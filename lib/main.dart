@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:botanisht/screens/home_screen.dart';
+
+Future<void> _initializeIsar() async {
+  if (!(await Isar.instanceNames()).contains('plant')) {
+    final dir = await getApplicationDocumentsDirectory();
+    await Isar.openInstance(
+      'plant',
+      [PlantEntitySchema],
+      directory: dir.path,
+    );
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  // Optionally, you can register adapters here if you have any.
-  // For now, we are storing Maps, so no adapter needed.
-  runApp(const BotanishtApp());
+  await _initializeIsar();
+  runApp(
+    ProviderScope(
+      child: const BotanishtApp(),
+    ),
+  );
 }
 
 class BotanishtApp extends StatelessWidget {

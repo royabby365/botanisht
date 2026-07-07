@@ -1,113 +1,102 @@
 import 'package:flutter/material.dart';
-import '../services/plant_api_service.dart';
-import '../models/plant.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:botanisht/providers/plant_provider.dart';
+import 'package:botanisht/models/plant.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncPlants = ref.watch(plantListNotifierProvider);
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late final PlantApiService _apiService;
-  late final TabController _tabController;
+    return Scaffold(
+      appBar: AppBar(
+        title: _buildLogo(context),
+        centerTitle: true,
+        backgroundColor: Colors.green.shade50,
+        elevation: 0,
+        foregroundColor: Colors.green.shade800,
+      ),
+      body: asyncPlants.when(
+        data: (plants) {
+          if (plants.isEmpty) {
+            return const Center(
+              child: Text(
+                'No plants yet.\nAdd some to get started!',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+            );
+          }
+          // Group plants by category (null/unknown go to 'Other')
+          final Map<String, List<Plant>> grouped = {};
+          for (final plant in plants) {
+            final cat = plant.category ?? 'Other';
+            if (!grouped.containsKey(cat)) {
+              grouped[cat] = [];
+            }
+            grouped[cat]!.add(plant);
+          }
 
-  bool _isLoading = true;
-  List<Plant> _indoorPlants = [];
-  List<Plant> _kitchenPlants = [];
-  List<Plant> _pollinatorPlants = [];
+          // Default tabs we want to show; if a category has no plants, show empty.
+          final List<String> tabLabels = [
+            'Indoor Jungle',
+            'Kitchen Garden',
+            'Pollinator Yard',
+          ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _loadPlants();
+          return Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.shade300,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: TabBar(
+                  labelColor: Colors.green.shade800,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.green.shade400,
+                  indicatorWeight: 3,
+                  tabs: tabLabels
+                      .map((label) => Tab(text: label))
+                      .toList(),
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: tabLabels.map((label) {
+                    final category = _labelToCategory(label);
+                    final List<Plant> categoryPlants =
+                        grouped.containsKey(category)
+                            ? grouped[category]!
+                            : [];
+                    return _buildPlantList(categoryPlants);
+                  }).toList(),
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Colors.green),
+        ),
+        error: (e, _) => Center(
+          child: Text(
+            'Error loading plants: $e',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ),
+    );
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _apiService.close();
-    super.dispose();
-  }
-
-  Future<void> _loadPlants() async {
-    setState(() => _isLoading = true);
-    try {
-      // For demo, fetch some plants and categorize by name keywords
-      final List<Plant> allPlants = await _apiService.searchPlants('');
-      // Take first 20 plants for demo
-      final List<Plant> samplePlants = allPlants.take(20).toList();
-
-      setState(() {
-        _indoorPlants = samplePlants.where((p) {
-              final name = p.name.toLowerCase();
-              return name.contains('fern') ||
-                  name.contains('pothos') ||
-                  name.contains('spider') ||
-                  name.contains('snake') ||
-                  name.contains('peace') ||
-                  name.contains('zanzibar') ||
-                  name.contains('aloe') ||
-                  name.contains('ivy') ||
-                  name.contains('succulent') ||
-                  name.contains('cactus');
-            }).toList();
-
-        _kitchenPlants = samplePlants.where((p) {
-              final name = p.name.toLowerCase();
-              return name.contains('tomato') ||
-                  name.contains('lettuce') ||
-                  name.contains('carrot') ||
-                  name.contains('pepper') ||
-                  name.contains('cucumber') ||
-                  name.contains('zucchini') ||
-                  name.contains('spinach') ||
-                  name.contains('kale') ||
-                  name.contains('broccoli') ||
-                  name.contains('basil') ||
-                  name.contains('parsley') ||
-                  name.contains('cilantro') ||
-                  name.contains('mint') ||
-                  name.contains('thyme') ||
-                  name.contains('rosemary') ||
-                  name.contains('oregano') ||
-                  name.contains('dill') ||
-                  name.contains('chives');
-            }).toList();
-
-        _pollinatorPlants = samplePlants.where((p) {
-              final name = p.name.toLowerCase();
-              return name.contains('rose') ||
-                  name.contains('lavender') ||
-                  name.contains('sunflower') ||
-                  name.contains('daisy') ||
-                  name.contains('marigold') ||
-                  name.contains('zinnea') ||
-                  name.contains('cosmos') ||
-                  name.contains('bee') ||
-                  name.contains('butterfly') ||
-                  name.contains('pollinator') ||
-                  name.contains('blossom');
-            }).toList();
-      });
-    } catch (e) {
-      // If API fails, show empty lists but could show error.
-      setState(() {
-        _indoorPlants = [];
-        _kitchenPlants = [];
-        _pollinatorPlants = [];
-      });
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Widget _buildLogo() {
+  Widget _buildLogo(BuildContext context) {
     return RichText(
       text: TextSpan(
         style: DefaultTextStyle.of(context).style,
@@ -146,13 +135,13 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildPlantList(List<Plant> plants, String type) {
+  Widget _buildPlantList(List<Plant> plants) {
     if (plants.isEmpty) {
-      return Center(
+      return const Center(
         child: Text(
-          'No $type plants yet.\nAdd some to get started!',
+          'No plants in this category yet.\nAdd some to get started!',
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+          style: TextStyle(color: Colors.grey, fontSize: 16),
         ),
       );
     }
@@ -174,13 +163,13 @@ class _HomeScreenState extends State<HomeScreen>
               backgroundColor: Colors.green.shade50,
               radius: 28,
               child: Icon(
-                _getIconForPlantType(type),
+                _getIconForCategory(plant.category ?? 'Other'),
                 size: 28,
                 color: Colors.green.shade700,
               ),
             ),
             title: Text(
-              plant.name,
+              plant.name ?? 'Unknown Plant',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -191,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 const SizedBox(height: 4),
                 Text(
-                  'Scientific name: ${plant.scientificName ?? 'N/A'}',
+                  'Scientific: ${plant.scientificName ?? 'N/A'}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -219,10 +208,11 @@ class _HomeScreenState extends State<HomeScreen>
               icon: const Icon(Icons.add_circle_outline),
               color: Colors.green.shade400,
               onPressed: () {
-                // TODO: Add plant to user's garden
+                // TODO: Add plant to user's garden (could store in another Isar collection)
+                // For now, just show a snackbar.
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Added ${plant.name} to your $type!'),
+                    content: Text('Added ${plant.name} to your garden!'),
                     backgroundColor: Colors.green.shade700,
                   ),
                 );
@@ -234,67 +224,29 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  IconData _getIconForPlantType(String type) {
-    switch (type.toLowerCase()) {
+  String _labelToCategory(String label) {
+    switch (label) {
+      case 'Indoor Jungle':
+        return 'indoor';
+      case 'Kitchen Garden':
+        return 'kitchen';
+      case 'Pollinator Yard':
+        return 'pollinator';
+      default:
+        return 'other';
+    }
+  }
+
+  IconData _getIconForCategory(String category) {
+    switch (category.toLowerCase()) {
       case 'indoor':
         return Icons.grass;
       case 'kitchen':
         return Icons.restaurant_menu;
       case 'pollinator':
-        return Icons.nature_people; // Use nature_people for pollinator
+        return Icons.nature_people;
       default:
-        return Icons.grass;
+        return Icons.label; // fallback
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _buildLogo(),
-        centerTitle: true,
-        backgroundColor: Colors.green.shade50,
-        elevation: 0,
-        foregroundColor: Colors.green.shade800,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.green))
-          : Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.green.shade800,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: Colors.green.shade400,
-                    indicatorWeight: 3,
-                    tabs: const [
-                      Tab(text: 'Indoor Jungle'),
-                      Tab(text: 'Kitchen Garden'),
-                      Tab(text: 'Pollinator Yard'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildPlantList(_indoorPlants, 'Indoor'),
-                      _buildPlantList(_kitchenPlants, 'Kitchen'),
-                      _buildPlantList(_pollinatorPlants, 'Pollinator'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-    );
   }
 }

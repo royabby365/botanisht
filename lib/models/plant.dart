@@ -18,6 +18,9 @@ class Plant {
   final String? sowLastBeforeLastFrostDate;
   final String? sowFirstAfterLastFrostDate;
   final String? sowLastAfterLastFrostDate;
+  // App-specific fields
+  final String? category; // indoor, kitchen, pollinator, or null
+  final String? customName; // user-defined nickname
 
   Plant({
     required this.id,
@@ -39,6 +42,8 @@ class Plant {
     this.sowLastBeforeLastFrostDate,
     this.sowFirstAfterLastFrostDate,
     this.sowLastAfterLastFrostDate,
+    this.category,
+    this.customName,
   });
 
   factory Plant.fromJson(Map<String, dynamic> json) {
@@ -67,14 +72,15 @@ class Plant {
           attributes['sow_first_after_last_frost_date'] as String?,
       sowLastAfterLastFrostDate:
           attributes['sow_last_after_last_frost_date'] as String?,
+      // API does not provide category/customName
+      category: null,
+      customName: null,
     );
   }
 
   static List<String>? _parseStringList(dynamic value) {
     if (value == null) return null;
     if (value is String) {
-      // Sometimes the API returns a string separated by commas or newlines.
-      // We'll split by common delimiters.
       final List<String> parts = value
           .replaceAll('\n', ',')
           .replaceAll(';', ',')
@@ -116,5 +122,7 @@ class Plant {
         'sowLastBeforeLastFrostDate': sowLastBeforeLastFrostDate,
         'sowFirstAfterLastFrostDate': sowFirstAfterLastFrostDate,
         'sowLastAfterLastFrostDate': sowLastAfterLastFrostDate,
+        'category': category,
+        'customName': customName,
       };
 }
