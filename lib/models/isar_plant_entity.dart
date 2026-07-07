@@ -4,7 +4,7 @@ part 'isar_plant_entity.g.dart';
 
 @collection
 class PlantEntity {
-  Id id = Isar.autoIncrement; // you can also keep the external id if needed
+  Id id = Isar.autoIncrement; // you can also use null = Isar.autoIncrement
 
   String? name;
   String? description;
@@ -26,10 +26,10 @@ class PlantEntity {
   String? sowLastAfterLastFrostDate;
 
   // User‑specific fields
-  String? category; // 'indoor', 'kitchen', 'pollinator'
+  String? category; // e.g., 'indoorJungle', 'kitchenGarden', etc.
   String? customName;
 
-  // NEW: pet safety flag (true = safe for cats and dogs)
+  // PET SAFETY FLAG (true = safe for cats & dogs)
   bool? isPetSafe;
 
   PlantEntity();

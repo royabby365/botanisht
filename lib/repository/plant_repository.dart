@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
+import 'package:botanisht/models/hydroponic_log.g.dart';
 import 'package:botanisht/services/plant_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,14 +15,12 @@ class PlantRepository {
   late final PlantApiService _apiService;
 
   Future<void> _init() async {
-    // Initialize Isar instance (same as used in main)
-    final bool exists = (await Isar.instanceNames()).contains('plant');
-    if (!exists) {
-      final dir = await getApplicationDocumentsDirectory();
-      await Isar.openInstance(
-        'plant',
+    final dir = await getApplicationDocumentsDirectory();
+    if (!Isar.instanceNames.contains('plant')) {
+      await Isar.open(
         [PlantEntitySchema, HydroponicLogSchema],
         directory: dir.path,
+        name: 'plant',
       );
     }
     _isar = Isar.getInstance('plant')!;
@@ -41,7 +40,6 @@ class PlantRepository {
 
   /// Get plants by category (indoorJungle, kitchenGarden, etc.)
   Future<List<Plant>> getPlantsByCategory(String category) async {
-    // category stored as string; we accept enum's name
     final entities = await _isar.plantEntitys
         .filter()
         .categoryEqualTo(category)
@@ -57,8 +55,8 @@ class PlantRepository {
   /// Stream the most recent HydroponicLog entry (ordered by timestamp DESC).
   Stream<HydroponicLog?> watchLatestHydroponicLog() {
     return _isar.hydroponicLogs
-        .filter()
-        .sortByTimestampDesc()
+        .where()
+        .sortBy((q) => q.timestamp, Sort.descending)
         .limit(1)
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
@@ -70,53 +68,51 @@ class PlantRepository {
   }
 
   // Conversion helpers
-  Plant _entityToPlant(PlantEntity entity) => Plant(
-        id: entity.id,
-        name: entity.name ?? '',
-        description: entity.description,
-        scientificName: entity.scientificName,
-        imageUrl: entity.imageUrl,
-        sunRequirements: entity.sunRequirements,
-        waterRequirements: entity.waterRequirements,
-        propagationMethod: entity.propagationMethod,
-        daysToHarvest: entity.daysToHarvest,
-        companions: entity.companions,
-        antagonists: entity.antagonists,
-        spacing: entity.spacing,
-        rowSpacing: entity.rowSpacing,
-        seedDepth: entity.seedDepth,
-        sowMethod: entity.sowMethod,
-        sowRightBeforeLastFrostDate: entity.sowRightBeforeLastFrostDate,
-        sowLastBeforeLastFrostDate: entity.sowLastBeforeLastFrostDate,
-        sowFirstAfterLastFrostDate: entity.sowFirstAfterLastFrostDate,
-        sowLastAfterLastFrostDate: entity.sowLastAfterLastFrostDate,
-        category: entity.category?.name, // store enum name as string
-        customName: entity.customName,
-        isPetSafe: entity.isPetSafe,
+  Plant _entityToPlant(PlantEntity e) => Plant(
+        id: e.id,
+        name: e.name ?? '',
+        description: e.description,
+        scientificName: e.scientificName,
+        imageUrl: e.imageUrl,
+        sunRequirements: e.sunRequirements,
+        waterRequirements: e.waterRequirements,
+        propagationMethod: e.propagationMethod,
+        daysToHarvest: e.daysToHarvest,
+        companions: e.companions,
+        antagonists: e.antagonists,
+        spacing: e.spacing,
+        rowSpacing: e.rowSpacing,
+        seedDepth: e.seedDepth,
+        sowMethod: e.sowMethod,
+        sowRightBeforeLastFrostDate: e.sowRightBeforeLastFrostDate,
+        sowLastBeforeLastFrostDate: e.sowLastBeforeLastFrostDate,
+        sowFirstAfterLastFrostDate: e.sowFirstAfterLastFrostDate,
+        sowLastAfterLastFrostDate: e.sowLastAfterLastFrostDate,
+        category: e.category,
+        customName: e.customName,
+        isPetSafe: e.isPetSafe,
       );
 
-  PlantEntity _plantToEntity(Plant plant) => PlantEntity()
-    ..id = plant.id
-    ..name = plant.name
-    ..description = plant.description
-    ..scientificName = plant.scientificName
-    ..imageUrl = plant.imageUrl
-    ..sunRequirements = plant.sunRequirements
-    ..waterRequirements = plant.waterRequirements
-    ..propagationMethod = plant.propagationMethod
-    ..daysToHarvest = plant.daysToHarvest
-    ..companions = plant.companions
-    ..antagonists = plant.antagonists
-    ..spacing = plant.spacing
-    ..rowSpacing = plant.rowSpacing
-    ..seedDepth = plant.seedDepth
-    ..sowMethod = plant.sowMethod
-    ..sowRightBeforeLastFrostDate = plant.sowRightBeforeLastFrostDate
-    ..sowLastBeforeLastFrostDate = plant.sowLastBeforeLastFrostDate
-    ..sowFirstAfterLastFrostDate = plant.sowFirstAfterLastFrostDate
-    ..sowLastAfterLastFrostDate = plant.sowLastAfterLastFrostDate
-    ..customName = plant.customName
-    ..isPetSafe = plant.isPetSafe
-    // Store enum as string? We'll keep category as string for simplicity.
-    ..category = plant.category;
-}
+  PlantEntity _plantToEntity(Plant p) => PlantEntity()
+    ..id = p.id
+    ..name = p.name
+    ..description = p.description
+    ..scientificName = p.scientificName
+    ..imageUrl = p.imageUrl
+    ..sunRequirements = p.sunRequirements
+    ..waterRequirements = p.waterRequirements
+    ..propagationMethod = p.propagationMethod
+    ..daysToHarvest = p.daysToHarvest
+    ..companions = p.companions
+    ..antagonists = p.antagonists
+    ..spacing = p.spacing
+    ..rowSpacing = p.rowSpacing
+    ..seedDepth = p.seedDepth
+    ..sowMethod = p.sowMethod
+    ..sowRightBeforeLastFrostDate = p.sowRightBeforeLastFrostDate
+    ..sowLastBeforeLastFrostDate = p.sowLastBeforeLastFrostDate
+    ..sowFirstAfterLastFrostDate = p.sowFirstAfterLastFrostDate
+    ..sowLastAfterLastFrostDate = p.sowLastAfterLastFrostDate
+    ..category = p.category
+    ..customName = p.customName
+    ..isPetSafe = p.isPetSafe;}

@@ -3,16 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
+import 'package:botanisht/models/isar_plant_entity.dart';
 
 Future<void> _initializeIsar() async {
-  if (!(await Isar.instanceNames()).contains('plant')) {
-    final dir = await getApplicationDocumentsDirectory();
-    await Isar.openInstance(
-      'plant',
-      [PlantEntitySchema],
-      directory: dir.path,
-    );
-  }
+  final dir = await getApplicationDocumentsDirectory();
+  await Isar.open(
+    [PlantEntitySchema],
+    directory: dir.path,
+    // instanceName: 'plant', // optional, default is empty string
+  );
 }
 
 void main() async {

@@ -21,6 +21,7 @@ class Plant {
   // App-specific fields
   final String? category; // indoor, kitchen, pollinator, or null
   final String? customName; // user-defined nickname
+  final bool? isPetSafe; // true = safe for cats & dogs
 
   Plant({
     required this.id,
@@ -44,6 +45,7 @@ class Plant {
     this.sowLastAfterLastFrostDate,
     this.category,
     this.customName,
+    this.isPetSafe,
   });
 
   factory Plant.fromJson(Map<String, dynamic> json) {
@@ -72,9 +74,10 @@ class Plant {
           attributes['sow_first_after_last_frost_date'] as String?,
       sowLastAfterLastFrostDate:
           attributes['sow_last_after_last_frost_date'] as String?,
-      // API does not provide category/customName
+      // API does not provide category/customName/isPetSafe
       category: null,
       customName: null,
+      isPetSafe: null,
     );
   }
 
@@ -124,5 +127,6 @@ class Plant {
         'sowLastAfterLastFrostDate': sowLastAfterLastFrostDate,
         'category': category,
         'customName': customName,
+        'isPetSafe': isPetSafe,
       };
 }

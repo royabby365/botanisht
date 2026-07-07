@@ -18,12 +18,12 @@ class PlantApiService {
   }
 
   Future<void> _init() async {
-    if (!Isar.instanceNames().contains('plant')) {
-      final dir = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationDocumentsDirectory();
+    if (!Isar.instanceNames.contains('plant')) {
       final isar = await Isar.open(
-        [PlantEntity],
+        [PlantEntitySchema, HydroponicLogSchema],
         directory: dir.path,
-        instanceName: 'plant',
+        name: 'plant',
       );
       _isar = isar;
     } else {
@@ -34,7 +34,7 @@ class PlantApiService {
 
   /// Get plant by ID from local cache (Isar). Returns null if not found.
   Future<Plant?> _getFromCache(int id) async {
-    final entity = await _isar.plantEntities.get(id);
+    final entity = await _isar.plantEntitys.get(id);
     if (entity == null) return null;
     return _entityToPlant(entity);
   }
@@ -42,7 +42,7 @@ class PlantApiService {
   /// Save or update a plant to the Isar database.
   Future<void> _putToCache(Plant plant) async {
     final entity = _plantToEntity(plant);
-    await _isar.writeTxn(() => _isar.plantEntities.put(entity));
+    await _isar.writeTxn(() => _isar.plantEntitys.put(entity));
   }
 
   /// Public method to put a plant (used by repository).

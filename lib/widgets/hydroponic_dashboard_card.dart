@@ -55,9 +55,7 @@ class HydroponicDashboardCard extends ConsumerWidget {
                     const SizedBox(height: 8),
                     _MetricRow(
                       label: 'TDS',
-                      value: log.nutrientTds != null
-                          => '${(log.nutrientTds!.round())} ppm'
-                          : '–',
+                      value: log.nutrientTds != null ? '${(log.nutrientTds!.round())} ppm' : '–',
                       unit: '',
                     ),
                     const SizedBox(height: 8),
