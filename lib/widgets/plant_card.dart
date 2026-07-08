@@ -37,7 +37,7 @@ class PlantCard extends ConsumerWidget {
     final healthStatus = displayUserPlant?.healthStatus;
     final lastWatered = displayUserPlant?.lastWatered;
     final location = displayUserPlant?.location;
-    final isPetSafe = displayPlant?.isPetSafe;
+    final isPetSafe = displayPlant?.isPetSafe ?? displayUserPlant?.isPetSafe;
     
     final isHydro = category == 'hydro';
     final asyncHydroLog = isHydro
@@ -57,6 +57,8 @@ class PlantCard extends ConsumerWidget {
               Row(
                 children: [
                   _CategoryBadge(category: category),
+                  const SizedBox(width: 8),
+                  if (isPetSafe != null) _PetSafetyBadge(isPetSafe: isPetSafe),
                   const Spacer(),
                   if (isUserPlant && healthStatus != null)
                     _HealthIndicator(status: healthStatus),
@@ -139,9 +141,6 @@ class PlantCard extends ConsumerWidget {
                     color: Colors.amber.shade700,
                     isHydro: isHydro,
                   ),
-                  const SizedBox(width: 12),
-                  if (displayPlant?.isPetSafe != null)
-                    _PetSafetyBadge(isPetSafe: displayPlant!.isPetSafe!),
                 ],
               ),
               
@@ -389,43 +388,37 @@ class _CareIndicator extends StatelessWidget {
 
 class _PetSafetyBadge extends StatelessWidget {
   final bool isPetSafe;
-  
+
   const _PetSafetyBadge({required this.isPetSafe});
-  
+
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isPetSafe 
-              ? Colors.green.withOpacity(0.08)
-              : Colors.orange.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isPetSafe 
-                ? Colors.green.withOpacity(0.2)
-                : Colors.orange.withOpacity(0.2),
+    final color = isPetSafe ? Colors.green.shade700 : Colors.orange.shade700;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: (isPetSafe ? Colors.green : Colors.orange).withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPetSafe ? Icons.pets_rounded : Icons.warning_amber_rounded,
+            size: 14,
+            color: color,
           ),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              isPetSafe ? Icons.pets_rounded : Icons.warning_amber_rounded,
-              size: 24,
-              color: isPetSafe ? Colors.green.shade700 : Colors.orange.shade700,
+          const SizedBox(width: 5),
+          Text(
+            isPetSafe ? 'Pet Safe' : 'Toxic to Pets',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
-            const SizedBox(height: 6),
-            Text(
-              isPetSafe ? 'Pet Safe' : 'Not Pet Safe',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: isPetSafe ? Colors.green.shade700 : Colors.orange.shade700,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

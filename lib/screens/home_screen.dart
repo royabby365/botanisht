@@ -23,7 +23,15 @@ class HomeScreen extends ConsumerWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Flexible(child: AppLogo()),
+          title: const SizedBox(
+            width: 200,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: AppLogo(),
+            ),
+          ),
+          titleSpacing: 16,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(72),
             child: _buildCustomTabBar(),

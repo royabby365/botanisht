@@ -46,6 +46,11 @@ class UserPlantDetailScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (userPlant.isPetSafe != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: _buildPetSafetyBadge(userPlant.isPetSafe!),
+              ),
             _buildSection('Basic Info', [
               _buildDetailRow(Icons.health_and_safety, 'Health',
                   userPlant.healthStatus?.capitalize() ?? 'Unknown'),
@@ -144,6 +149,37 @@ class UserPlantDetailScreen extends ConsumerWidget {
             ]),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPetSafetyBadge(bool isPetSafe) {
+    final color = isPetSafe ? Colors.green.shade700 : Colors.orange.shade700;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: (isPetSafe ? Colors.green : Colors.orange).withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPetSafe ? Icons.pets_rounded : Icons.warning_amber_rounded,
+            size: 16,
+            color: color,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            isPetSafe ? 'Pet Safe' : 'Toxic to Pets',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ],
       ),
     );
   }
