@@ -1,89 +1,109 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:botanisht/providers/plant_provider.dart';
+import 'package:botanisht/services/plant_api_service.dart';
 import 'package:botanisht/models/plant.dart';
 
 class PlantSearchDelegate extends SearchDelegate<Plant?> {
-  final WidgetRef ref;
+  PlantSearchDelegate();
 
-  PlantSearchDelegate(this.ref);
+  // Cache the in-flight request so we don't re-hit the network on every
+  // keystroke rebuild; the future is reused as long as the query is unchanged.
+  Future<List<Plant>>? _searchFuture;
+  String? _searchQuery;
+
+  Future<List<Plant>> _fetch(String query) {
+    if (_searchQuery != query) {
+      _searchQuery = query;
+      _searchFuture = PlantApiService().searchPlants(query);
+    }
+    return _searchFuture!;
+  }
 
   @override
   List<Widget> buildActions(BuildContext context) => [
-    IconButton(
-      icon: const Icon(Icons.clear_rounded),
-      onPressed: () => query = '',
-    ),
-  ];
+        IconButton(
+          icon: const Icon(Icons.clear_rounded),
+          onPressed: () => query = '',
+          tooltip: 'Clear',
+        ),
+      ];
 
   @override
   Widget buildLeading(BuildContext context) => IconButton(
-    icon: const Icon(Icons.arrow_back_rounded),
-    onPressed: () => close(context, null),
-  );
+        icon: const Icon(Icons.arrow_back_rounded),
+        onPressed: () => close(context, null),
+        tooltip: 'Back',
+      );
 
   @override
-  Widget buildResults(BuildContext context) => _buildResults(context);
+  Widget buildResults(BuildContext context) => _buildSearchView();
 
   @override
-  Widget buildSuggestions(BuildContext context) => _buildResults(context);
+  Widget buildSuggestions(BuildContext context) => _buildSearchView();
 
-  Widget _buildResults(BuildContext context) {
-    final AsyncValue<List<Plant>> asyncPlants =
-        ref.watch(plantListNotifierProvider);
-    return asyncPlants.when(
-      data: (plants) {
-        final filtered = plants
-            .where((p) =>
-                (p.name?.toLowerCase().contains(query.toLowerCase()) ?? false))
-            .toList();
-        if (filtered.isEmpty) {
+  Widget _buildSearchView() {
+    final q = query.trim();
+
+    if (q.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_rounded, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('Search OpenFarm for any plant…'),
+          ],
+        ),
+      );
+    }
+
+    return FutureBuilder<List<Plant>>(
+      future: _fetch(q),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Could not reach OpenFarm.\n${snapshot.error}',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        final results = snapshot.data ?? [];
+        if (results.isEmpty) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.search_off_rounded,
-                    size: 64, color: Colors.grey.shade300),
+                const Icon(Icons.search_off_rounded, size: 64, color: Colors.grey),
                 const SizedBox(height: 16),
-                Text('No plants found for "$query"'),
+                Text('No plants found for "$q"'),
               ],
             ),
           );
         }
+
         return ListView.builder(
-          itemCount: filtered.length,
+          itemCount: results.length,
           itemBuilder: (context, index) {
-            final plant = filtered[index];
+            final plant = results[index];
             return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: const Color(0xFF1B4332).withOpacity(0.1),
-                child: Icon(
-                  _getIconForCategory(plant.category ?? 'Other'),
-                  color: const Color(0xFF1B4332),
-                ),
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xFF1B4332),
+                child: Icon(Icons.local_florist_rounded, color: Colors.white),
               ),
-              title: Text(plant.name ?? 'Unknown'),
+              title: Text(plant.name),
               subtitle: Text(plant.scientificName ?? ''),
               onTap: () => close(context, plant),
             );
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
     );
-  }
-
-  IconData _getIconForCategory(String category) {
-    switch (category) {
-      case 'indoor':
-        return Icons.park_rounded;
-      case 'kitchen':
-        return Icons.eco_rounded;
-      case 'hydro':
-        return Icons.science_rounded;
-      default:
-        return Icons.local_florist_rounded;
-    }
   }
 }

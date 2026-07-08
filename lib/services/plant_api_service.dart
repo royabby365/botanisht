@@ -55,7 +55,7 @@ class PlantApiService {
 
   Future<List<Plant>> searchPlants(String query) async {
     final response = await _client.get(
-      Uri.parse('$_baseUrl/plants?filter=$query&page_size=10'),
+      Uri.parse('$_baseUrl/crops?filter=$query&page_size=10'),
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);

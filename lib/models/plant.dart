@@ -51,7 +51,7 @@ class Plant {
   factory Plant.fromJson(Map<String, dynamic> json) {
     final attributes = json['attributes'] as Map<String, dynamic>;
     return Plant(
-      id: json['id'] as int,
+      id: int.tryParse(json['id'].toString()) ?? 0,
       name: attributes['name'] as String,
       description: attributes['description'] as String?,
       scientificName: attributes['scientific_name'] as String?,

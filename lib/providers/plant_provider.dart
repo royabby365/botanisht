@@ -63,8 +63,9 @@ final plantListNotifierProvider =
 // Notifier for user plant actions.
 class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
   final PlantRepository _repository;
+  final Ref ref;
 
-  UserPlantNotifier(this._repository) : super(const AsyncData(null));
+  UserPlantNotifier(this._repository, this.ref) : super(const AsyncData(null));
 
   Future<void> addFromEntity(int plantEntityId, {
     String? customName,
@@ -172,6 +173,10 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> updateHealthStatus(int id, String status, String note) async {
     try {
       await _repository.updateHealthStatus(id, status, note);
+      // Refresh the streams feeding the plant list / detail screens so the
+      // persisted health-status change is reflected immediately in the UI.
+      ref.invalidate(userPlantsProvider);
+      ref.invalidate(userPlantsSortedProvider);
     } catch (e) {
       // Ignore for now
     }
@@ -197,5 +202,5 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
 final userPlantNotifierProvider =
     StateNotifierProvider<UserPlantNotifier, AsyncValue<void>>((ref) {
   final repo = ref.read(plantRepositoryProvider);
-  return UserPlantNotifier(repo);
+  return UserPlantNotifier(repo, ref);
 });

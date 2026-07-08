@@ -195,12 +195,12 @@ class PlantRepository {
 
   Future<void> updateHealthStatus(int id, String status, String note) async {
     final plant = await _isar.userPlants.get(id);
-    if (plant != null) {
-      plant.healthStatus = status;
-      plant.healthNotes ??= [];
-      plant.healthNotes!.add('$status: $note');
-      await _isar.writeTxn(() => _isar.userPlants.put(plant));
-    }
+    if (plant == null) return;
+    // Create the updated object and persist it explicitly within a write txn.
+    final updated = plant
+      ..healthStatus = status
+      ..healthNotes = [...?plant.healthNotes, '$status: $note'];
+    await _isar.writeTxn(() => _isar.userPlants.put(updated));
   }
 
   Future<void> recordMeasurement(int id, {double? heightCm, double? widthCm}) async {

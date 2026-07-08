@@ -67,14 +67,16 @@ class PlantCard extends ConsumerWidget {
               
               const SizedBox(height: 16),
               
-              AspectRatio(
-                aspectRatio: 16 / 9,
+              SizedBox(
+                height: 120,
+                width: double.infinity,
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color(0xFF1B4332).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  clipBehavior: Clip.antiAlias,
                   child: _buildPlantImage(category),
                 ),
               ),

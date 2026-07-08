@@ -23,18 +23,19 @@ class HomeScreen extends ConsumerWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const AppLogo(),
+          title: const Flexible(child: AppLogo()),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(72),
             child: _buildCustomTabBar(),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.search, size: 28),
+              icon: const Icon(Icons.search, size: 24),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
               onPressed: () => _showSearchDialog(context, ref),
               tooltip: 'Search plants',
             ),
-            const SizedBox(width: 8),
           ],
         ),
         body: TabBarView(
@@ -258,7 +259,7 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => UserPlantDetailScreen(userPlant: userPlant),
+                    builder: (_) => UserPlantDetailScreen(plantId: userPlant.id!),
                   ),
                 ),
               );
@@ -581,7 +582,7 @@ class HomeScreen extends ConsumerWidget {
   void _showSearchDialog(BuildContext context, WidgetRef ref) {
     showSearch(
       context: context,
-      delegate: PlantSearchDelegate(ref),
+      delegate: PlantSearchDelegate(),
     );
   }
 
