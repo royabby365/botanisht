@@ -17,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: Colors.green.shade50,
         elevation: 0,
         foregroundColor: Colors.green.shade800,
+        toolbarHeight: 70, // Slightly taller to fit the subtitle
       ),
       body: asyncPlants.when(
         data: (plants) {
@@ -89,7 +90,7 @@ class HomeScreen extends ConsumerWidget {
           child: Text(
             'Error loading plants: $e',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         ),
       ),
@@ -97,41 +98,61 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildLogo(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: DefaultTextStyle.of(context).style,
-        children: const [
-          TextSpan(
-            text: 'Botan',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'B',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.green.shade700,
+              ),
             ),
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 2.0),
-              child: Icon(Icons.thumb_up, size: 24, color: Colors.green),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1.0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.thumb_up, color: Colors.green.shade700, size: 26),
+                  const Icon(Icons.eco, color: Colors.white, size: 14),
+                ],
+              ),
             ),
-          ),
-          TextSpan(
-            text: 'ish',
-            style: TextStyle(
-              fontSize: 24,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
+            Text(
+              'tan',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.green.shade700,
+              ),
             ),
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: EdgeInsets.only(left: 2.0),
-              child: Icon(Icons.eco, size: 20, color: Colors.green),
+            Text(
+              'isht',
+              style: TextStyle(
+                fontSize: 28,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w500,
+                color: Colors.green.shade700,
+              ),
             ),
+            const SizedBox(width: 2),
+            Icon(Icons.eco_outlined, color: Colors.green.shade700, size: 26),
+          ],
+        ),
+        Text(
+          'Beginner-Friendly Gardening & Plant Care',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.green.shade600,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -188,7 +209,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Sun: ${plant.sunlight}',
+                  'Sun: ${plant.sunlight ?? 'Unknown'}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -196,7 +217,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Water: ${plant.watering}',
+                  'Water: ${plant.watering ?? 'Unknown'}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -208,8 +229,6 @@ class HomeScreen extends ConsumerWidget {
               icon: const Icon(Icons.add_circle_outline),
               color: Colors.green.shade400,
               onPressed: () {
-                // TODO: Add plant to user's garden (could store in another Isar collection)
-                // For now, just show a snackbar.
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Added ${plant.name} to your garden!'),
@@ -246,7 +265,7 @@ class HomeScreen extends ConsumerWidget {
       case 'pollinator':
         return Icons.nature_people;
       default:
-        return Icons.label; // fallback
+        return Icons.label;
     }
   }
 }

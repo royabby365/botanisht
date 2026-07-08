@@ -2,7 +2,6 @@ import 'package:isar/isar.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
-import 'package:botanisht/models/hydroponic_log.g.dart';
 import 'package:botanisht/services/plant_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -56,7 +55,7 @@ class PlantRepository {
   Stream<HydroponicLog?> watchLatestHydroponicLog() {
     return _isar.hydroponicLogs
         .where()
-        .sortBy((q) => q.timestamp, Sort.descending)
+        .sortByTimestampDesc() 
         .limit(1)
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
