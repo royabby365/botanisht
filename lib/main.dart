@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
+import 'package:botanisht/screens/splash_screen.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
@@ -43,7 +44,7 @@ class BotanishtApp extends StatelessWidget {
       title: 'Botanisht',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 

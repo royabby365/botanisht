@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
+import 'package:botanisht/services/plant_api_service.dart';
 import 'package:botanisht/screens/user_plant_detail_screen.dart';
 import 'package:botanisht/widgets/plant_card.dart';
+import 'package:botanisht/widgets/app_logo.dart';
+import 'package:botanisht/widgets/add_plant_bottom_sheet.dart';
 import 'package:botanisht/screens/search_delegate.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -19,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: _buildLogo(context),
+          title: const AppLogo(),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(72),
             child: _buildCustomTabBar(),
@@ -70,44 +74,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogo(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: DefaultTextStyle.of(context).style,
-        children: const [
-          TextSpan(
-            text: 'Botan',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
-            ),
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 2.0),
-              child: Icon(Icons.thumb_up_rounded, size: 26),
-            ),
-          ),
-          TextSpan(
-            text: 'ish',
-            style: TextStyle(
-              fontSize: 26,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
-            ),
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: EdgeInsets.only(left: 2.0),
-              child: Icon(Icons.eco_rounded, size: 22),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildLogo(BuildContext context) => const AppLogo();
 
   Widget _buildCustomTabBar() {
     return Container(
@@ -607,143 +574,7 @@ class HomeScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        maxChildSize: 0.85,
-        minChildSize: 0.4,
-        expand: false,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFF5F0E1),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                Text(
-                  'Add Plant to Garden',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Search our database or create a custom entry',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF1B4332).withOpacity(0.7),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search plants...',
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    suffixIcon: const Icon(Icons.mic_rounded),
-                  ),
-                  onChanged: (value) {},
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Or create custom',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-                _buildCustomPlantForm(context, ref),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCustomPlantForm(BuildContext context, WidgetRef ref) {
-    final nameController = TextEditingController();
-    final customNameController = TextEditingController();
-    final locationController = TextEditingController();
-    String? selectedZone = 'indoor';
-
-    return StatefulBuilder(
-      builder: (context, setState) => Column(
-        children: [
-          TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              labelText: 'Plant Name *',
-              hintText: 'e.g., Monstera Deliciosa',
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: customNameController,
-            decoration: const InputDecoration(
-              labelText: 'Custom Name (Optional)',
-              hintText: 'e.g., Living Room Monster',
-            ),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: selectedZone,
-            decoration: const InputDecoration(labelText: 'Zone'),
-            items: const [
-              DropdownMenuItem(value: 'indoor', child: Text('Indoor')),
-              DropdownMenuItem(value: 'hydro', child: Text('Hydro')),
-              DropdownMenuItem(value: 'kitchen', child: Text('Kitchen')),
-            ],
-            onChanged: (value) => setState(() => selectedZone = value),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: locationController,
-            decoration: const InputDecoration(
-              labelText: 'Location (Optional)',
-              hintText: 'e.g., Kitchen window, Balcony, Grow tent',
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: nameController.text.isNotEmpty
-                  ? () {
-                      ref.read(userPlantNotifierProvider.notifier).addCustom(
-                        name: nameController.text,
-                        customName: customNameController.text.isNotEmpty ? customNameController.text : null,
-                        location: locationController.text.isNotEmpty ? locationController.text : null,
-                        lightConditions: selectedZone == 'hydro' ? 'Grow lights' : null,
-                        temperatureRange: selectedZone == 'hydro' ? '68-75°F' : null,
-                      );
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Added ${nameController.text} to garden!'),
-                          backgroundColor: const Color(0xFF1B4332),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  : null,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Add Custom Plant'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
-          ),
-        ],
-      ),
+      builder: (context) => const AddPlantBottomSheet(),
     );
   }
 
