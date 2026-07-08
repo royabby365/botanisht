@@ -101,9 +101,9 @@ HydroponicLog _hydroponicLogDeserialize(
   object.id = id;
   object.notes = reader.readStringOrNull(offsets[0]);
   object.nutrientTds = reader.readDoubleOrNull(offsets[1]);
-  object.plantId = reader.readLongOrNull(offsets[2]);
+  object.plantId = reader.readLong(offsets[2]);
   object.pumpCycleMinutes = reader.readLongOrNull(offsets[3]);
-  object.timestamp = reader.readDateTimeOrNull(offsets[4]);
+  object.timestamp = reader.readDateTime(offsets[4]);
   object.waterPH = reader.readDoubleOrNull(offsets[5]);
   return object;
 }
@@ -120,11 +120,11 @@ P _hydroponicLogDeserializeProp<P>(
     case 1:
       return (reader.readDoubleOrNull(offset)) as P;
     case 2:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readLongOrNull(offset)) as P;
     case 4:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 5:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
@@ -521,25 +521,7 @@ extension HydroponicLogQueryFilter
   }
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      plantIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'plantId',
-      ));
-    });
-  }
-
-  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      plantIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'plantId',
-      ));
-    });
-  }
-
-  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      plantIdEqualTo(int? value) {
+      plantIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'plantId',
@@ -550,7 +532,7 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       plantIdGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -564,7 +546,7 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       plantIdLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -578,8 +560,8 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       plantIdBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -669,25 +651,7 @@ extension HydroponicLogQueryFilter
   }
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      timestampIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'timestamp',
-      ));
-    });
-  }
-
-  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      timestampIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'timestamp',
-      ));
-    });
-  }
-
-  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
-      timestampEqualTo(DateTime? value) {
+      timestampEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'timestamp',
@@ -698,7 +662,7 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       timestampGreaterThan(
-    DateTime? value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -712,7 +676,7 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       timestampLessThan(
-    DateTime? value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -726,8 +690,8 @@ extension HydroponicLogQueryFilter
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       timestampBetween(
-    DateTime? lower,
-    DateTime? upper, {
+    DateTime lower,
+    DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1065,7 +1029,7 @@ extension HydroponicLogQueryProperty
     });
   }
 
-  QueryBuilder<HydroponicLog, int?, QQueryOperations> plantIdProperty() {
+  QueryBuilder<HydroponicLog, int, QQueryOperations> plantIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'plantId');
     });
@@ -1078,7 +1042,7 @@ extension HydroponicLogQueryProperty
     });
   }
 
-  QueryBuilder<HydroponicLog, DateTime?, QQueryOperations> timestampProperty() {
+  QueryBuilder<HydroponicLog, DateTime, QQueryOperations> timestampProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'timestamp');
     });

@@ -6,12 +6,12 @@ part 'hydroponic_log.g.dart';
 class HydroponicLog {
   Id id = Isar.autoIncrement;
 
-  int? plantId;
+  int plantId = 0;
 
   double? waterPH;
   double? nutrientTds;
   int? pumpCycleMinutes;
-  DateTime? timestamp;
+  DateTime timestamp = DateTime.now();
   String? notes;
 
   HydroponicLog();

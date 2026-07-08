@@ -2,30 +2,33 @@ import 'package:isar/isar.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
+import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/services/plant_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlantRepository {
+  PlantRepository() {
+    _init();
+  }
+
   late final Isar _isar;
   late final PlantApiService _apiService;
 
-  PlantRepository() {
+  Future<void> _init() async {
+    // Get the Isar instance that was already opened in main.dart
     _isar = Isar.getInstance('plant')!;
-    _apiService = PlantApiService(_isar);
+    _apiService = PlantApiService();
   }
 
-  /// Get a plant by ID, using cache (Isar) then API if needed.
   Future<Plant?> getPlant(int id) async {
     return await _apiService.getPlant(id);
   }
 
-  /// Get all plants from the local database.
   Future<List<Plant>> getAllPlants() async {
     final entities = await _isar.plantEntitys.where().findAll();
     return entities.map(_entityToPlant).toList();
   }
 
-  /// Get plants by category (indoorJungle, kitchenGarden, etc.)
   Future<List<Plant>> getPlantsByCategory(String category) async {
     final entities = await _isar.plantEntitys
         .filter()
@@ -34,12 +37,10 @@ class PlantRepository {
     return entities.map(_entityToPlant).toList();
   }
 
-  /// Save or update a plant (e.g., after user edits custom name/category).
   Future<void> savePlant(Plant plant) async {
     await _apiService.putPlant(plant);
   }
 
-  /// Stream the most recent HydroponicLog entry (ordered by timestamp DESC).
   Stream<HydroponicLog?> watchLatestHydroponicLog() {
     return _isar.hydroponicLogs
         .where()
@@ -48,13 +49,183 @@ class PlantRepository {
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
   }
+  
+  Stream<HydroponicLog?> watchLatestHydroponicLogForZone(String zone) {
+    return _isar.hydroponicLogs
+        .filter()
+        .zoneEqualTo(zone)
+        .sortByTimestampDesc()
+        .limit(1)
+        .watch(fireImmediately: true)
+        .map((list) => list.isNotEmpty ? list.first : null);
+  }
+
+  Stream<List<HydroponicLog>> watchHydroponicLogsForZone(String zone) {
+    return _isar.hydroponicLogs
+        .filter()
+        .zoneEqualTo(zone)
+        .sortByTimestampDesc()
+        .watch(fireImmediately: true);
+  }
+
+  // User Plant methods
+  Stream<List<UserPlant>> watchUserPlants() {
+    return _isar.userPlants
+        .where()
+        .sortByAcquiredDateDesc()
+        .watch(fireImmediately: true);
+  }
+
+  Future<List<UserPlant>> getUserPlantsSorted() async {
+    return await _isar.userPlants
+        .where()
+        .sortByAcquiredDateDesc()
+        .findAll();
+  }
+
+  Future<List<UserPlant>> getPlantsNeedingWater() async {
+    final now = DateTime.now();
+    final allPlants = await _isar.userPlants.where().findAll();
+    return allPlants.where((p) {
+      if (p.lastWatered == null) return true;
+      final diff = now.difference(p.lastWatered!).inDays;
+      return diff >= 7;
+    }).toList();
+  }
+
+  Future<void> addUserPlantFromEntity(
+    int plantEntityId, {
+    String? customName,
+    String? location,
+    String? potSize,
+    String? soilType,
+    DateTime? acquiredDate,
+    String? source,
+  }) async {
+    final userPlant = UserPlant()
+      ..plantEntityId = plantEntityId
+      ..customName = customName
+      ..location = location
+      ..potSize = potSize
+      ..soilType = soilType
+      ..acquiredDate = acquiredDate ?? DateTime.now()
+      ..source = source
+      ..healthStatus = 'healthy'
+      ..healthNotes = []
+      ..photoPaths = []
+      ..tags = [];
+
+    await _isar.writeTxn(() => _isar.userPlants.put(userPlant));
+  }
+
+  Future<void> addCustomUserPlant({
+    required String name,
+    String? customName,
+    String? location,
+    String? potSize,
+    String? soilType,
+    DateTime? acquiredDate,
+    String? source,
+    String? lightConditions,
+    String? temperatureRange,
+    String? humidityLevel,
+    List<String>? tags,
+  }) async {
+    final userPlant = UserPlant()
+      ..customName = customName ?? name
+      ..location = location
+      ..potSize = potSize
+      ..soilType = soilType
+      ..acquiredDate = acquiredDate ?? DateTime.now()
+      ..source = source
+      ..lightConditions = lightConditions
+      ..temperatureRange = temperatureRange
+      ..humidityLevel = humidityLevel
+      ..tags = tags ?? []
+      ..healthStatus = 'healthy'
+      ..healthNotes = []
+      ..photoPaths = [];
+
+    await _isar.writeTxn(() => _isar.userPlants.put(userPlant));
+  }
+
+  Future<void> updateUserPlant(UserPlant plant) async {
+    await _isar.writeTxn(() => _isar.userPlants.put(plant));
+  }
+
+  Future<void> deleteUserPlant(int id) async {
+    await _isar.writeTxn(() => _isar.userPlants.delete(id));
+  }
+
+  Future<void> recordWatering(int id, {String? notes, double? amount}) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      plant.lastWatered = DateTime.now();
+      plant.healthNotes ??= [];
+      if (notes != null && notes.isNotEmpty) {
+        plant.healthNotes!.add('Watered: $notes');
+      }
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
+
+  Future<void> recordFertilizing(int id, {String? notes, String? fertilizerType}) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      plant.lastFertilized = DateTime.now();
+      plant.healthNotes ??= [];
+      if (notes != null && notes.isNotEmpty) {
+        plant.healthNotes!.add('Fertilized: $notes${fertilizerType != null ? ' ($fertilizerType)' : ''}');
+      }
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
+
+  Future<void> recordPruning(int id, {String? notes}) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      plant.lastPruned = DateTime.now();
+      plant.healthNotes ??= [];
+      if (notes != null && notes.isNotEmpty) {
+        plant.healthNotes!.add('Pruned: $notes');
+      }
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
+
+  Future<void> updateHealthStatus(int id, String status, String note) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      plant.healthStatus = status;
+      plant.healthNotes ??= [];
+      plant.healthNotes!.add('$status: $note');
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
+
+  Future<void> recordMeasurement(int id, {double? heightCm, double? widthCm}) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      if (heightCm != null) plant.heightCm = heightCm;
+      if (widthCm != null) plant.widthCm = widthCm;
+      plant.lastMeasured = DateTime.now();
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
+
+  Future<void> addPhoto(int id, String photoPath) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant != null) {
+      plant.photoPaths ??= [];
+      plant.photoPaths!.add(photoPath);
+      await _isar.writeTxn(() => _isar.userPlants.put(plant));
+    }
+  }
 
   void dispose() {
     _apiService.close();
-    // Do not close Isar here; it's shared.
   }
 
-  // Conversion helpers
   Plant _entityToPlant(PlantEntity e) => Plant(
         id: e.id,
         name: e.name ?? '',
@@ -102,4 +273,5 @@ class PlantRepository {
     ..sowLastAfterLastFrostDate = p.sowLastAfterLastFrostDate
     ..category = p.category
     ..customName = p.customName
-    ..isPetSafe = p.isPetSafe;}
+    ..isPetSafe = p.isPetSafe;
+}
