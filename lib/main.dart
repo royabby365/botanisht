@@ -85,7 +85,7 @@ class BotanishtApp extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: primaryGreen, size: 28),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: cardDarkGreen,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.15),

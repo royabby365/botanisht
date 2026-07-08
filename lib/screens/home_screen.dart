@@ -5,6 +5,7 @@ import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/screens/user_plant_detail_screen.dart';
 import 'package:botanisht/widgets/plant_card.dart';
+import 'package:botanisht/screens/search_delegate.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -34,7 +35,6 @@ class HomeScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            // Indoor tab
             _buildZoneTab(
               asyncPlants,
               ref,
@@ -42,7 +42,6 @@ class HomeScreen extends ConsumerWidget {
               icon: Icons.park,
               emptyMessage: 'No indoor plants yet.\nDiscover ferns, succulents, and tropicals.',
             ),
-            // Hydro tab
             _buildZoneTab(
               asyncPlants,
               ref,
@@ -50,7 +49,6 @@ class HomeScreen extends ConsumerWidget {
               icon: Icons.science,
               emptyMessage: 'No hydroponic plants yet.\nAdd lettuce, herbs, or tomatoes to your system.',
             ),
-            // Kitchen tab
             _buildZoneTab(
               asyncPlants,
               ref,
@@ -58,7 +56,6 @@ class HomeScreen extends ConsumerWidget {
               icon: Icons.eco,
               emptyMessage: 'No kitchen garden plants yet.\nGrow vegetables, herbs, and edible flowers.',
             ),
-            // Diagnostic tab (My Garden)
             _buildDiagnosticTab(asyncUserPlants, ref),
           ],
         ),
@@ -273,7 +270,6 @@ class HomeScreen extends ConsumerWidget {
           );
         }
 
-        // Sort by health status (critical first)
         userPlants.sort((a, b) {
           final healthOrder = {'critical': 0, 'warning': 1, 'healthy': 2, 'dormant': 3};
           final aHealth = healthOrder[a.healthStatus] ?? 4;
@@ -445,8 +441,8 @@ class HomeScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: plant.isPetSafe! 
-                          ? Colors.green.withOpacity(0.1) 
+                      color: plant.isPetSafe!
+                          ? Colors.green.withOpacity(0.1)
                           : Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -459,8 +455,8 @@ class HomeScreen extends ConsumerWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            plant.isPetSafe! 
-                                ? 'Safe for cats and dogs' 
+                            plant.isPetSafe!
+                                ? 'Safe for cats and dogs'
                                 : 'Toxic to pets — keep out of reach',
                             style: TextStyle(
                               color: plant.isPetSafe! ? Colors.green.shade700 : Colors.orange.shade700,
@@ -472,6 +468,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 const SizedBox(height: 24),
+                ],
                 if (plant.sunRequirements != null || plant.waterRequirements != null) ...[
                   Text('Care Requirements', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
@@ -537,6 +534,20 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  Widget _InfoChip({required String label, required IconData icon}) {
+    return Chip(
+      avatar: Icon(icon, size: 16, color: const Color(0xFF1B4332)),
+      label: Text(label),
+      backgroundColor: const Color(0xFF1B4332).withOpacity(0.08),
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      labelStyle: const TextStyle(
+        color: Color(0xFF1B4332),
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
   Widget _buildCareRow(BuildContext context, IconData icon, String label, String value, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -571,20 +582,6 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _InfoChip({required String label, required IconData icon}) {
-    return Chip(
-      avatar: Icon(icon, size: 16, color: const Color(0xFF1B4332)),
-      label: Text(label),
-      backgroundColor: const Color(0xFF1B4332).withOpacity(0.08),
-      side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      labelStyle: const TextStyle(
-        color: Color(0xFF1B4332),
-        fontWeight: FontWeight.w500,
       ),
     );
   }
@@ -701,9 +698,9 @@ class HomeScreen extends ConsumerWidget {
             value: selectedZone,
             decoration: const InputDecoration(labelText: 'Zone'),
             items: const [
-              DropdownMenuItem(value: 'indoor', child: Text('🌿 Indoor')),
-              DropdownMenuItem(value: 'hydro', child: Text('💧 Hydro')),
-              DropdownMenuItem(value: 'kitchen', child: Text('🥕 Kitchen')),
+              DropdownMenuItem(value: 'indoor', child: Text('Indoor')),
+              DropdownMenuItem(value: 'hydro', child: Text('Hydro')),
+              DropdownMenuItem(value: 'kitchen', child: Text('Kitchen')),
             ],
             onChanged: (value) => setState(() => selectedZone = value),
           ),
@@ -753,94 +750,7 @@ class HomeScreen extends ConsumerWidget {
   void _showSearchDialog(BuildContext context, WidgetRef ref) {
     showSearch(
       context: context,
-      delegate: _PlantSearchDelegate(ref),
-    );
-  }
-
-  IconData _getIconForCategory(String category) {
-    switch (category) {
-      case 'indoor':
-        return Icons.park_rounded;
-      case 'kitchen':
-        return Icons.eco_rounded;
-      case 'hydro':
-        return Icons.science_rounded;
-      case 'pollinator':
-        return Icons.bug_report_rounded;
-      case 'native':
-        return Icons.landscape_rounded;
-      case 'permeable':
-        return Icons.terrain_rounded;
-      case 'bento':
-        return Icons.restaurant_rounded;
-      default:
-        return Icons.local_florist_rounded;
-    }
-  }
-}
-
-class _PlantSearchDelegate extends SearchDelegate<Plant?> {
-  final WidgetRef ref;
-
-  _PlantSearchDelegate(this.ref);
-
-  @override
-  List<Widget> buildActions(BuildContext context) => [
-    IconButton(
-      icon: const Icon(Icons.clear_rounded),
-      onPressed: () => query = '',
-    ),
-  ];
-
-  @override
-  Widget buildLeading(BuildContext context) => IconButton(
-    icon: const Icon(Icons.arrow_back_rounded),
-    onPressed: () => close(context, null),
-  );
-
-  @override
-  Widget buildResults(BuildContext context) => _buildResults();
-
-  @override
-  Widget buildSuggestions(BuildContext context) => _buildResults();
-
-  Widget _buildResults() {
-    final asyncPlants = ref.watch(plantListNotifierProvider);
-    return asyncPlants.when(
-      data: (plants) {
-        final filtered = plants
-            .where((p) => p.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
-            .toList();
-        if (filtered.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.search_off_rounded, size: 64, color: Colors.grey.shade300),
-                const SizedBox(height: 16),
-                Text('No plants found for "$query"'),
-              ],
-            ),
-          );
-        }
-        return ListView.builder(
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            final plant = filtered[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: const Color(0xFF1B4332).withOpacity(0.1),
-                child: Icon(_getIconForCategory(plant.category ?? 'Other'), color: const Color(0xFF1B4332)),
-              ),
-              title: Text(plant.name ?? 'Unknown'),
-              subtitle: Text(plant.scientificName ?? ''),
-              onTap: () => close(null, plant),
-            ),
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      delegate: PlantSearchDelegate(ref),
     );
   }
 

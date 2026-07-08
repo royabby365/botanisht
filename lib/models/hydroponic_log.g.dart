@@ -46,6 +46,11 @@ const HydroponicLogSchema = CollectionSchema(
       id: 5,
       name: r'waterPH',
       type: IsarType.double,
+    ),
+    r'zone': PropertySchema(
+      id: 6,
+      name: r'zone',
+      type: IsarType.string,
     )
   },
   estimateSize: _hydroponicLogEstimateSize,
@@ -74,6 +79,12 @@ int _hydroponicLogEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.zone;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -89,6 +100,7 @@ void _hydroponicLogSerialize(
   writer.writeLong(offsets[3], object.pumpCycleMinutes);
   writer.writeDateTime(offsets[4], object.timestamp);
   writer.writeDouble(offsets[5], object.waterPH);
+  writer.writeString(offsets[6], object.zone);
 }
 
 HydroponicLog _hydroponicLogDeserialize(
@@ -105,6 +117,7 @@ HydroponicLog _hydroponicLogDeserialize(
   object.pumpCycleMinutes = reader.readLongOrNull(offsets[3]);
   object.timestamp = reader.readDateTime(offsets[4]);
   object.waterPH = reader.readDoubleOrNull(offsets[5]);
+  object.zone = reader.readStringOrNull(offsets[6]);
   return object;
 }
 
@@ -127,6 +140,8 @@ P _hydroponicLogDeserializeProp<P>(
       return (reader.readDateTime(offset)) as P;
     case 5:
       return (reader.readDoubleOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -789,6 +804,159 @@ extension HydroponicLogQueryFilter
       ));
     });
   }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'zone',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'zone',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition> zoneEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition> zoneBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'zone',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition> zoneMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'zone',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zone',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      zoneIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'zone',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension HydroponicLogQueryObject
@@ -872,6 +1040,18 @@ extension HydroponicLogQuerySortBy
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByWaterPHDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'waterPH', Sort.desc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByZone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByZoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.desc);
     });
   }
 }
@@ -965,6 +1145,18 @@ extension HydroponicLogQuerySortThenBy
       return query.addSortBy(r'waterPH', Sort.desc);
     });
   }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByZone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByZoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.desc);
+    });
+  }
 }
 
 extension HydroponicLogQueryWhereDistinct
@@ -1005,6 +1197,13 @@ extension HydroponicLogQueryWhereDistinct
   QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> distinctByWaterPH() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'waterPH');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> distinctByZone(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'zone', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1051,6 +1250,12 @@ extension HydroponicLogQueryProperty
   QueryBuilder<HydroponicLog, double?, QQueryOperations> waterPHProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'waterPH');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, String?, QQueryOperations> zoneProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'zone');
     });
   }
 }

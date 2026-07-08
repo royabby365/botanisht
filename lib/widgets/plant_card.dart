@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
-import 'package:botanisht/providers/hydroponic_providers.dart';
+import 'package:botanisht/providers/hydroponic_provider.dart';
+import 'package:botanisht/models/hydroponic_log.dart';
 
 class PlantCard extends ConsumerWidget {
   final Plant? plant;
@@ -38,9 +39,10 @@ class PlantCard extends ConsumerWidget {
     final location = displayUserPlant?.location;
     final isPetSafe = displayPlant?.isPetSafe;
     
-    // Get hydroponic telemetry if this is a hydro plant
     final isHydro = category == 'hydro';
-    final asyncHydroLog = isHydro ? ref.watch(latestLogForZoneProvider('hydro')) : null;
+    final asyncHydroLog = isHydro
+        ? ref.watch(latestLogForZoneProvider('hydro'))
+        : const AsyncValue<HydroponicLog?>.data(null);
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -52,7 +54,6 @@ class PlantCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: Category badge + Health indicator + Menu
               Row(
                 children: [
                   _CategoryBadge(category: category),
@@ -66,7 +67,6 @@ class PlantCard extends ConsumerWidget {
               
               const SizedBox(height: 16),
               
-              // Plant image/icon area
               AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Container(
@@ -81,7 +81,6 @@ class PlantCard extends ConsumerWidget {
               
               const SizedBox(height: 16),
               
-              // Name & Scientific name
               Text(
                 name,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -121,7 +120,6 @@ class PlantCard extends ConsumerWidget {
               
               const SizedBox(height: 16),
               
-              // Care indicators row (Water, Light, Pet Safety)
               Row(
                 children: [
                   _CareIndicator(
@@ -145,13 +143,11 @@ class PlantCard extends ConsumerWidget {
                 ],
               ),
               
-              // Hydroponic telemetry section
               if (isHydro) ...[
                 const SizedBox(height: 16),
                 _HydroTelemetrySection(asyncHydroLog: asyncHydroLog),
               ],
               
-              // Last watered for user plants
               if (isUserPlant && lastWatered != null) ...[
                 const SizedBox(height: 12),
                 Row(
@@ -210,7 +206,7 @@ class PlantCard extends ConsumerWidget {
 
   String _getWaterValue(Plant? plant, UserPlant? userPlant) {
     if (userPlant?.lastWatered != null) {
-      final days = DateTime.now().difference(userPlant.lastWatered!).inDays;
+      final days = DateTime.now().difference(userPlant!.lastWatered!).inDays;
       if (days == 0) return 'Today';
       if (days == 1) return '1 day ago';
       return '$days days ago';
@@ -434,10 +430,10 @@ class _PetSafetyBadge extends StatelessWidget {
 }
 
 class _HydroTelemetrySection extends ConsumerWidget {
-  final AsyncValue<dynamic> asyncHydroLog;
-  
+  final AsyncValue<HydroponicLog?> asyncHydroLog;
+
   const _HydroTelemetrySection({required this.asyncHydroLog});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return asyncHydroLog.when(
@@ -548,7 +544,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         );
       },
@@ -606,7 +602,7 @@ class _TelemetryCard extends StatelessWidget {
     required this.unit,
     required this.color,
     required this.isOptimal,
-  );
+  });
   
   @override
   Widget build(BuildContext context) {

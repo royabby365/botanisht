@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:botanisht/models/hydroponic_log.dart';
 import 'package:botanisht/repository/plant_repository.dart';
 
 final plantRepositoryProvider = Provider((ref) => PlantRepository());

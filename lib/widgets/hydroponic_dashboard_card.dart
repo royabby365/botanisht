@@ -10,7 +10,7 @@ class HydroponicDashboardCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncLog = ref.watch(hydroponicLatestProvider);
+    final asyncLog = ref.watch(latestLogForZoneProvider('hydro'));
 
     return Card(
       elevation: 4,
