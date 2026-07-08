@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:botanisht/models/hydroponic_log.dart';
+
 import 'package:isar/isar.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/plant.dart';
@@ -13,22 +13,7 @@ class PlantApiService {
   late final Isar _isar;
   late final http.Client _client;
 
-  PlantApiService() {
-    _init();
-  }
-
-  Future<void> _init() async {
-    final dir = await getApplicationDocumentsDirectory();
-    if (!Isar.instanceNames.contains('plant')) {
-      final isar = await Isar.open(
-        [PlantEntitySchema, HydroponicLogSchema],
-        directory: dir.path,
-        name: 'plant',
-      );
-      _isar = isar;
-    } else {
-      _isar = Isar.getInstance('plant')!;
-    }
+  PlantApiService(this._isar) {
     _client = http.Client();
   }
 

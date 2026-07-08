@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:botanisht/screens/home_screen.dart';
 import 'package:botanisht/models/isar_plant_entity.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
-import 'package:botanisht/screens/home_screen.dart';
+
+Future<void> _initializeIsar() async {
+  final dir = await getApplicationDocumentsDirectory();
+  await Isar.open(
+    [PlantEntitySchema, HydroponicLogSchema],
+    directory: dir.path,
+    name: 'plant',
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  final dir = await getApplicationDocumentsDirectory();
-  
-  if (Isar.instanceNames.isEmpty) {
-    await Isar.open(
-      [PlantEntitySchema, HydroponicLogSchema],
-      directory: dir.path,
-      name: 'plant',
-    );
-  }
-
-  runApp(const BotanishtApp());
+  await _initializeIsar();
+  runApp(
+    ProviderScope(
+      child: const BotanishtApp(),
+    ),
+  );
 }
 
 class BotanishtApp extends StatelessWidget {
-  const BotanishtApp({super.key});
+  const BotanishtApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

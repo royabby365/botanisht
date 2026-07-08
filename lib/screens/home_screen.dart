@@ -17,7 +17,6 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: Colors.green.shade50,
         elevation: 0,
         foregroundColor: Colors.green.shade800,
-        toolbarHeight: 70, // Slightly taller to fit the subtitle
       ),
       body: asyncPlants.when(
         data: (plants) {
@@ -90,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
           child: Text(
             'Error loading plants: $e',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.red),
+            style: TextStyle(color: Colors.red),
           ),
         ),
       ),
@@ -98,61 +97,45 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildLogo(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'B',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade700,
-              ),
+    return RichText(
+      text: TextSpan(
+        style: DefaultTextStyle.of(context).style,
+        children: const [
+          TextSpan(
+            text: 'Botan',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+              letterSpacing: -0.5,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1.0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(Icons.thumb_up, color: Colors.green.shade700, size: 26),
-                  const Icon(Icons.eco, color: Colors.white, size: 14),
-                ],
-              ),
-            ),
-            Text(
-              'tan',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade700,
-              ),
-            ),
-            Text(
-              'isht',
-              style: TextStyle(
-                fontSize: 28,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w500,
-                color: Colors.green.shade700,
-              ),
-            ),
-            const SizedBox(width: 2),
-            Icon(Icons.eco_outlined, color: Colors.green.shade700, size: 26),
-          ],
-        ),
-        Text(
-          'Beginner-Friendly Gardening & Plant Care',
-          style: TextStyle(
-            fontSize: 10,
-            color: Colors.green.shade600,
-            fontWeight: FontWeight.w500,
           ),
-        ),
-      ],
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.0),
+              child: Icon(Icons.thumb_up, size: 28, color: Colors.green),
+            ),
+          ),
+          TextSpan(
+            text: 'ish',
+            style: TextStyle(
+              fontSize: 28,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+              letterSpacing: -0.5,
+            ),
+          ),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Padding(
+              padding: EdgeInsets.only(left: 2.0),
+              child: Icon(Icons.eco, size: 22, color: Colors.green),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -209,7 +192,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Sun: ${plant.sunlight ?? 'Unknown'}',
+                  'Sun: ${plant.sunlight}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -217,7 +200,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Water: ${plant.watering ?? 'Unknown'}',
+                  'Water: ${plant.watering}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,

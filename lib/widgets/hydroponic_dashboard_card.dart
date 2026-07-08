@@ -69,7 +69,7 @@ class HydroponicDashboardCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Updated: ${log.timestamp.toLocal()}',
+                      'Updated: ${log.timestamp?.toLocal() ?? 'Unknown'}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,

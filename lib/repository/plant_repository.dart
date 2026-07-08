@@ -6,24 +6,12 @@ import 'package:botanisht/services/plant_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlantRepository {
-  PlantRepository() {
-    _init();
-  }
-
   late final Isar _isar;
   late final PlantApiService _apiService;
 
-  Future<void> _init() async {
-    final dir = await getApplicationDocumentsDirectory();
-    if (!Isar.instanceNames.contains('plant')) {
-      await Isar.open(
-        [PlantEntitySchema, HydroponicLogSchema],
-        directory: dir.path,
-        name: 'plant',
-      );
-    }
+  PlantRepository() {
     _isar = Isar.getInstance('plant')!;
-    _apiService = PlantApiService();
+    _apiService = PlantApiService(_isar);
   }
 
   /// Get a plant by ID, using cache (Isar) then API if needed.
@@ -55,7 +43,7 @@ class PlantRepository {
   Stream<HydroponicLog?> watchLatestHydroponicLog() {
     return _isar.hydroponicLogs
         .where()
-        .sortByTimestampDesc() 
+        .sortByTimestampDesc()
         .limit(1)
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
