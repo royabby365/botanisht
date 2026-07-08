@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:botanisht/models/plant.dart';
+import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
 import 'package:botanisht/widgets/app_logo.dart';
 
-/// Launch screen shown while the app (Isar, providers) finishes warming up.
+/// Launch screen shown until the app is actually ready: the Isar-backed
+/// garden list and the cached plant catalog have both loaded their first
+/// values. A short minimum-visibility floor keeps the leaf bar from flashing.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -19,14 +24,42 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _proceedWhenReady() async {
-    // Hold the splash briefly so the leaf loading bar is visible and the
-    // Isar-backed providers have a moment to settle before revealing Home.
-    await Future.delayed(const Duration(milliseconds: 1800));
+    // Keep the splash on screen at least this long so it feels intentional.
+    final minSplash = Future.delayed(const Duration(milliseconds: 700));
+
+    // Wait for the real first-data loads the home screen depends on.
+    final readiness = Future.wait<void>([
+      _whenNotLoading(plantListNotifierProvider),
+      ref.read(userPlantsProvider.future).then((_) {}),
+      ref.read(allPlantsProvider.future).then((_) {}),
+    ]).timeout(
+      const Duration(seconds: 8),
+      onTimeout: () => <void>[],
+    );
+
+    await Future.wait([minSplash, readiness]);
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     }
+  }
+
+  /// Completes once [provider]'s AsyncValue leaves the loading state
+  /// (i.e. its first real value/error has arrived).
+  Future<void> _whenNotLoading(
+    ProviderListenable<AsyncValue<List<Plant>>> provider,
+  ) {
+    final completer = Completer<void>();
+    final sub = ref.listenManual<AsyncValue<List<Plant>>>(
+      provider,
+      (_, next) {
+        if (!next.isLoading && !completer.isCompleted) completer.complete();
+      },
+      fireImmediately: true,
+    );
+    completer.future.whenComplete(sub.close);
+    return completer.future;
   }
 
   @override
