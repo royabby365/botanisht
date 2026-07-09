@@ -27,18 +27,20 @@ class PlantCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final displayPlant = plant;
     final displayUserPlant = userPlant;
-    
-    final name = isUserPlant 
+
+    final name = isUserPlant
         ? (displayUserPlant?.customName ?? 'Plant #${displayUserPlant?.plantEntityId}')
         : (displayPlant?.name ?? 'Unknown Plant');
-    
+
     final scientificName = displayPlant?.scientificName;
-    final category = zone ?? displayPlant?.category ?? displayUserPlant?.lightConditions?.toLowerCase() ?? 'indoor';
+    final imageUrl = displayPlant?.imageUrl;
+    final category =
+        zone ?? displayPlant?.category ?? displayUserPlant?.lightConditions?.toLowerCase() ?? 'indoor';
     final healthStatus = displayUserPlant?.healthStatus;
     final lastWatered = displayUserPlant?.lastWatered;
     final location = displayUserPlant?.location;
     final isPetSafe = displayPlant?.isPetSafe ?? displayUserPlant?.isPetSafe;
-    
+
     final isHydro = category == 'hydro';
     final asyncHydroLog = isHydro
         ? ref.watch(latestLogForZoneProvider('hydro'))
@@ -46,85 +48,101 @@ class PlantCard extends ConsumerWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // TOP ROW — always the same height (badges only).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _CategoryBadge(category: category),
                   const SizedBox(width: 8),
                   if (isPetSafe != null) _PetSafetyBadge(isPetSafe: isPetSafe),
                   const Spacer(),
                   if (isUserPlant && healthStatus != null)
-                    _HealthIndicator(status: healthStatus),
-                  if (!isUserPlant)
+                    _HealthIndicator(status: healthStatus)
+                  else
                     _AddToGardenButton(onPressed: onAddToGarden),
                 ],
               ),
-              
-              const SizedBox(height: 16),
-              
-              SizedBox(
-                height: 120,
-                width: double.infinity,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1B4332).withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: _buildPlantImage(category),
-                ),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              Text(
-                name,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1B4332),
-                ),
-              ),
-              if (scientificName != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  scientificName,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontStyle: FontStyle.italic,
-                    color: const Color(0xFF1B4332).withOpacity(0.6),
-                  ),
-                ),
-              ],
-              if (location != null) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on_rounded,
-                      size: 14,
-                      color: const Color(0xFF1B4332).withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            // MIDDLE — fixed-height image / icon area. Never collapses or
+            // expands regardless of whether a photo is available.
+            SizedBox(
+              height: 120,
+              width: double.infinity,
+              child: _buildPlantImage(category, imageUrl),
+            ),
+            const SizedBox(height: 16),
+            // NAME + SCIENTIFIC — consistent block (scientific always occupies
+            // one line so the card height doesn't shift).
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1B4332),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      location,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    height: 18,
+                    child: Text(
+                      scientificName ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontStyle: FontStyle.italic,
                         color: const Color(0xFF1B4332).withOpacity(0.6),
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-              ],
-              
-              const SizedBox(height: 16),
-              
-              Row(
+                  ),
+                  if (location != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 14,
+                            color: const Color(0xFF1B4332).withOpacity(0.5),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: const Color(0xFF1B4332).withOpacity(0.6),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // BOTTOM — care indicators, consistent height.
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                 children: [
                   _CareIndicator(
                     icon: Icons.water_drop_rounded,
@@ -143,21 +161,21 @@ class PlantCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              
-              if (isHydro) ...[
-                const SizedBox(height: 16),
-                _HydroTelemetrySection(asyncHydroLog: asyncHydroLog),
-              ],
-              
-              if (isUserPlant && lastWatered != null) ...[
-                const SizedBox(height: 12),
-                Row(
+            ),
+            if (isHydro) ...[
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _HydroTelemetrySection(asyncHydroLog: asyncHydroLog),
+              ),
+            ],
+            if (isUserPlant && lastWatered != null) ...[
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Row(
                   children: [
-                    Icon(
-                      Icons.water_drop_rounded,
-                      size: 16,
-                      color: Colors.blue.shade600,
-                    ),
+                    Icon(Icons.water_drop_rounded, size: 16, color: Colors.blue.shade600),
                     const SizedBox(width: 8),
                     Text(
                       'Last watered ${_formatRelativeTime(lastWatered)}',
@@ -168,15 +186,16 @@ class PlantCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ],
-            ],
-          ),
+              ),
+            ] else
+              const SizedBox(height: 16),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPlantImage(String category) {
+  Widget _buildPlantImage(String category, String? imageUrl) {
     final icons = {
       'indoor': Icons.park_rounded,
       'hydro': Icons.science_rounded,
@@ -186,21 +205,44 @@ class PlantCard extends ConsumerWidget {
       'permeable': Icons.terrain_rounded,
       'bento': Icons.restaurant_rounded,
     };
-    
+
     final icon = icons[category] ?? Icons.local_florist_rounded;
     final colors = {
       'indoor': const Color(0xFF2D6A4F),
       'hydro': Colors.blue.shade700,
       'kitchen': Colors.orange.shade700,
     };
-    
+
     final color = colors[category] ?? const Color(0xFF1B4332);
-    
-    return Center(
-      child: Icon(
-        icon,
-        size: 64,
-        color: color.withOpacity(0.3),
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        loadingBuilder: (context, child, progress) =>
+            progress == null ? child : _iconPlaceholder(icon, color),
+        errorBuilder: (context, error, stack) => _iconPlaceholder(icon, color),
+      );
+    }
+
+    return _iconPlaceholder(icon, color);
+  }
+
+  Widget _iconPlaceholder(IconData icon, Color color) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color.withOpacity(0.14), color.withOpacity(0.04)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Icon(icon, size: 56, color: color.withOpacity(0.35)),
       ),
     );
   }

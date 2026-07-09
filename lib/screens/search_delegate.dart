@@ -5,17 +5,14 @@ import 'package:botanisht/models/plant.dart';
 class PlantSearchDelegate extends SearchDelegate<Plant?> {
   PlantSearchDelegate();
 
-  // Cache the in-flight request so we don't re-hit the network on every
-  // keystroke rebuild; the future is reused as long as the query is unchanged.
-  Future<List<Plant>>? _searchFuture;
-  String? _searchQuery;
+  // A single API client reused across keystrokes. Closed in dispose() so we
+  // don't leak an http.Client per character typed.
+  final PlantApiService _api = PlantApiService();
 
-  Future<List<Plant>> _fetch(String query) {
-    if (_searchQuery != query) {
-      _searchQuery = query;
-      _searchFuture = PlantApiService().searchPlants(query);
-    }
-    return _searchFuture!;
+  @override
+  void dispose() {
+    _api.close();
+    super.dispose();
   }
 
   @override
@@ -40,6 +37,7 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
   @override
   Widget buildSuggestions(BuildContext context) => _buildSearchView();
 
+  // Both results and suggestions come from the live OpenFarm API call below.
   Widget _buildSearchView() {
     final q = query.trim();
 
@@ -57,11 +55,14 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
     }
 
     return FutureBuilder<List<Plant>>(
-      future: _fetch(q),
+      // Keyed by query so a new keystroke triggers a fresh network request.
+      key: ValueKey(q),
+      future: _api.searchPlants(q),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
         }
+
         if (snapshot.hasError) {
           return Center(
             child: Padding(
@@ -76,13 +77,13 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
 
         final results = snapshot.data ?? [];
         if (results.isEmpty) {
-          return Center(
+          return const Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.search_off_rounded, size: 64, color: Colors.grey),
-                const SizedBox(height: 16),
-                Text('No plants found for "$q"'),
+                Icon(Icons.search_off_rounded, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text('No plants found'),
               ],
             ),
           );
@@ -93,9 +94,13 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
           itemBuilder: (context, index) {
             final plant = results[index];
             return ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Color(0xFF1B4332),
-                child: Icon(Icons.local_florist_rounded, color: Colors.white),
+              leading: CircleAvatar(
+                backgroundColor: const Color(0xFF1B4332),
+                backgroundImage:
+                    plant.imageUrl != null ? NetworkImage(plant.imageUrl!) : null,
+                child: plant.imageUrl == null
+                    ? const Icon(Icons.local_florist_rounded, color: Colors.white)
+                    : null,
               ),
               title: Text(plant.name),
               subtitle: Text(plant.scientificName ?? ''),

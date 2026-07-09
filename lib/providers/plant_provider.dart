@@ -173,12 +173,14 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> updateHealthStatus(int id, String status, String note) async {
     try {
       await _repository.updateHealthStatus(id, status, note);
-      // Refresh the streams feeding the plant list / detail screens so the
-      // persisted health-status change is reflected immediately in the UI.
+      // Refresh every provider that derives its view of the garden so the
+      // UI reflects the persisted change immediately instead of reverting.
       ref.invalidate(userPlantsProvider);
       ref.invalidate(userPlantsSortedProvider);
+      ref.invalidate(plantsNeedingWaterProvider);
     } catch (e) {
-      // Ignore for now
+      // Surface the failure rather than silently reverting to the old value.
+      state = AsyncError(e, StackTrace.current);
     }
   }
 

@@ -196,10 +196,37 @@ class PlantRepository {
   Future<void> updateHealthStatus(int id, String status, String note) async {
     final plant = await _isar.userPlants.get(id);
     if (plant == null) return;
-    // Create the updated object and persist it explicitly within a write txn.
-    final updated = plant
+    // Create a COPY of the object with the new status and persist it
+    // explicitly within a write transaction so Isar actually saves it.
+    final updated = UserPlant()
+      ..id = plant.id
+      ..plantEntityId = plant.plantEntityId
+      ..customName = plant.customName
+      ..location = plant.location
+      ..potSize = plant.potSize
+      ..soilType = plant.soilType
+      ..acquiredDate = plant.acquiredDate
+      ..source = plant.source
+      ..wateringSchedule = plant.wateringSchedule
+      ..fertilizingSchedule = plant.fertilizingSchedule
+      ..pruningSchedule = plant.pruningSchedule
       ..healthStatus = status
-      ..healthNotes = [...?plant.healthNotes, '$status: $note'];
+      ..healthNotes = [...?plant.healthNotes, '$status: $note']
+      ..lastWatered = plant.lastWatered
+      ..lastFertilized = plant.lastFertilized
+      ..lastPruned = plant.lastPruned
+      ..wateringReminderEnabled = plant.wateringReminderEnabled
+      ..fertilizingReminderEnabled = plant.fertilizingReminderEnabled
+      ..pruningReminderEnabled = plant.pruningReminderEnabled
+      ..lightConditions = plant.lightConditions
+      ..temperatureRange = plant.temperatureRange
+      ..humidityLevel = plant.humidityLevel
+      ..isPetSafe = plant.isPetSafe
+      ..heightCm = plant.heightCm
+      ..widthCm = plant.widthCm
+      ..lastMeasured = plant.lastMeasured
+      ..photoPaths = plant.photoPaths
+      ..tags = plant.tags;
     await _isar.writeTxn(() => _isar.userPlants.put(updated));
   }
 
