@@ -140,6 +140,11 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncLoading();
     try {
       await _repository.deleteUserPlant(id);
+      // Refresh every provider that derives its view of the garden so the
+      // UI reflects the removal immediately instead of reverting.
+      ref.invalidate(userPlantsProvider);
+      ref.invalidate(userPlantsSortedProvider);
+      ref.invalidate(plantsNeedingWaterProvider);
       state = const AsyncData(null);
     } catch (e, stack) {
       state = AsyncError(e, stack);

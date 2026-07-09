@@ -146,6 +146,10 @@ class UserPlantDetailScreen extends ConsumerWidget {
               _buildActionButton('Health', Icons.health_and_safety, Colors.red, () {
                 _showHealthDialog(context, ref, userPlant);
               }),
+              _buildActionButton('Delete Plant', Icons.delete_rounded, Colors.red,
+                  () {
+                _confirmDelete(context, ref, userPlant);
+              }),
             ]),
           ],
         ),
@@ -265,6 +269,50 @@ class UserPlantDetailScreen extends ConsumerWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
+      ),
+    );
+  }
+
+  void _confirmDelete(
+      BuildContext context, WidgetRef ref, UserPlant userPlant) {
+    // Capture the app-level messenger from the detail screen's context so we
+    // can still toast after we navigate back to the garden.
+    final messenger = ScaffoldMessenger.of(context);
+    final name = userPlant.customName ?? 'Plant';
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete plant?'),
+        content: Text(
+          'This will permanently remove "$name" from your garden. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              // Close the dialog, then return to the garden first so the user
+              // never sees the detail screen's "plant not found" loading state.
+              Navigator.pop(dialogContext);
+              Navigator.of(context).pop();
+              // Now delete in the background and refresh the garden list.
+              await ref
+                  .read(userPlantNotifierProvider.notifier)
+                  .delete(userPlant.id!);
+              ref.invalidate(userPlantsProvider);
+              ref.invalidate(userPlantsSortedProvider);
+              ref.invalidate(plantsNeedingWaterProvider);
+              messenger.showSnackBar(
+                SnackBar(content: Text('$name deleted')),
+              );
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
