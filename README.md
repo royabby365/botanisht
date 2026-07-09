@@ -7,8 +7,8 @@ log is stored on-device in a fast, ACID-compliant local database.
 
 Built for growers of every level — from a first windowsill herb to a full
 hydroponic rig — Botanisht organizes your garden into focused zones, runs
-smart cultivation engines entirely offline, and respects senior-first
-accessibility with triple theming and strict contrast ratios.
+smart cultivation engines entirely offline, and embraces universal design
+principles with triple theming and strict contrast ratios.
 
 ---
 
@@ -45,13 +45,10 @@ All intelligence runs on-device — no network round-trips, no telemetry leak:
   hail, freezing, or frost, scans outdoor zones and produces a "move inside"
   advisory for the affected plants.
 
-### Senior-First Accessibility
-- **Dynamic triple theming**: Natural Cream (light), Deep Evergreen (dark),
-  and a dedicated High-Contrast mode.
-- **Strict WCAG color ratios** in every theme, including AAA contrast for the
-  high-contrast scheme.
-- **Enhanced font weights and sizing** throughout (bold titles ≥ 22sp, body
-  text ≥ 18sp on onboarding; heavier weights in high-contrast mode).
+### Universal Design & Accessibility
+- **Adaptive Triple Theming**: Natural Cream (light), Deep Evergreen (dark), and a dedicated High-Contrast mode designed for absolute legibility.
+- **WCAG AAA Compliance**: Enforces rigid contrast ratios across all themes to support low-vision users and outdoor readability under direct sunlight glare.
+- **High-Legibility Typography**: Enhanced font weights and sizing throughout (bold headers ≥ 22sp, body text ≥ 18sp) to ensure effortless navigation.
 
 ### Comprehensive Care Data
 - Hydroponic telemetry: pH, TDS, and pump-tracking placeholders.
