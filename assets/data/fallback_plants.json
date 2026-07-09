@@ -1,0 +1,67 @@
+[
+  {
+    "id": 101,
+    "type": "crops",
+    "attributes": {
+      "name": "Thyme",
+      "scientific_name": "Thymus vulgaris",
+      "photo_url": "",
+      "description": "A fragrant, drought-tolerant Mediterranean herb often used in cooking.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true
+    }
+  },
+  {
+    "id": 102,
+    "type": "crops",
+    "attributes": {
+      "name": "Basil",
+      "scientific_name": "Ocimum basilicum",
+      "photo_url": "",
+      "description": "A fragrant culinary herb that loves warmth and regular watering.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true
+    }
+  },
+  {
+    "id": 103,
+    "type": "crops",
+    "attributes": {
+      "name": "Red Cabbage",
+      "scientific_name": "Brassica oleracea",
+      "photo_url": "",
+      "description": "A cool-season leafy vegetable with deep purple-red leaves rich in nutrients.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true
+    }
+  },
+  {
+    "id": 104,
+    "type": "crops",
+    "attributes": {
+      "name": "Lettuce",
+      "scientific_name": "Lactuca sativa",
+      "photo_url": "",
+      "description": "A fast-growing leafy green that is great for beginner gardeners.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true
+    }
+  },
+  {
+    "id": 105,
+    "type": "crops",
+    "attributes": {
+      "name": "Fiddle Leaf Fig",
+      "scientific_name": "Ficus lyrata",
+      "photo_url": "",
+      "description": "A popular ornamental houseplant with large, violin-shaped leaves.",
+      "sun_requirements": ["Indirect light"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false
+    }
+  }
+]

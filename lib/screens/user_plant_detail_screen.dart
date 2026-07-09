@@ -197,7 +197,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
         Text(
           title,
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         const SizedBox(height: 12),
         Card(
@@ -219,17 +219,20 @@ class UserPlantDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: Colors.green.shade700, size: 28),
+          Icon(icon, color: Colors.white70, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                    style: const TextStyle(
+                        fontSize: 14, color: Color(0xFFE2EFE9))),
                 Text(value,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white)),
               ],
             ),
           ),
@@ -248,7 +251,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
               backgroundColor: color.withOpacity(0.1),
               child: Icon(icon, size: 16, color: color)),
           const SizedBox(width: 12),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: Colors.white70))),
         ],
       ),
     );
