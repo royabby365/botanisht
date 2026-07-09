@@ -9,6 +9,7 @@ import 'package:botanisht/screens/user_plant_detail_screen.dart';
 import 'package:botanisht/widgets/plant_card.dart';
 import 'package:botanisht/widgets/app_logo.dart';
 import 'package:botanisht/widgets/add_plant_bottom_sheet.dart';
+import 'package:botanisht/widgets/delete_plant_dialog.dart';
 import 'package:botanisht/screens/search_delegate.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -271,6 +272,7 @@ class HomeScreen extends ConsumerWidget {
                     builder: (_) => UserPlantDetailScreen(plantId: userPlant.id!),
                   ),
                 ),
+                onLongPress: () => confirmDeletePlant(context, ref, userPlant),
               );
             },
           ),

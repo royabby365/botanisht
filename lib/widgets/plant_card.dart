@@ -10,6 +10,7 @@ class PlantCard extends ConsumerWidget {
   final UserPlant? userPlant;
   final bool isUserPlant;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final VoidCallback? onAddToGarden;
   final String? zone;
 
@@ -19,6 +20,7 @@ class PlantCard extends ConsumerWidget {
     this.userPlant,
     this.isUserPlant = false,
     this.onTap,
+    this.onLongPress,
     this.onAddToGarden,
     this.zone,
   }) : assert(plant != null || userPlant != null);
@@ -52,6 +54,7 @@ class PlantCard extends ConsumerWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/repository/plant_repository.dart';
+import 'package:botanisht/widgets/delete_plant_dialog.dart';
 
 class UserPlantDetailScreen extends ConsumerWidget {
   final int plantId;
@@ -148,7 +149,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
               }),
               _buildActionButton('Delete Plant', Icons.delete_rounded, Colors.red,
                   () {
-                _confirmDelete(context, ref, userPlant);
+                confirmDeletePlant(context, ref, userPlant, popDetail: true);
               }),
             ]),
           ],
@@ -269,50 +270,6 @@ class UserPlantDetailScreen extends ConsumerWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-      ),
-    );
-  }
-
-  void _confirmDelete(
-      BuildContext context, WidgetRef ref, UserPlant userPlant) {
-    // Capture the app-level messenger from the detail screen's context so we
-    // can still toast after we navigate back to the garden.
-    final messenger = ScaffoldMessenger.of(context);
-    final name = userPlant.customName ?? 'Plant';
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete plant?'),
-        content: Text(
-          'This will permanently remove "$name" from your garden. This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              // Close the dialog, then return to the garden first so the user
-              // never sees the detail screen's "plant not found" loading state.
-              Navigator.pop(dialogContext);
-              Navigator.of(context).pop();
-              // Now delete in the background and refresh the garden list.
-              await ref
-                  .read(userPlantNotifierProvider.notifier)
-                  .delete(userPlant.id!);
-              ref.invalidate(userPlantsProvider);
-              ref.invalidate(userPlantsSortedProvider);
-              ref.invalidate(plantsNeedingWaterProvider);
-              messenger.showSnackBar(
-                SnackBar(content: Text('$name deleted')),
-              );
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
