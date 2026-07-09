@@ -74,6 +74,7 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
     String? soilType,
     DateTime? acquiredDate,
     String? source,
+    String? zone,
   }) async {
     state = const AsyncLoading();
     try {
@@ -85,6 +86,7 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
         soilType: soilType,
         acquiredDate: acquiredDate,
         source: source,
+        zone: zone,
       );
       state = const AsyncData(null);
     } catch (e, stack) {
@@ -104,6 +106,8 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
     String? temperatureRange,
     String? humidityLevel,
     List<String>? tags,
+    String? zone,
+    int quantity = 1,
   }) async {
     state = const AsyncLoading();
     try {
@@ -119,6 +123,8 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
         temperatureRange: temperatureRange,
         humidityLevel: humidityLevel,
         tags: tags,
+        zone: zone,
+        quantity: quantity,
       );
       state = const AsyncData(null);
     } catch (e, stack) {
@@ -142,6 +148,19 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
       await _repository.deleteUserPlant(id);
       // Refresh every provider that derives its view of the garden so the
       // UI reflects the removal immediately instead of reverting.
+      ref.invalidate(userPlantsProvider);
+      ref.invalidate(userPlantsSortedProvider);
+      ref.invalidate(plantsNeedingWaterProvider);
+      state = const AsyncData(null);
+    } catch (e, stack) {
+      state = AsyncError(e, stack);
+    }
+  }
+
+  Future<void> setQuantity(int id, int quantity) async {
+    state = const AsyncLoading();
+    try {
+      await _repository.setQuantity(id, quantity);
       ref.invalidate(userPlantsProvider);
       ref.invalidate(userPlantsSortedProvider);
       ref.invalidate(plantsNeedingWaterProvider);

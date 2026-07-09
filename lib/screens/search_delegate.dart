@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:botanisht/services/plant_api_service.dart';
+import 'package:botanisht/services/plant_catalog.dart';
 import 'package:botanisht/models/plant.dart';
 
+/// In-app plant search.
+///
+/// Uses the bundled botanical catalogue ([PlantCatalog]) only — no Wikipedia
+/// or other free-text web search — so results are always real plant species
+/// with a reference thumbnail for visual cross-referencing.
 class PlantSearchDelegate extends SearchDelegate<Plant?> {
   PlantSearchDelegate();
-
-  // A single API client reused across keystrokes. Closed in dispose() so we
-  // don't leak an http.Client per character typed.
-  final PlantApiService _api = PlantApiService();
-
-  @override
-  void dispose() {
-    _api.close();
-    super.dispose();
-  }
 
   @override
   List<Widget> buildActions(BuildContext context) => [
@@ -37,7 +32,6 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
   @override
   Widget buildSuggestions(BuildContext context) => _buildSearchView();
 
-  // Both results and suggestions come from the live OpenFarm API call below.
   Widget _buildSearchView() {
     final q = query.trim();
 
@@ -48,31 +42,22 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
           children: [
             Icon(Icons.search_rounded, size: 64, color: Colors.grey),
             SizedBox(height: 16),
-            Text('Search OpenFarm for any plant…'),
+            Text(
+              'Search the Botanisht plant catalogue…',
+              style: TextStyle(fontSize: 18),
+            ),
           ],
         ),
       );
     }
 
     return FutureBuilder<List<Plant>>(
-      // Keyed by query so a new keystroke triggers a fresh network request.
+      // Keyed by query so a new keystroke triggers a fresh catalogue lookup.
       key: ValueKey(q),
-      future: _api.searchPlants(q),
+      future: PlantCatalog.search(q),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Could not reach OpenFarm.\n${snapshot.error}',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
         }
 
         final results = snapshot.data ?? [];
@@ -83,7 +68,7 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
               children: [
                 Icon(Icons.search_off_rounded, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
-                Text('No plants found'),
+                Text('No plants found', style: TextStyle(fontSize: 18)),
               ],
             ),
           );
@@ -93,17 +78,29 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
           itemCount: results.length,
           itemBuilder: (context, index) {
             final plant = results[index];
+            final hasImage =
+                plant.imageUrl != null && plant.imageUrl!.isNotEmpty;
             return ListTile(
               leading: CircleAvatar(
                 backgroundColor: const Color(0xFF1B4332),
                 backgroundImage:
-                    plant.imageUrl != null ? NetworkImage(plant.imageUrl!) : null,
-                child: plant.imageUrl == null
-                    ? const Icon(Icons.local_florist_rounded, color: Colors.white)
-                    : null,
+                    hasImage ? NetworkImage(plant.imageUrl!) : null,
+                child: hasImage
+                    ? null
+                    : const Icon(Icons.local_florist_rounded,
+                        color: Colors.white),
               ),
-              title: Text(plant.name),
-              subtitle: Text(plant.scientificName ?? ''),
+              title: Text(
+                plant.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                plant.scientificName ?? '',
+                style: const TextStyle(fontSize: 15),
+              ),
               onTap: () => close(context, plant),
             );
           },

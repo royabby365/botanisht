@@ -15,6 +15,16 @@ class UserPlant {
   String? potSize; // e.g., "6 inch", "10 gallon"
   String? soilType; // e.g., "Cactus mix", "Potting soil + perlite"
 
+  // Zone / bed assignment (e.g., 'indoor', 'hydro', 'kitchen', or a custom
+  // zone name). The setter normalises casing + whitespace so grouping and
+  // filtering are never defeated by 'Indoor' vs 'indoor' vs ' Indoor '.
+  String? _zone;
+  String? get zone => _zone;
+  set zone(String? value) => _zone = value?.toLowerCase().trim();
+
+  // How many of this exact crop the user is growing in this zone.
+  int quantity = 1;
+
   // Acquisition info
   DateTime? acquiredDate;
   String? source; // "Nursery", "Gift", "Propagation", "Seeds", "Wild"

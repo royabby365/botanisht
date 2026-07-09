@@ -117,40 +117,50 @@ const UserPlantSchema = CollectionSchema(
       name: r'pruningSchedule',
       type: IsarType.string,
     ),
-    r'soilType': PropertySchema(
+    r'quantity': PropertySchema(
       id: 20,
+      name: r'quantity',
+      type: IsarType.long,
+    ),
+    r'soilType': PropertySchema(
+      id: 21,
       name: r'soilType',
       type: IsarType.string,
     ),
     r'source': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'source',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'temperatureRange': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'temperatureRange',
       type: IsarType.string,
     ),
     r'wateringReminderEnabled': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'wateringReminderEnabled',
       type: IsarType.bool,
     ),
     r'wateringSchedule': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'wateringSchedule',
       type: IsarType.string,
     ),
     r'widthCm': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'widthCm',
       type: IsarType.double,
+    ),
+    r'zone': PropertySchema(
+      id: 28,
+      name: r'zone',
+      type: IsarType.string,
     )
   },
   estimateSize: _userPlantEstimateSize,
@@ -281,6 +291,12 @@ int _userPlantEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.zone;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -310,13 +326,15 @@ void _userPlantSerialize(
   writer.writeString(offsets[17], object.potSize);
   writer.writeBool(offsets[18], object.pruningReminderEnabled);
   writer.writeString(offsets[19], object.pruningSchedule);
-  writer.writeString(offsets[20], object.soilType);
-  writer.writeString(offsets[21], object.source);
-  writer.writeStringList(offsets[22], object.tags);
-  writer.writeString(offsets[23], object.temperatureRange);
-  writer.writeBool(offsets[24], object.wateringReminderEnabled);
-  writer.writeString(offsets[25], object.wateringSchedule);
-  writer.writeDouble(offsets[26], object.widthCm);
+  writer.writeLong(offsets[20], object.quantity);
+  writer.writeString(offsets[21], object.soilType);
+  writer.writeString(offsets[22], object.source);
+  writer.writeStringList(offsets[23], object.tags);
+  writer.writeString(offsets[24], object.temperatureRange);
+  writer.writeBool(offsets[25], object.wateringReminderEnabled);
+  writer.writeString(offsets[26], object.wateringSchedule);
+  writer.writeDouble(offsets[27], object.widthCm);
+  writer.writeString(offsets[28], object.zone);
 }
 
 UserPlant _userPlantDeserialize(
@@ -347,13 +365,15 @@ UserPlant _userPlantDeserialize(
   object.potSize = reader.readStringOrNull(offsets[17]);
   object.pruningReminderEnabled = reader.readBool(offsets[18]);
   object.pruningSchedule = reader.readStringOrNull(offsets[19]);
-  object.soilType = reader.readStringOrNull(offsets[20]);
-  object.source = reader.readStringOrNull(offsets[21]);
-  object.tags = reader.readStringList(offsets[22]);
-  object.temperatureRange = reader.readStringOrNull(offsets[23]);
-  object.wateringReminderEnabled = reader.readBool(offsets[24]);
-  object.wateringSchedule = reader.readStringOrNull(offsets[25]);
-  object.widthCm = reader.readDoubleOrNull(offsets[26]);
+  object.quantity = reader.readLong(offsets[20]);
+  object.soilType = reader.readStringOrNull(offsets[21]);
+  object.source = reader.readStringOrNull(offsets[22]);
+  object.tags = reader.readStringList(offsets[23]);
+  object.temperatureRange = reader.readStringOrNull(offsets[24]);
+  object.wateringReminderEnabled = reader.readBool(offsets[25]);
+  object.wateringSchedule = reader.readStringOrNull(offsets[26]);
+  object.widthCm = reader.readDoubleOrNull(offsets[27]);
+  object.zone = reader.readStringOrNull(offsets[28]);
   return object;
 }
 
@@ -405,19 +425,23 @@ P _userPlantDeserializeProp<P>(
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 21:
       return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 24:
-      return (reader.readBool(offset)) as P;
-    case 25:
       return (reader.readStringOrNull(offset)) as P;
+    case 25:
+      return (reader.readBool(offset)) as P;
     case 26:
+      return (reader.readStringOrNull(offset)) as P;
+    case 27:
       return (reader.readDoubleOrNull(offset)) as P;
+    case 28:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -2830,6 +2854,59 @@ extension UserPlantQueryFilter
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> quantityEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'quantity',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> quantityGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'quantity',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> quantityLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'quantity',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> quantityBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'quantity',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> soilTypeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -3754,6 +3831,152 @@ extension UserPlantQueryFilter
       ));
     });
   }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'zone',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'zone',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'zone',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'zone',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zone',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> zoneIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'zone',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension UserPlantQueryObject
@@ -3984,6 +4207,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByQuantity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'quantity', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByQuantityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'quantity', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortBySoilType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'soilType', Sort.asc);
@@ -4057,6 +4292,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByWidthCmDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByZone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByZoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.desc);
     });
   }
 }
@@ -4296,6 +4543,18 @@ extension UserPlantQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByQuantity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'quantity', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByQuantityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'quantity', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenBySoilType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'soilType', Sort.asc);
@@ -4369,6 +4628,18 @@ extension UserPlantQuerySortThenBy
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByWidthCmDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByZone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByZoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zone', Sort.desc);
     });
   }
 }
@@ -4509,6 +4780,12 @@ extension UserPlantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByQuantity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'quantity');
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctBySoilType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4555,6 +4832,13 @@ extension UserPlantQueryWhereDistinct
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByWidthCm() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'widthCm');
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByZone(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'zone', caseSensitive: caseSensitive);
     });
   }
 }
@@ -4693,6 +4977,12 @@ extension UserPlantQueryProperty
     });
   }
 
+  QueryBuilder<UserPlant, int, QQueryOperations> quantityProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'quantity');
+    });
+  }
+
   QueryBuilder<UserPlant, String?, QQueryOperations> soilTypeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'soilType');
@@ -4735,6 +5025,12 @@ extension UserPlantQueryProperty
   QueryBuilder<UserPlant, double?, QQueryOperations> widthCmProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'widthCm');
+    });
+  }
+
+  QueryBuilder<UserPlant, String?, QQueryOperations> zoneProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'zone');
     });
   }
 }

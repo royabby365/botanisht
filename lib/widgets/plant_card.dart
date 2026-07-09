@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/hydroponic_provider.dart';
+import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
 
 class PlantCard extends ConsumerWidget {
@@ -12,18 +13,22 @@ class PlantCard extends ConsumerWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final VoidCallback? onAddToGarden;
-  final String? zone;
+  final String zone;
+  final String? companionAdvice;
+  final bool companionIsWarning;
 
   const PlantCard({
     super.key,
     this.plant,
     this.userPlant,
-    this.isUserPlant = false,
+    required this.isUserPlant,
     this.onTap,
     this.onLongPress,
     this.onAddToGarden,
-    this.zone,
-  }) : assert(plant != null || userPlant != null);
+    this.zone = 'indoor',
+    this.companionAdvice,
+    this.companionIsWarning = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,7 +101,7 @@ class PlantCard extends ConsumerWidget {
                     name,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1B4332),
+                      color: Colors.white,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -108,7 +113,7 @@ class PlantCard extends ConsumerWidget {
                       scientificName ?? '',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontStyle: FontStyle.italic,
-                        color: const Color(0xFF1B4332).withOpacity(0.6),
+                        color: const Color(0xFFE2EFE9),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -141,6 +146,14 @@ class PlantCard extends ConsumerWidget {
                 ],
               ),
             ),
+            if (companionAdvice != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: _CompanionAdviceBox(
+                  message: companionAdvice!,
+                  isWarning: companionIsWarning,
+                ),
+              ),
             const SizedBox(height: 16),
             // BOTTOM — care indicators, consistent height.
             Padding(
@@ -192,6 +205,14 @@ class PlantCard extends ConsumerWidget {
               ),
             ] else
               const SizedBox(height: 16),
+            if (isUserPlant)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: _QuantityStepper(
+                  userPlant: displayUserPlant!,
+                  ref: ref,
+                ),
+              ),
           ],
         ),
       ),
@@ -408,9 +429,8 @@ class _CareIndicator extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
-                color: color.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
+                fontSize: 13,
+                color: const Color(0xFFE2EFE9),
               ),
             ),
             const SizedBox(height: 2),
@@ -806,10 +826,123 @@ class _HealthConfig {
   final String label;
   final IconData icon;
   final Color color;
-  
+
   const _HealthConfig({
     required this.label,
     required this.icon,
     required this.color,
   });
+}
+
+/// High-contrast companion-planting advisory rendered directly beneath the
+/// plant card title.
+class _CompanionAdviceBox extends StatelessWidget {
+  final String message;
+  final bool isWarning;
+
+  const _CompanionAdviceBox({
+    required this.message,
+    required this.isWarning,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = isWarning
+        ? const Color(0xFF3A2A00)
+        : const Color(0xFF0F2D1F);
+    final border = isWarning
+        ? const Color(0xFFF4B860)
+        : const Color(0xFF52B788);
+    final icon = isWarning
+        ? Icons.warning_amber_rounded
+        : Icons.eco_rounded;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border, width: 1.5),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: border, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Bold quantity stepper. Each tap persists immediately via an Isar write.
+class _QuantityStepper extends StatelessWidget {
+  final UserPlant userPlant;
+  final WidgetRef ref;
+
+  const _QuantityStepper({
+    required this.userPlant,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final qty = userPlant.quantity;
+    return Row(
+      children: [
+        const Icon(Icons.numbers_rounded,
+            color: Color(0xFFE2EFE9), size: 20),
+        const SizedBox(width: 8),
+        const Text(
+          'Qty:',
+          style: TextStyle(
+            color: Color(0xFFE2EFE9),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 12),
+        IconButton(
+          onPressed: () {
+            final next = (qty - 1).clamp(1, 9999);
+            ref
+                .read(userPlantNotifierProvider.notifier)
+                .setQuantity(userPlant.id!, next);
+          },
+          icon: const Icon(Icons.remove_circle_outline_rounded,
+              color: Colors.white),
+          tooltip: 'Decrease quantity',
+        ),
+        Text(
+          '$qty',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            final next = (qty + 1).clamp(1, 9999);
+            ref
+                .read(userPlantNotifierProvider.notifier)
+                .setQuantity(userPlant.id!, next);
+          },
+          icon: const Icon(Icons.add_circle_outline_rounded,
+              color: Colors.white),
+          tooltip: 'Increase quantity',
+        ),
+      ],
+    );
+  }
 }

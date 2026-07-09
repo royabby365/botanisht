@@ -1,0 +1,170 @@
+[
+  {
+    "id": 201,
+    "type": "crops",
+    "attributes": {
+      "name": "Tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Tomato",
+      "description": "A sun-loving fruiting crop that rewards consistent watering and support.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 202,
+    "type": "crops",
+    "attributes": {
+      "name": "Basil",
+      "scientific_name": "Ocimum basilicum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Basil",
+      "description": "A fragrant culinary herb that loves warmth and regular watering.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 203,
+    "type": "crops",
+    "attributes": {
+      "name": "Zucchini",
+      "scientific_name": "Cucurbita pepo",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Zucchini",
+      "description": "A fast-producing summer squash that needs room to sprawl.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 204,
+    "type": "crops",
+    "attributes": {
+      "name": "Cucumber",
+      "scientific_name": "Cucumis sativus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cucumber",
+      "description": "A vining crop that thrives with trellising and steady moisture.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 205,
+    "type": "crops",
+    "attributes": {
+      "name": "Green Beans",
+      "scientific_name": "Phaseolus vulgaris",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Beans",
+      "description": "Nitrogen-fixing pole or bush beans that enrich the soil.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 206,
+    "type": "crops",
+    "attributes": {
+      "name": "Lettuce",
+      "scientific_name": "Lactuca sativa",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Lettuce",
+      "description": "A fast-growing leafy green that is great for beginner gardeners.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 207,
+    "type": "crops",
+    "attributes": {
+      "name": "Strawberry",
+      "scientific_name": "Fragaria ananassa",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Strawberry",
+      "description": "A low perennial fruit that fruits best in full sun.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 208,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Monstera Deliciosa",
+      "scientific_name": "Monstera deliciosa",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Monstera",
+      "description": "A popular split-leaf tropical foliage plant for bright indirect light.",
+      "sun_requirements": ["Indirect light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor"
+    }
+  },
+  {
+    "id": 209,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Snake Plant",
+      "scientific_name": "Dracaena trifasciata",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Snake+Plant",
+      "description": "A near-indestructible drought-tolerant succulent for low light.",
+      "sun_requirements": ["Low light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor"
+    }
+  },
+  {
+    "id": 210,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Aloe Vera",
+      "scientific_name": "Aloe vera",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Aloe",
+      "description": "A soothing succulent that stores water in its leaves.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor"
+    }
+  },
+  {
+    "id": 211,
+    "type": "herb",
+    "attributes": {
+      "name": "Mint",
+      "scientific_name": "Mentha spicata",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Mint",
+      "description": "A vigorously spreading aromatic herb; best grown in a pot.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["High"],
+      "pet_safe": true,
+      "category": "kitchen"
+    }
+  },
+  {
+    "id": 212,
+    "type": "herb",
+    "attributes": {
+      "name": "Rosemary",
+      "scientific_name": "Salvia rosmarinus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Rosemary",
+      "description": "A woody Mediterranean herb that loves heat and dryness.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "indoor"
+    }
+  }
+]

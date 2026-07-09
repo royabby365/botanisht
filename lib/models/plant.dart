@@ -74,8 +74,8 @@ class Plant {
           attributes['sow_first_after_last_frost_date'] as String?,
       sowLastAfterLastFrostDate:
           attributes['sow_last_after_last_frost_date'] as String?,
-      // API does not provide category/customName/isPetSafe
-      category: null,
+      // The local plant catalogue carries a category we can persist on add.
+      category: attributes['category'] as String?,
       customName: null,
       isPetSafe: null,
     );

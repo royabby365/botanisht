@@ -69,6 +69,8 @@ flutter:
 
   assets:
     - assets/data/fallback_plants.json
+    - assets/data/plant_catalog.json
+    - assets/data/weather_forecast.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

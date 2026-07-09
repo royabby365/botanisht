@@ -101,6 +101,7 @@ class PlantRepository {
     String? soilType,
     DateTime? acquiredDate,
     String? source,
+    String? zone,
   }) async {
     final userPlant = UserPlant()
       ..plantEntityId = plantEntityId
@@ -110,6 +111,8 @@ class PlantRepository {
       ..soilType = soilType
       ..acquiredDate = acquiredDate ?? DateTime.now()
       ..source = source
+      ..zone = zone ?? 'indoor'
+      ..quantity = 1
       ..healthStatus = 'healthy'
       ..healthNotes = []
       ..photoPaths = []
@@ -130,6 +133,8 @@ class PlantRepository {
     String? temperatureRange,
     String? humidityLevel,
     List<String>? tags,
+    String? zone,
+    int quantity = 1,
   }) async {
     final userPlant = UserPlant()
       ..customName = customName ?? name
@@ -138,6 +143,8 @@ class PlantRepository {
       ..soilType = soilType
       ..acquiredDate = acquiredDate ?? DateTime.now()
       ..source = source
+      ..zone = zone ?? 'indoor'
+      ..quantity = quantity
       ..lightConditions = lightConditions
       ..temperatureRange = temperatureRange
       ..humidityLevel = humidityLevel
@@ -155,6 +162,26 @@ class PlantRepository {
 
   Future<void> deleteUserPlant(int id) async {
     await _isar.writeTxn(() => _isar.userPlants.delete(id));
+  }
+
+  /// Adjust the quantity of a specific crop (e.g. from the card stepper) and
+  /// persist it inside an immediate write transaction.
+  Future<void> setQuantity(int id, int quantity) async {
+    final plant = await _isar.userPlants.get(id);
+    if (plant == null) return;
+    plant.quantity = quantity.clamp(1, 9999);
+    await _isar.writeTxn(() => _isar.userPlants.put(plant));
+  }
+
+  /// Distinct, normalized zone names present across the user's garden.
+  Future<List<String>> getUniqueZones() async {
+    final all = await _isar.userPlants.where().findAll();
+    final zones = <String>{};
+    for (final p in all) {
+      final z = (p.zone ?? 'uncategorized').toLowerCase();
+      zones.add(z);
+    }
+    return zones.toList()..sort();
   }
 
   Future<void> recordWatering(int id, {String? notes, double? amount}) async {
@@ -226,6 +253,8 @@ class PlantRepository {
       ..widthCm = plant.widthCm
       ..lastMeasured = plant.lastMeasured
       ..photoPaths = plant.photoPaths
+      ..zone = plant.zone
+      ..quantity = plant.quantity
       ..tags = plant.tags;
     await _isar.writeTxn(() => _isar.userPlants.put(updated));
   }
