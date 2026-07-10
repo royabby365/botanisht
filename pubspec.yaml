@@ -40,6 +40,7 @@ dependencies:
   flutter_riverpod: ^2.4.0
   # optional: json_annotation for serialization if needed
   json_annotation: ^4.9.0
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/data/fallback_plants.json
     - assets/data/plant_catalog.json
     - assets/data/weather_forecast.json
+    - assets/data/IMG_20260707_171423.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

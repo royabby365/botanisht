@@ -2,68 +2,56 @@ import 'package:flutter/material.dart';
 
 /// Brand wordmark for Botanisht.
 ///
-/// Composes a detailed inline layout: "Botan" in deep forest green, a stylized
-/// leaf vector token standing in for the character 'o', an italic lighter
-/// "ish", and a trailing leaf flourish. Everything is wrapped in a [FittedBox]
-/// with a fixed horizontal boundary so it can never overflow its container.
+/// Renders the definitive uploaded logo asset
+/// (`assets/data/IMG_20260707_171423.png`). Its size is derived from the
+/// device's screen metrics — and clamped to the available parent width — so it
+/// scales proportionally across phones, tablets, and the settings drawer
+/// instead of using a fixed box that could overflow the 28px boundary.
 class BrandLogo extends StatelessWidget {
-  final double maxWidth;
+  /// Optional explicit size overrides. When omitted, the logo is sized
+  /// proportionally to the screen while preserving its intrinsic aspect
+  /// ratio (591 x 201).
+  final double? height;
+  final double? width;
 
-  const BrandLogo({super.key, this.maxWidth = 200});
+  const BrandLogo({super.key, this.height, this.width});
+
+  // Intrinsic logo dimensions used to preserve the aspect ratio.
+  static const double _aspect = 591 / 201;
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Botan',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B4332),
-                letterSpacing: 0.5,
-              ),
-            ),
-            // The 'o' — a stylized leaf/thumb token.
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: Icon(
-                Icons.eco_rounded,
-                color: const Color(0xFF2D6A4F),
-                size: 26,
-              ),
-            ),
-            Text(
-              'ish',
-              style: TextStyle(
-                fontSize: 28,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w300,
-                color: const Color(0xFF1B4332),
-                letterSpacing: 1.5,
-              ),
-            ),
-            // Trailing leaf flourish tracking right after the terminal 't'.
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: Transform.rotate(
-                angle: 0.4,
-                child: Icon(
-                  Icons.eco_rounded,
-                  color: const Color(0xFF52B788),
-                  size: 18,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    final image = Image.asset(
+      'assets/data/IMG_20260707_171423.png',
+      fit: BoxFit.contain,
+      alignment: Alignment.centerLeft,
+    );
+
+    // Explicit overrides take precedence and still respect the aspect ratio
+    // when only one dimension is supplied.
+    if (width != null && height != null) {
+      return SizedBox(width: width, height: height, child: image);
+    }
+    if (width != null) {
+      final w = width!;
+      return SizedBox(width: w, height: w / _aspect, child: image);
+    }
+    if (height != null) {
+      final h = height!;
+      return SizedBox(width: h * _aspect, height: h, child: image);
+    }
+
+    // Dynamic, screen-proportional sizing: start from ~42% of the screen
+    // width, keep it within sane bounds, and never let it exceed 70% of the
+    // parent's available width so it can't overflow the AppBar or drawer.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenW = MediaQuery.of(context).size.width;
+        var w = (screenW * 0.42).clamp(120.0, 260.0);
+        if (w > constraints.maxWidth * 0.7) w = constraints.maxWidth * 0.7;
+        final h = w / _aspect;
+        return SizedBox(width: w, height: h, child: image);
+      },
     );
   }
 }
