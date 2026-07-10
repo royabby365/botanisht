@@ -255,51 +255,6 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _showGardenLocationDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController(
-      text: ref.read(settingsProvider).gardenZipCode ?? '',
-    );
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Garden Location'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          maxLength: 5,
-          decoration: const InputDecoration(
-            labelText: 'ZIP Code',
-            hintText: '62220',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.location_on_rounded),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final zip = controller.text.trim();
-              if (RegExp(r'^\d{5}$').hasMatch(zip)) {
-                ref.read(settingsProvider.notifier).setGardenZip(zip);
-                ref.invalidate(weatherAlertProvider);
-                Navigator.pop(ctx);
-              } else {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(
-                      content: Text('Enter a valid 5-digit ZIP code')),
-                );
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _pretty(String z) {
     if (z == 'uncategorized') return 'Garden';
     const map = {
@@ -511,6 +466,51 @@ class AppSettingsDrawer extends ConsumerWidget {
             ),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () => _showGardenLocationDialog(context, ref),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showGardenLocationDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController(
+      text: ref.read(settingsProvider).gardenZipCode ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Garden Location'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          maxLength: 5,
+          decoration: const InputDecoration(
+            labelText: 'ZIP Code',
+            hintText: '62220',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.location_on_rounded),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final zip = controller.text.trim();
+              if (RegExp(r'^\d{5}$').hasMatch(zip)) {
+                ref.read(settingsProvider.notifier).setGardenZip(zip);
+                ref.invalidate(weatherAlertProvider);
+                Navigator.pop(ctx);
+              } else {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(
+                      content: Text('Enter a valid 5-digit ZIP code')),
+                );
+              }
+            },
+            child: const Text('Save'),
           ),
         ],
       ),

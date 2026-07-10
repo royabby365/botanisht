@@ -43,7 +43,11 @@ class PlantCard extends ConsumerWidget {
     final scientificName = displayPlant?.scientificName;
     final imageUrl = displayPlant?.imageUrl;
     final category =
-        zone ?? displayPlant?.category ?? displayUserPlant?.lightConditions?.toLowerCase() ?? 'indoor';
+        zone.isNotEmpty
+            ? zone
+            : (displayPlant?.category ??
+                displayUserPlant?.lightConditions?.toLowerCase() ??
+                'indoor');
     final healthStatus = displayUserPlant?.healthStatus;
     final lastWatered = displayUserPlant?.lastWatered;
     final location = displayUserPlant?.location;

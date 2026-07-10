@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/hydroponic_log.dart';
 import '../providers/hydroponic_provider.dart';
 
 /// A card that displays the latest hydroponic telemetry (pH and TDS)
@@ -69,7 +68,7 @@ class HydroponicDashboardCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Updated: ${log.timestamp?.toLocal() ?? 'Unknown'}',
+                      'Updated: ${log.timestamp.toLocal()}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,

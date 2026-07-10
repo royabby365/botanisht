@@ -4,7 +4,6 @@ import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/services/plant_api_service.dart';
-import 'package:path_provider/path_provider.dart';
 
 class PlantRepository {
   PlantRepository() {

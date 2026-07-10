@@ -166,7 +166,7 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                                   color: Color(0xFF1B4332),
                                 ),
                         ),
-                        title: Text(plant.name ?? 'Unknown'),
+                        title: Text(plant.name),
                         subtitle: Text(plant.scientificName ?? ''),
                         // Tapping a result opens the preview sheet (never dead).
                         onTap: () => _openPreview(plant),

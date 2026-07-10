@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
-import 'package:botanisht/repository/plant_repository.dart';
 import 'package:botanisht/widgets/delete_plant_dialog.dart';
 
 class UserPlantDetailScreen extends ConsumerWidget {

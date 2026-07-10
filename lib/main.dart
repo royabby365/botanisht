@@ -11,7 +11,6 @@ import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/providers/settings_provider.dart';
 import 'package:botanisht/repository/plant_repository.dart';
-import 'package:botanisht/screens/home_screen.dart';
 import 'package:botanisht/screens/onboarding_screen.dart';
 import 'package:botanisht/screens/splash_screen.dart';
 
