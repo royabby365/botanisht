@@ -17,28 +17,48 @@ const AppSettingsSchema = CollectionSchema(
   name: r'AppSettings',
   id: -5633561779022347008,
   properties: {
-    r'highContrast': PropertySchema(
+    r'cachedWeatherMessage': PropertySchema(
       id: 0,
+      name: r'cachedWeatherMessage',
+      type: IsarType.string,
+    ),
+    r'cachedWeatherPlantNames': PropertySchema(
+      id: 1,
+      name: r'cachedWeatherPlantNames',
+      type: IsarType.stringList,
+    ),
+    r'gardenZipCode': PropertySchema(
+      id: 2,
+      name: r'gardenZipCode',
+      type: IsarType.string,
+    ),
+    r'highContrast': PropertySchema(
+      id: 3,
       name: r'highContrast',
       type: IsarType.bool,
     ),
     r'isFirstRun': PropertySchema(
-      id: 1,
+      id: 4,
       name: r'isFirstRun',
       type: IsarType.bool,
     ),
+    r'lastWeatherFetch': PropertySchema(
+      id: 5,
+      name: r'lastWeatherFetch',
+      type: IsarType.dateTime,
+    ),
     r'temperatureScale': PropertySchema(
-      id: 2,
+      id: 6,
       name: r'temperatureScale',
       type: IsarType.long,
     ),
     r'themeMode': PropertySchema(
-      id: 3,
+      id: 7,
       name: r'themeMode',
       type: IsarType.long,
     ),
     r'units': PropertySchema(
-      id: 4,
+      id: 8,
       name: r'units',
       type: IsarType.long,
     )
@@ -63,6 +83,30 @@ int _appSettingsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.cachedWeatherMessage;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final list = object.cachedWeatherPlantNames;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
+    }
+  }
+  {
+    final value = object.gardenZipCode;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -72,11 +116,15 @@ void _appSettingsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeBool(offsets[0], object.highContrast);
-  writer.writeBool(offsets[1], object.isFirstRun);
-  writer.writeLong(offsets[2], object.temperatureScale);
-  writer.writeLong(offsets[3], object.themeMode);
-  writer.writeLong(offsets[4], object.units);
+  writer.writeString(offsets[0], object.cachedWeatherMessage);
+  writer.writeStringList(offsets[1], object.cachedWeatherPlantNames);
+  writer.writeString(offsets[2], object.gardenZipCode);
+  writer.writeBool(offsets[3], object.highContrast);
+  writer.writeBool(offsets[4], object.isFirstRun);
+  writer.writeDateTime(offsets[5], object.lastWeatherFetch);
+  writer.writeLong(offsets[6], object.temperatureScale);
+  writer.writeLong(offsets[7], object.themeMode);
+  writer.writeLong(offsets[8], object.units);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -86,12 +134,16 @@ AppSettings _appSettingsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = AppSettings();
-  object.highContrast = reader.readBool(offsets[0]);
+  object.cachedWeatherMessage = reader.readStringOrNull(offsets[0]);
+  object.cachedWeatherPlantNames = reader.readStringList(offsets[1]);
+  object.gardenZipCode = reader.readStringOrNull(offsets[2]);
+  object.highContrast = reader.readBool(offsets[3]);
   object.id = id;
-  object.isFirstRun = reader.readBool(offsets[1]);
-  object.temperatureScale = reader.readLong(offsets[2]);
-  object.themeMode = reader.readLong(offsets[3]);
-  object.units = reader.readLong(offsets[4]);
+  object.isFirstRun = reader.readBool(offsets[4]);
+  object.lastWeatherFetch = reader.readDateTimeOrNull(offsets[5]);
+  object.temperatureScale = reader.readLong(offsets[6]);
+  object.themeMode = reader.readLong(offsets[7]);
+  object.units = reader.readLong(offsets[8]);
   return object;
 }
 
@@ -103,14 +155,22 @@ P _appSettingsDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 6:
+      return (reader.readLong(offset)) as P;
+    case 7:
+      return (reader.readLong(offset)) as P;
+    case 8:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -211,6 +271,559 @@ extension AppSettingsQueryWhere
 extension AppSettingsQueryFilter
     on QueryBuilder<AppSettings, AppSettings, QFilterCondition> {
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'cachedWeatherMessage',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'cachedWeatherMessage',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cachedWeatherMessage',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'cachedWeatherMessage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'cachedWeatherMessage',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cachedWeatherMessage',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherMessageIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'cachedWeatherMessage',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'cachedWeatherPlantNames',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'cachedWeatherPlantNames',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cachedWeatherPlantNames',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'cachedWeatherPlantNames',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'cachedWeatherPlantNames',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cachedWeatherPlantNames',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'cachedWeatherPlantNames',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      cachedWeatherPlantNamesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'cachedWeatherPlantNames',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'gardenZipCode',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'gardenZipCode',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'gardenZipCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'gardenZipCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'gardenZipCode',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'gardenZipCode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      gardenZipCodeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'gardenZipCode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       highContrastEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -279,6 +892,80 @@ extension AppSettingsQueryFilter
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isFirstRun',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastWeatherFetch',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastWeatherFetch',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastWeatherFetch',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastWeatherFetch',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastWeatherFetch',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      lastWeatherFetchBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastWeatherFetch',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -458,6 +1145,33 @@ extension AppSettingsQueryLinks
 
 extension AppSettingsQuerySortBy
     on QueryBuilder<AppSettings, AppSettings, QSortBy> {
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByCachedWeatherMessage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedWeatherMessage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByCachedWeatherMessageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedWeatherMessage', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByGardenZipCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'gardenZipCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByGardenZipCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'gardenZipCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByHighContrast() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'highContrast', Sort.asc);
@@ -480,6 +1194,20 @@ extension AppSettingsQuerySortBy
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByIsFirstRunDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isFirstRun', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByLastWeatherFetch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherFetch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByLastWeatherFetchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherFetch', Sort.desc);
     });
   }
 
@@ -524,6 +1252,33 @@ extension AppSettingsQuerySortBy
 
 extension AppSettingsQuerySortThenBy
     on QueryBuilder<AppSettings, AppSettings, QSortThenBy> {
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByCachedWeatherMessage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedWeatherMessage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByCachedWeatherMessageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedWeatherMessage', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByGardenZipCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'gardenZipCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByGardenZipCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'gardenZipCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByHighContrast() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'highContrast', Sort.asc);
@@ -558,6 +1313,20 @@ extension AppSettingsQuerySortThenBy
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByIsFirstRunDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isFirstRun', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByLastWeatherFetch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherFetch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByLastWeatherFetchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherFetch', Sort.desc);
     });
   }
 
@@ -602,6 +1371,29 @@ extension AppSettingsQuerySortThenBy
 
 extension AppSettingsQueryWhereDistinct
     on QueryBuilder<AppSettings, AppSettings, QDistinct> {
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByCachedWeatherMessage({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cachedWeatherMessage',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByCachedWeatherPlantNames() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cachedWeatherPlantNames');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByGardenZipCode(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'gardenZipCode',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByHighContrast() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'highContrast');
@@ -611,6 +1403,13 @@ extension AppSettingsQueryWhereDistinct
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByIsFirstRun() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isFirstRun');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByLastWeatherFetch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastWeatherFetch');
     });
   }
 
@@ -642,6 +1441,26 @@ extension AppSettingsQueryProperty
     });
   }
 
+  QueryBuilder<AppSettings, String?, QQueryOperations>
+      cachedWeatherMessageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedWeatherMessage');
+    });
+  }
+
+  QueryBuilder<AppSettings, List<String>?, QQueryOperations>
+      cachedWeatherPlantNamesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedWeatherPlantNames');
+    });
+  }
+
+  QueryBuilder<AppSettings, String?, QQueryOperations> gardenZipCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'gardenZipCode');
+    });
+  }
+
   QueryBuilder<AppSettings, bool, QQueryOperations> highContrastProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'highContrast');
@@ -651,6 +1470,13 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, bool, QQueryOperations> isFirstRunProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isFirstRun');
+    });
+  }
+
+  QueryBuilder<AppSettings, DateTime?, QQueryOperations>
+      lastWeatherFetchProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastWeatherFetch');
     });
   }
 

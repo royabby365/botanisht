@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 import 'package:botanisht/models/isar_user_plant.dart';
+import 'package:botanisht/services/notification_service.dart';
 
 /// A single atmospheric forecast reading.
 class WeatherForecast {
@@ -166,9 +167,12 @@ class WeatherAlertService {
     final shown = names.take(3).join(', ');
     final extra = names.length > 3 ? ' and ${names.length - 3} more' : '';
 
+    // Also surface the advisory in the device system tray so it reaches the
+    // user even when the app is minimised or the phone is locked.
+    NotificationService.instance.showWeatherAlert();
     return WeatherAlert(
       message:
-          '⚠️ Storms/Frost in the forecast — you may want to move your outdoor $shown$extra inside!',
+          'Storms/Frost in the forecast — you may want to move your outdoor $shown$extra inside!',
       plantNames: names,
     );
   }

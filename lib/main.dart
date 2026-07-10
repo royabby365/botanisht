@@ -13,6 +13,7 @@ import 'package:botanisht/providers/settings_provider.dart';
 import 'package:botanisht/repository/plant_repository.dart';
 import 'package:botanisht/screens/onboarding_screen.dart';
 import 'package:botanisht/screens/splash_screen.dart';
+import 'package:botanisht/services/notification_service.dart';
 
 late final Isar isarInstance;
 
@@ -33,6 +34,9 @@ Future<void> _initializeIsar() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeIsar();
+  // Bring up the local-notifications plugin so severe-weather advisories can
+  // be pushed to the device system tray.
+  await NotificationService.instance.initialize();
 
   // First-run gate: if the user has not completed the onboarding tutorial yet
   // (or no settings row exists), route them to the tutorial. Otherwise boot
