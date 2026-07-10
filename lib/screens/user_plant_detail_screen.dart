@@ -52,7 +52,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: _buildPetSafetyBadge(userPlant.isPetSafe!),
               ),
-            _buildSection('Basic Info', [
+            _buildSection(context, 'Basic Info', [
               _buildDetailRow(Icons.health_and_safety, 'Health',
                   userPlant.healthStatus?.capitalize() ?? 'Unknown'),
               _buildDetailRow(Icons.location_on, 'Location',
@@ -97,7 +97,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
                     Icons.tag, 'Tags', userPlant.tags!.join(', ')),
             ]),
             const SizedBox(height: 24),
-            _buildSection('Care History', [
+            _buildSection(context, 'Care History', [
               if (userPlant.healthNotes != null &&
                   userPlant.healthNotes!.isNotEmpty)
                 ...userPlant.healthNotes!.asMap().entries.map((entry) =>
@@ -117,7 +117,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
                     Icons.content_cut, Colors.green),
             ]),
             const SizedBox(height: 24),
-            _buildSection('Measurements', [
+            _buildSection(context, 'Measurements', [
               if (userPlant.heightCm != null)
                 _buildDetailRow(Icons.height, 'Height', '${userPlant.heightCm} cm'),
               if (userPlant.widthCm != null)
@@ -128,7 +128,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
                     userPlant.lastMeasured!.toLocal().toString().split(' ')[0]),
             ]),
             const SizedBox(height: 24),
-            _buildSection('Actions', [
+            _buildSection(context, 'Actions', [
               _buildActionButton('Water', Icons.water_drop, Colors.blue, () {
                 repo.recordWatering(userPlant.id!);
                 ScaffoldMessenger.of(context)
@@ -159,28 +159,22 @@ class UserPlantDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildPetSafetyBadge(bool isPetSafe) {
-    final color = isPetSafe ? Colors.green.shade700 : Colors.orange.shade700;
+    final bg = isPetSafe ? const Color(0xFF388E3C) : const Color(0xFFD32F2F);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: (isPetSafe ? Colors.green : Colors.orange).withOpacity(0.12),
+        color: bg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: bg.withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            isPetSafe ? Icons.pets_rounded : Icons.warning_amber_rounded,
-            size: 16,
-            color: color,
-          ),
-          const SizedBox(width: 6),
           Text(
-            isPetSafe ? 'Pet Safe' : 'Toxic to Pets',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
+            isPetSafe ? '🐾 Pet Safe' : '⚠️ Toxic to Pets',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
               fontSize: 13,
             ),
           ),
@@ -189,15 +183,17 @@ class UserPlantDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection(String title, List<Widget> children) {
+  Widget _buildSection(BuildContext context, String title, List<Widget> children) {
     if (children.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary),
         ),
         const SizedBox(height: 12),
         Card(

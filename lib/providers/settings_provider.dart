@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:botanisht/repository/settings_repository.dart';
+import 'package:botanisht/repository/plant_repository.dart';
 import 'package:botanisht/models/isar_app_settings.dart';
-
+import 'package:botanisht/models/plant.dart';
+import 'package:botanisht/services/weather_alert_service.dart';
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository();
 });
@@ -53,14 +54,33 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     required bool highContrast,
     required int units,
     required int temperatureScale,
+    String? gardenZipCode,
   }) {
     state = state.copyWith(
       themeMode: themeMode,
       highContrast: highContrast,
       units: units,
       temperatureScale: temperatureScale,
+      gardenZipCode: gardenZipCode,
       isFirstRun: false,
     );
-    _persist();
+    _repository.saveSettings(state);
+  }
+
+  /// Persists the garden ZIP code used to anchor weather alerts (no GPS).
+  void setGardenZip(String? zip) {
+    state = state.copyWith(gardenZipCode: zip);
+    _repository.saveSettings(state);
+  }
+
+  /// Writes the latest weather advisory and sync timestamp to Isar so the
+  /// dashboard can boot with zero lag from the local cache.
+  void cacheWeather(WeatherAlert? alert) {
+    state = state.copyWith(
+      lastWeatherFetch: DateTime.now(),
+      cachedWeatherMessage: alert?.message,
+      cachedWeatherPlantNames: alert?.plantNames,
+    );
+    _repository.saveSettings(state);
   }
 }

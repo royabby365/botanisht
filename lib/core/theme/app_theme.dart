@@ -41,16 +41,16 @@ class BotanishtPalette {
 /// When [highContrast] is `true` a dedicated high-contrast scheme is returned
 /// regardless of the base mode, satisfying WCAG AAA contrast requirements for
 /// senior-first accessibility.
-ThemeData resolveTheme({required int themeMode, required bool highContrast}) {
+ThemeData resolveTheme({
+  required int themeMode,
+  required bool highContrast,
+  bool systemIsDark = false,
+}) {
   if (highContrast) return buildHighContrastTheme();
-  switch (themeMode) {
-    case 2:
-      return buildEvergreenTheme();
-    case 1:
-    case 0:
-    default:
-      return buildCreamTheme();
-  }
+  // `System` follows the device ambient brightness: Deep Evergreen (dark)
+  // when the platform reports dark, otherwise Natural Cream (light).
+  final effectiveDark = themeMode == 2 || (themeMode == 0 && systemIsDark);
+  return effectiveDark ? buildEvergreenTheme() : buildCreamTheme();
 }
 
 /// Natural Cream — the default light theme. Warm, paper-like background with
@@ -78,6 +78,7 @@ ThemeData buildCreamTheme() {
     scaffoldBackgroundColor: creamBackground,
     appBarTheme: AppBarTheme(
       backgroundColor: creamBackground,
+      foregroundColor: primaryGreen,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
@@ -208,6 +209,7 @@ ThemeData buildEvergreenTheme() {
     scaffoldBackgroundColor: background,
     appBarTheme: AppBarTheme(
       backgroundColor: background,
+      foregroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
@@ -337,6 +339,7 @@ ThemeData buildHighContrastTheme() {
     scaffoldBackgroundColor: background,
     appBarTheme: const AppBarTheme(
       backgroundColor: background,
+      foregroundColor: white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,

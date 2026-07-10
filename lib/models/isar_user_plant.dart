@@ -48,6 +48,9 @@ class UserPlant {
 
   // Environment
   String? lightConditions; // "Full sun", "Partial shade", "Indirect light", "Grow light"
+  // Structured light exposure selector: 0 = Low Light, 1 = Medium Light,
+  // 2 = Bright Direct, 3 = Grow Lights.
+  int lightExposure = 0;
   String? temperatureRange; // e.g., "65-75°F"
   String? humidityLevel; // "Low", "Medium", "High"
 

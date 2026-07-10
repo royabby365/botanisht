@@ -30,8 +30,8 @@ Plants are automatically routed into four independent environments based on
 category, each with its own focused dashboard:
 
 - **Indoor** — houseplants, ferns, succulents, and tropicals.
-- **Hydro** — hydroponic systems with telemetry (pH, TDS, pump status
-  placeholders).
+- **Hydro** — water-based growing; log pH, TDS, or pump cycles manually
+  (no sensors required).
 - **Kitchen** — herbs, vegetables, and edible flowers.
 - **Diagnostics** — a unified health and alert view across every zone.
 
@@ -51,7 +51,7 @@ All intelligence runs on-device — no network round-trips, no telemetry leak:
 - **High-Legibility Typography**: Enhanced font weights and sizing throughout (bold headers ≥ 22sp, body text ≥ 18sp) to ensure effortless navigation.
 
 ### Comprehensive Care Data
-- Hydroponic telemetry: pH, TDS, and pump-tracking placeholders.
+- Hydroponics (optional): pH, TDS, and pump cycles logged manually — no hardware required.
 - Quantity and growth tracking per plant.
 - Local image-path referencing (photos stay on your device).
 

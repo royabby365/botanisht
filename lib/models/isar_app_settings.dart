@@ -30,6 +30,19 @@ class AppSettings {
   /// install always lands on the tutorial.
   bool isFirstRun = true;
 
+  /// Optional garden location used to anchor weather alerts. Stored as a
+  /// 5-digit US ZIP code so the app never needs device GPS or location
+  /// permissions — fully privacy-friendly and local-first.
+  String? gardenZipCode;
+
+  /// Timestamp of the last successful weather sync, used to enforce the
+  /// 4-hour cache freshness window.
+  DateTime? lastWeatherFetch;
+
+  /// Persisted storm/frost advisory so the dashboard can boot with zero lag.
+  String? cachedWeatherMessage;
+  List<String>? cachedWeatherPlantNames;
+
   AppSettings();
 
   AppSettings copyWith({
@@ -38,6 +51,10 @@ class AppSettings {
     int? units,
     int? temperatureScale,
     bool? isFirstRun,
+    String? gardenZipCode,
+    DateTime? lastWeatherFetch,
+    String? cachedWeatherMessage,
+    List<String>? cachedWeatherPlantNames,
   }) {
     return AppSettings()
       ..id = id
@@ -45,6 +62,12 @@ class AppSettings {
       ..highContrast = highContrast ?? this.highContrast
       ..units = units ?? this.units
       ..temperatureScale = temperatureScale ?? this.temperatureScale
-      ..isFirstRun = isFirstRun ?? this.isFirstRun;
+      ..isFirstRun = isFirstRun ?? this.isFirstRun
+      ..gardenZipCode = gardenZipCode ?? this.gardenZipCode
+      ..lastWeatherFetch = lastWeatherFetch ?? this.lastWeatherFetch
+      ..cachedWeatherMessage =
+          cachedWeatherMessage ?? this.cachedWeatherMessage
+      ..cachedWeatherPlantNames =
+          cachedWeatherPlantNames ?? this.cachedWeatherPlantNames;
   }
 }

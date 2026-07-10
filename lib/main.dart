@@ -51,24 +51,59 @@ void main() async {
   );
 }
 
-class BotanishtApp extends ConsumerWidget {
+class BotanishtApp extends ConsumerStatefulWidget {
   final bool isFirstRun;
 
   const BotanishtApp({super.key, required this.isFirstRun});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BotanishtApp> createState() => _BotanishtAppState();
+}
+
+/// Holds the root [MaterialApp] and reacts instantly to OS dark/light toggles
+/// so `System` theme mode tracks the device's ambient brightness.
+class _BotanishtAppState extends ConsumerState<BotanishtApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild the moment the platform brightness flips (e.g. system Dark Mode).
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+
+    // Explicitly read the system's ambient brightness. Map to Deep Evergreen
+    // (dark) when the platform is dark, otherwise Natural Cream (light).
+    final systemBrightness =
+        MediaQuery.maybePlatformBrightnessOf(context) ??
+            WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final systemIsDark = systemBrightness == Brightness.dark;
+
     final theme = resolveTheme(
       themeMode: settings.themeMode,
       highContrast: settings.highContrast,
+      systemIsDark: systemIsDark,
     );
 
     return MaterialApp(
       title: 'Botanisht',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: isFirstRun ? const OnboardingScreen() : const SplashScreen(),
+      home: widget.isFirstRun ? const OnboardingScreen() : const SplashScreen(),
     );
   }
 }

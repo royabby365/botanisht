@@ -132,6 +132,8 @@ class PlantRepository {
     String? lightConditions,
     String? temperatureRange,
     String? humidityLevel,
+    int? lightExposure,
+    bool? isPetSafe,
     List<String>? tags,
     String? zone,
     int quantity = 1,
@@ -146,8 +148,10 @@ class PlantRepository {
       ..zone = zone ?? 'indoor'
       ..quantity = quantity
       ..lightConditions = lightConditions
+      ..lightExposure = lightExposure ?? 0
       ..temperatureRange = temperatureRange
       ..humidityLevel = humidityLevel
+      ..isPetSafe = isPetSafe
       ..tags = tags ?? []
       ..healthStatus = 'healthy'
       ..healthNotes = []
@@ -246,6 +250,7 @@ class PlantRepository {
       ..fertilizingReminderEnabled = plant.fertilizingReminderEnabled
       ..pruningReminderEnabled = plant.pruningReminderEnabled
       ..lightConditions = plant.lightConditions
+      ..lightExposure = plant.lightExposure
       ..temperatureRange = plant.temperatureRange
       ..humidityLevel = plant.humidityLevel
       ..isPetSafe = plant.isPetSafe

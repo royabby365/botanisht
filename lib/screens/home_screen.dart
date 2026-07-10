@@ -21,6 +21,9 @@ class HomeScreen extends ConsumerWidget {
     final asyncUserPlants = ref.watch(userPlantsProvider);
     final weatherAsync = ref.watch(weatherAlertProvider);
     final alert = weatherAsync.value;
+    final locationReady = ref.watch(gardenLocationReadyProvider);
+    // Keeps the 4-hour weather refresh cycle alive for the app session.
+    ref.watch(weatherAutoRefreshProvider);
 
     return asyncUserPlants.when(
       data: (userPlants) {
@@ -65,6 +68,7 @@ class HomeScreen extends ConsumerWidget {
             body: Column(
               children: [
                 if (alert != null) _WeatherAlertCard(alert: alert),
+                if (!locationReady) const _GardenLocationHint(),
                 Expanded(
                   child: TabBarView(
                     children: [
@@ -251,6 +255,51 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  void _showGardenLocationDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController(
+      text: ref.read(settingsProvider).gardenZipCode ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Garden Location'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          maxLength: 5,
+          decoration: const InputDecoration(
+            labelText: 'ZIP Code',
+            hintText: '62220',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.location_on_rounded),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final zip = controller.text.trim();
+              if (RegExp(r'^\d{5}$').hasMatch(zip)) {
+                ref.read(settingsProvider.notifier).setGardenZip(zip);
+                ref.invalidate(weatherAlertProvider);
+                Navigator.pop(ctx);
+              } else {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(
+                      content: Text('Enter a valid 5-digit ZIP code')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _pretty(String z) {
     if (z == 'uncategorized') return 'Garden';
     const map = {
@@ -327,6 +376,39 @@ class _WeatherAlertCard extends StatelessWidget {
   }
 }
 
+/// Quiet, non-alarming hint shown when no garden ZIP is set, so weather
+/// alerts stay opt-in and privacy-friendly (no GPS required).
+class _GardenLocationHint extends StatelessWidget {
+  const _GardenLocationHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surface.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: scheme.onSurface.withOpacity(0.18)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, color: scheme.primary, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Set a garden location in Settings to enable automatic '
+              'storm/frost warnings.',
+              style: TextStyle(fontSize: 15, color: scheme.onSurface),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Settings / navigation drawer. All toggles persist immediately to Isar via
 /// [SettingsNotifier], so preferences survive app restarts.
 class AppSettingsDrawer extends ConsumerWidget {
@@ -345,7 +427,13 @@ class AppSettingsDrawer extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const BrandLogo(maxWidth: 170),
+                SizedBox(
+                  width: 180,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: BrandLogo(),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Settings',
@@ -409,6 +497,20 @@ class AppSettingsDrawer extends ConsumerWidget {
             subtitle: const Text('vs Celsius'),
             value: settings.temperatureScale == 1,
             onChanged: (v) => notifier.setTemperatureScale(v ? 1 : 0),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.location_on_rounded),
+            title: const Text('Garden Location',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            subtitle: Text(
+              settings.gardenZipCode?.isNotEmpty == true
+                  ? 'ZIP ${settings.gardenZipCode}'
+                  : 'Set a ZIP code for weather alerts',
+              style: const TextStyle(fontSize: 14),
+            ),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => _showGardenLocationDialog(context, ref),
           ),
         ],
       ),

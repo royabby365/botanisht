@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
-import 'package:botanisht/services/plant_api_service.dart';
+import 'package:botanisht/services/plant_catalog.dart';
+import 'package:botanisht/widgets/plant_preview_sheet.dart';
 
 class AddPlantBottomSheet extends ConsumerStatefulWidget {
   const AddPlantBottomSheet();
@@ -17,12 +18,21 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
   final _customNameController = TextEditingController();
   final _locationController = TextEditingController();
   final _searchController = TextEditingController();
-  final _api = PlantApiService();
 
   String? _selectedZone = 'indoor';
   bool _isSearching = false;
   List<Plant> _searchResults = [];
   Timer? _debounce;
+
+  // Structured light exposure selector: 0 = Low Light, 1 = Medium Light,
+  // 2 = Bright Direct, 3 = Grow Lights.
+  int _lightExposure = 0;
+  static const List<String> _lightLabels = [
+    'Low Light',
+    'Medium Light',
+    'Bright Direct',
+    'Grow Lights',
+  ];
 
   @override
   void initState() {
@@ -52,7 +62,9 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
     }
     if (mounted) setState(() => _isSearching = true);
     try {
-      final results = await _api.searchPlants(q);
+      // Unified botanical filter — identical logic to the main SearchDelegate,
+      // so no academic terms or unrelated tech specs leak into the results.
+      final results = await PlantCatalog.search(q);
       if (mounted) setState(() => _searchResults = results);
     } catch (_) {
       if (mounted) setState(() => _searchResults = []);
@@ -61,19 +73,12 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
     }
   }
 
-  void _fillFromPlant(Plant plant) {
-    _nameController.text = plant.name ?? '';
-    _customNameController.text = '';
-    if (plant.category != null &&
-        ['indoor', 'hydro', 'kitchen'].contains(plant.category)) {
-      _selectedZone = plant.category;
-    }
-    setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Filled details for ${plant.name ?? 'plant'}'),
-        behavior: SnackBarBehavior.floating,
-      ),
+  void _openPreview(Plant plant) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => PlantPreviewSheet(plant: plant),
     );
   }
 
@@ -84,7 +89,6 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
     _customNameController.dispose();
     _locationController.dispose();
     _searchController.dispose();
-    _api.close();
     super.dispose();
   }
 
@@ -123,7 +127,7 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Search our database or create a custom entry',
+                'Search our botanical database or create a custom entry',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: const Color(0xFF1B4332).withOpacity(0.7),
                 ),
@@ -134,18 +138,7 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                 decoration: InputDecoration(
                   hintText: 'Search plants...',
                   prefixIcon: const Icon(Icons.search_rounded),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.mic_rounded),
-                    tooltip: 'Voice search',
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Voice search coming soon.'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    ),
-                  ),
                 ),
-                onSubmitted: _runSearch,
               ),
               const SizedBox(height: 8),
               if (_isSearching) const LinearProgressIndicator(),
@@ -158,17 +151,25 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                     itemCount: _searchResults.length,
                     itemBuilder: (context, index) {
                       final plant = _searchResults[index];
+                      final hasImage =
+                          plant.imageUrl != null && plant.imageUrl!.isNotEmpty;
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: const Color(0xFF1B4332).withOpacity(0.1),
-                          child: const Icon(
-                            Icons.local_florist_rounded,
-                            color: Color(0xFF1B4332),
-                          ),
+                          backgroundColor:
+                              const Color(0xFF1B4332).withOpacity(0.1),
+                          backgroundImage:
+                              hasImage ? NetworkImage(plant.imageUrl!) : null,
+                          child: hasImage
+                              ? null
+                              : const Icon(
+                                  Icons.local_florist_rounded,
+                                  color: Color(0xFF1B4332),
+                                ),
                         ),
                         title: Text(plant.name ?? 'Unknown'),
                         subtitle: Text(plant.scientificName ?? ''),
-                        onTap: () => _fillFromPlant(plant),
+                        // Tapping a result opens the preview sheet (never dead).
+                        onTap: () => _openPreview(plant),
                       );
                     },
                   ),
@@ -206,6 +207,31 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                 onChanged: (value) => setState(() => _selectedZone = value),
               ),
               const SizedBox(height: 12),
+              // Structured light exposure selector (no free-text strings).
+              Text(
+                'Light Exposure',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<int>(
+                selected: {_lightExposure},
+                onSelectionChanged: (s) =>
+                    setState(() => _lightExposure = s.first),
+                segments: const [
+                  ButtonSegment(
+                      value: 0, label: Text('Low', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 1,
+                      label: Text('Medium', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 2,
+                      label: Text('Bright', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 3,
+                      label: Text('Grow', style: TextStyle(fontSize: 13))),
+                ],
+              ),
+              const SizedBox(height: 12),
               TextField(
                 controller: _locationController,
                 decoration: const InputDecoration(
@@ -229,10 +255,11 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                                 location: _locationController.text.isNotEmpty
                                     ? _locationController.text
                                     : null,
-                                lightConditions:
-                                    _selectedZone == 'hydro' ? 'Grow lights' : null,
+                                lightConditions: _lightLabels[_lightExposure],
+                                lightExposure: _lightExposure,
                                 temperatureRange:
                                     _selectedZone == 'hydro' ? '68-75°F' : null,
+                                zone: _selectedZone,
                               );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(

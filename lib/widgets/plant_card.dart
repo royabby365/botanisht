@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
@@ -240,14 +241,17 @@ class PlantCard extends ConsumerWidget {
     final color = colors[category] ?? const Color(0xFF1B4332);
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
+      // Robust, cached network image. On failure or while loading we fall
+      // back to a crisp, category-specific icon so the card never shows a
+      // broken-image glyph or the generic pine tree.
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
-        loadingBuilder: (context, child, progress) =>
-            progress == null ? child : _iconPlaceholder(icon, color),
-        errorBuilder: (context, error, stack) => _iconPlaceholder(icon, color),
+        fadeInDuration: const Duration(milliseconds: 250),
+        placeholder: (context, url) => _iconPlaceholder(icon, color),
+        errorWidget: (context, url, error) => _iconPlaceholder(icon, color),
       );
     }
 
@@ -458,29 +462,23 @@ class _PetSafetyBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isPetSafe ? Colors.green.shade700 : Colors.orange.shade700;
+    final bg = isPetSafe ? const Color(0xFF388E3C) : const Color(0xFFD32F2F);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: (isPetSafe ? Colors.green : Colors.orange).withOpacity(0.12),
+        color: bg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: bg.withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            isPetSafe ? Icons.pets_rounded : Icons.warning_amber_rounded,
-            size: 14,
-            color: color,
-          ),
-          const SizedBox(width: 5),
           Text(
-            isPetSafe ? 'Pet Safe' : 'Toxic to Pets',
-            style: TextStyle(
+            isPetSafe ? '🐾 Pet Safe' : '⚠️ Toxic to Pets',
+            style: const TextStyle(
               fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: color,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
         ],
@@ -515,14 +513,14 @@ class _HydroTelemetrySection extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'No live telemetry',
+                        'No readings yet',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.blue.shade700,
                         ),
                       ),
                       Text(
-                        'Connect sensors to see pH & TDS',
+                        'Log pH, nutrients, or pump cycles manually — no hardware required.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue.shade500,
@@ -530,10 +528,6 @@ class _HydroTelemetrySection extends ConsumerWidget {
                       ),
                     ],
                   ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('Add Sensor'),
                 ),
               ],
             ),

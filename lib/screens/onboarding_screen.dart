@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 
 import 'package:botanisht/core/theme/app_theme.dart';
 import 'package:botanisht/providers/settings_provider.dart';
@@ -34,6 +35,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _temperatureScale = 0; // 0 = Celsius, 1 = Fahrenheit
   int _themeMode = 1; // 1 = Natural Cream (light) by default
   bool _highContrast = false;
+  String _gardenZip = ''; // optional garden ZIP (no GPS)
 
   @override
   void dispose() {
@@ -69,11 +71,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
+    final zip = _gardenZip.trim();
     ref.read(settingsProvider.notifier).completeOnboarding(
           themeMode: _themeMode,
           highContrast: _highContrast,
           units: _units,
           temperatureScale: _temperatureScale,
+          gardenZipCode: zip.isEmpty ? null : zip,
         );
     if (mounted) {
       Navigator.of(context).pushReplacement(
@@ -374,6 +378,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ],
             selected: _temperatureScale,
             onSelected: (v) => setState(() => _temperatureScale = v),
+          ),
+          const SizedBox(height: 18),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Where is your garden? (Enter ZIP Code)',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                onChanged: (v) => _gardenZip = v,
+                keyboardType: TextInputType.number,
+                maxLength: 5,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  hintText: '62220',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on_rounded),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 18),
           _preferenceGroup<_ThemeChoice>(

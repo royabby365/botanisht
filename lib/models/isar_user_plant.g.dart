@@ -87,78 +87,83 @@ const UserPlantSchema = CollectionSchema(
       name: r'lightConditions',
       type: IsarType.string,
     ),
-    r'location': PropertySchema(
+    r'lightExposure': PropertySchema(
       id: 14,
+      name: r'lightExposure',
+      type: IsarType.long,
+    ),
+    r'location': PropertySchema(
+      id: 15,
       name: r'location',
       type: IsarType.string,
     ),
     r'photoPaths': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'photoPaths',
       type: IsarType.stringList,
     ),
     r'plantEntityId': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'plantEntityId',
       type: IsarType.long,
     ),
     r'potSize': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'potSize',
       type: IsarType.string,
     ),
     r'pruningReminderEnabled': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'pruningReminderEnabled',
       type: IsarType.bool,
     ),
     r'pruningSchedule': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'pruningSchedule',
       type: IsarType.string,
     ),
     r'quantity': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'quantity',
       type: IsarType.long,
     ),
     r'soilType': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'soilType',
       type: IsarType.string,
     ),
     r'source': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'source',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'temperatureRange': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'temperatureRange',
       type: IsarType.string,
     ),
     r'wateringReminderEnabled': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'wateringReminderEnabled',
       type: IsarType.bool,
     ),
     r'wateringSchedule': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'wateringSchedule',
       type: IsarType.string,
     ),
     r'widthCm': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'widthCm',
       type: IsarType.double,
     ),
     r'zone': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'zone',
       type: IsarType.string,
     )
@@ -320,21 +325,22 @@ void _userPlantSerialize(
   writer.writeDateTime(offsets[11], object.lastPruned);
   writer.writeDateTime(offsets[12], object.lastWatered);
   writer.writeString(offsets[13], object.lightConditions);
-  writer.writeString(offsets[14], object.location);
-  writer.writeStringList(offsets[15], object.photoPaths);
-  writer.writeLong(offsets[16], object.plantEntityId);
-  writer.writeString(offsets[17], object.potSize);
-  writer.writeBool(offsets[18], object.pruningReminderEnabled);
-  writer.writeString(offsets[19], object.pruningSchedule);
-  writer.writeLong(offsets[20], object.quantity);
-  writer.writeString(offsets[21], object.soilType);
-  writer.writeString(offsets[22], object.source);
-  writer.writeStringList(offsets[23], object.tags);
-  writer.writeString(offsets[24], object.temperatureRange);
-  writer.writeBool(offsets[25], object.wateringReminderEnabled);
-  writer.writeString(offsets[26], object.wateringSchedule);
-  writer.writeDouble(offsets[27], object.widthCm);
-  writer.writeString(offsets[28], object.zone);
+  writer.writeLong(offsets[14], object.lightExposure);
+  writer.writeString(offsets[15], object.location);
+  writer.writeStringList(offsets[16], object.photoPaths);
+  writer.writeLong(offsets[17], object.plantEntityId);
+  writer.writeString(offsets[18], object.potSize);
+  writer.writeBool(offsets[19], object.pruningReminderEnabled);
+  writer.writeString(offsets[20], object.pruningSchedule);
+  writer.writeLong(offsets[21], object.quantity);
+  writer.writeString(offsets[22], object.soilType);
+  writer.writeString(offsets[23], object.source);
+  writer.writeStringList(offsets[24], object.tags);
+  writer.writeString(offsets[25], object.temperatureRange);
+  writer.writeBool(offsets[26], object.wateringReminderEnabled);
+  writer.writeString(offsets[27], object.wateringSchedule);
+  writer.writeDouble(offsets[28], object.widthCm);
+  writer.writeString(offsets[29], object.zone);
 }
 
 UserPlant _userPlantDeserialize(
@@ -359,21 +365,22 @@ UserPlant _userPlantDeserialize(
   object.lastPruned = reader.readDateTimeOrNull(offsets[11]);
   object.lastWatered = reader.readDateTimeOrNull(offsets[12]);
   object.lightConditions = reader.readStringOrNull(offsets[13]);
-  object.location = reader.readStringOrNull(offsets[14]);
-  object.photoPaths = reader.readStringList(offsets[15]);
-  object.plantEntityId = reader.readLongOrNull(offsets[16]);
-  object.potSize = reader.readStringOrNull(offsets[17]);
-  object.pruningReminderEnabled = reader.readBool(offsets[18]);
-  object.pruningSchedule = reader.readStringOrNull(offsets[19]);
-  object.quantity = reader.readLong(offsets[20]);
-  object.soilType = reader.readStringOrNull(offsets[21]);
-  object.source = reader.readStringOrNull(offsets[22]);
-  object.tags = reader.readStringList(offsets[23]);
-  object.temperatureRange = reader.readStringOrNull(offsets[24]);
-  object.wateringReminderEnabled = reader.readBool(offsets[25]);
-  object.wateringSchedule = reader.readStringOrNull(offsets[26]);
-  object.widthCm = reader.readDoubleOrNull(offsets[27]);
-  object.zone = reader.readStringOrNull(offsets[28]);
+  object.lightExposure = reader.readLong(offsets[14]);
+  object.location = reader.readStringOrNull(offsets[15]);
+  object.photoPaths = reader.readStringList(offsets[16]);
+  object.plantEntityId = reader.readLongOrNull(offsets[17]);
+  object.potSize = reader.readStringOrNull(offsets[18]);
+  object.pruningReminderEnabled = reader.readBool(offsets[19]);
+  object.pruningSchedule = reader.readStringOrNull(offsets[20]);
+  object.quantity = reader.readLong(offsets[21]);
+  object.soilType = reader.readStringOrNull(offsets[22]);
+  object.source = reader.readStringOrNull(offsets[23]);
+  object.tags = reader.readStringList(offsets[24]);
+  object.temperatureRange = reader.readStringOrNull(offsets[25]);
+  object.wateringReminderEnabled = reader.readBool(offsets[26]);
+  object.wateringSchedule = reader.readStringOrNull(offsets[27]);
+  object.widthCm = reader.readDoubleOrNull(offsets[28]);
+  object.zone = reader.readStringOrNull(offsets[29]);
   return object;
 }
 
@@ -413,34 +420,36 @@ P _userPlantDeserializeProp<P>(
     case 13:
       return (reader.readStringOrNull(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
-    case 15:
-      return (reader.readStringList(offset)) as P;
-    case 16:
-      return (reader.readLongOrNull(offset)) as P;
-    case 17:
-      return (reader.readStringOrNull(offset)) as P;
-    case 18:
-      return (reader.readBool(offset)) as P;
-    case 19:
-      return (reader.readStringOrNull(offset)) as P;
-    case 20:
       return (reader.readLong(offset)) as P;
-    case 21:
+    case 15:
       return (reader.readStringOrNull(offset)) as P;
+    case 16:
+      return (reader.readStringList(offset)) as P;
+    case 17:
+      return (reader.readLongOrNull(offset)) as P;
+    case 18:
+      return (reader.readStringOrNull(offset)) as P;
+    case 19:
+      return (reader.readBool(offset)) as P;
+    case 20:
+      return (reader.readStringOrNull(offset)) as P;
+    case 21:
+      return (reader.readLong(offset)) as P;
     case 22:
       return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 24:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 25:
-      return (reader.readBool(offset)) as P;
-    case 26:
       return (reader.readStringOrNull(offset)) as P;
+    case 26:
+      return (reader.readBool(offset)) as P;
     case 27:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 28:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 29:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2075,6 +2084,62 @@ extension UserPlantQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'lightConditions',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lightExposureEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lightExposure',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lightExposureGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lightExposure',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lightExposureLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lightExposure',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lightExposureBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lightExposure',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -4145,6 +4210,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLightExposure() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightExposure', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLightExposureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightExposure', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLocation() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'location', Sort.asc);
@@ -4481,6 +4558,18 @@ extension UserPlantQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLightExposure() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightExposure', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLightExposureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightExposure', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLocation() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'location', Sort.asc);
@@ -4739,6 +4828,12 @@ extension UserPlantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLightExposure() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lightExposure');
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLocation(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4936,6 +5031,12 @@ extension UserPlantQueryProperty
   QueryBuilder<UserPlant, String?, QQueryOperations> lightConditionsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lightConditions');
+    });
+  }
+
+  QueryBuilder<UserPlant, int, QQueryOperations> lightExposureProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lightExposure');
     });
   }
 

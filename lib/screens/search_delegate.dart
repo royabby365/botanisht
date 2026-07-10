@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:botanisht/services/plant_catalog.dart';
 import 'package:botanisht/models/plant.dart';
+import 'package:botanisht/widgets/plant_preview_sheet.dart';
 
 /// In-app plant search.
 ///
@@ -101,7 +102,15 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
                 plant.scientificName ?? '',
                 style: const TextStyle(fontSize: 15),
               ),
-              onTap: () => close(context, plant),
+              onTap: () {
+                close(context, null);
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => PlantPreviewSheet(plant: plant),
+                );
+              },
             );
           },
         );
