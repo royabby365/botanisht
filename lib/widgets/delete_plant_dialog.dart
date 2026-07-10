@@ -15,9 +15,10 @@ Future<void> confirmDeletePlant(
   UserPlant userPlant, {
   bool popDetail = false,
 }) async {
-  // Capture the app-level messenger up front so we can still toast even after
-  // we navigate away from the current screen.
+  // Capture the app-level messenger and navigator up front so we can still
+  // toast and pop even after the async gaps below.
   final messenger = ScaffoldMessenger.of(context);
+  final navigator = Navigator.of(context);
   final name = userPlant.customName ?? 'Plant';
 
   final confirmed = await showDialog<bool>(
@@ -45,10 +46,10 @@ Future<void> confirmDeletePlant(
 
   // Return to the garden first (if we came from the detail screen) so the user
   // never sees the detail screen's "plant not found" loading state.
-  if (popDetail) Navigator.of(context).pop();
+  if (popDetail) navigator.pop();
 
   // Delete in the background and refresh the garden list.
-  await ref.read(userPlantNotifierProvider.notifier).delete(userPlant.id!);
+  await ref.read(userPlantNotifierProvider.notifier).delete(userPlant.id);
   ref.invalidate(userPlantsProvider);
   ref.invalidate(userPlantsSortedProvider);
   ref.invalidate(plantsNeedingWaterProvider);

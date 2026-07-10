@@ -94,7 +94,7 @@ class Plant {
       return parts.isEmpty ? null : parts;
     }
     if (value is List<dynamic>) {
-      return (value as List<dynamic>)
+      return (value)
           .map((e) => e.toString())
           .where((e) => e.isNotEmpty)
           .toList();

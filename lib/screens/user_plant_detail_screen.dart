@@ -7,7 +7,7 @@ import 'package:botanisht/widgets/delete_plant_dialog.dart';
 class UserPlantDetailScreen extends ConsumerWidget {
   final int plantId;
 
-  const UserPlantDetailScreen({Key? key, required this.plantId}) : super(key: key);
+  const UserPlantDetailScreen({super.key, required this.plantId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,17 +129,17 @@ class UserPlantDetailScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             _buildSection(context, 'Actions', [
               _buildActionButton('Water', Icons.water_drop, Colors.blue, () {
-                repo.recordWatering(userPlant.id!);
+                repo.recordWatering(userPlant.id);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('Watering recorded!')));
               }),
               _buildActionButton('Fertilize', Icons.grass, Colors.brown, () {
-                repo.recordFertilizing(userPlant.id!);
+                repo.recordFertilizing(userPlant.id);
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Fertilizing recorded!')));
               }),
               _buildActionButton('Prune', Icons.content_cut, Colors.green, () {
-                repo.recordPruning(userPlant.id!);
+                repo.recordPruning(userPlant.id);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('Pruning recorded!')));
               }),
@@ -314,7 +314,7 @@ class UserPlantDetailScreen extends ConsumerWidget {
                 await ref
                     .read(userPlantNotifierProvider.notifier)
                     .updateHealthStatus(
-                        userPlant.id!, selectedStatus, noteController.text);
+                        userPlant.id, selectedStatus, noteController.text);
                 // Ensure the list/detail streams refresh with the new value.
                 ref.invalidate(userPlantsProvider);
                 ref.invalidate(userPlantsSortedProvider);

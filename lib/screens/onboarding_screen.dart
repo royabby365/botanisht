@@ -362,8 +362,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             context,
             'Measurement System',
             [
-              _ChipOption(label: 'Metric', value: 0),
-              _ChipOption(label: 'Imperial', value: 1),
+              const _ChipOption(label: 'Metric', value: 0),
+              const _ChipOption(label: 'Imperial', value: 1),
             ],
             selected: _units,
             onSelected: (v) => setState(() => _units = v),
@@ -373,8 +373,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             context,
             'Temperature',
             [
-              _ChipOption(label: 'Celsius', value: 0),
-              _ChipOption(label: 'Fahrenheit', value: 1),
+              const _ChipOption(label: 'Celsius', value: 0),
+              const _ChipOption(label: 'Fahrenheit', value: 1),
             ],
             selected: _temperatureScale,
             onSelected: (v) => setState(() => _temperatureScale = v),
@@ -410,9 +410,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             context,
             'Theme Mode',
             [
-              _ChipOption(label: 'Cream', value: _ThemeChoice.cream),
-              _ChipOption(label: 'Evergreen', value: _ThemeChoice.evergreen),
-              _ChipOption(
+              const _ChipOption(label: 'Cream', value: _ThemeChoice.cream),
+              const _ChipOption(label: 'Evergreen', value: _ThemeChoice.evergreen),
+              const _ChipOption(
                 label: 'High Contrast',
                 value: _ThemeChoice.highContrast,
               ),

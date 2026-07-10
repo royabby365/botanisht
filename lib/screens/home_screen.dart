@@ -13,6 +13,16 @@ import 'package:botanisht/screens/user_plant_detail_screen.dart';
 import 'package:botanisht/data/companion_rules.dart';
 import 'package:botanisht/services/weather_alert_service.dart';
 
+const List<String> _outdoorZones = [
+  'kitchen',
+  'outdoor',
+  'garden',
+  'balcony',
+  'patio',
+  'yard',
+  'backyard',
+];
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -127,13 +137,43 @@ class HomeScreen extends ConsumerWidget {
   ) {
     if (plants.isEmpty) return _emptyState();
 
+    // --- Zone-tab advisories (contextual to this zone) ---
+    final headers = <Widget>[];
+
+    // Weather "move inside" advisory for physically-exposed (outdoor) zones.
+    final alert = ref.watch(weatherAlertProvider).value;
+    final isOutdoor = _outdoorZones.any((k) => zone.toLowerCase().contains(k));
+    if (isOutdoor && alert != null) {
+      final atRisk = plants
+          .where((p) =>
+              p.customName != null && alert.plantNames.contains(p.customName))
+          .map((p) => p.customName!)
+          .toList();
+      if (atRisk.isNotEmpty) headers.add(_ZoneMoveInsideCard(plants: atRisk));
+    }
+
+    // Zone-level companion-planting summary.
+    final companionAdvices = <String, bool>{};
+    for (final p in plants) {
+      final neighbors = plants
+          .where((n) => n.id != p.id)
+          .map((n) => n.customName ?? 'Plant')
+          .toList();
+      final advice = CompanionRules.evaluate(p.customName ?? 'Plant', neighbors);
+      if (advice != null) companionAdvices[advice.message] = advice.isWarning;
+    }
+    if (companionAdvices.isNotEmpty) {
+      headers.add(_ZoneCompanionSummaryCard(advices: companionAdvices));
+    }
+
     return RefreshIndicator(
       onRefresh: () async => ref.invalidate(userPlantsProvider),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: plants.length,
+        itemCount: headers.length + plants.length,
         itemBuilder: (context, index) {
-          final userPlant = plants[index];
+          if (index < headers.length) return headers[index];
+          final userPlant = plants[index - headers.length];
           final neighbors = plants
               .where((p) => p.id != userPlant.id)
               .map((p) => p.customName ?? 'Plant')
@@ -153,7 +193,7 @@ class HomeScreen extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) =>
-                      UserPlantDetailScreen(plantId: userPlant.id!),
+                      UserPlantDetailScreen(plantId: userPlant.id),
                 ),
               ),
               onLongPress: () => confirmDeletePlant(context, ref, userPlant),
@@ -203,7 +243,7 @@ class HomeScreen extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) =>
-                      UserPlantDetailScreen(plantId: userPlant.id!),
+                      UserPlantDetailScreen(plantId: userPlant.id),
                 ),
               ),
               onLongPress: () => confirmDeletePlant(context, ref, userPlant),
@@ -364,10 +404,128 @@ class _GardenLocationHint extends StatelessWidget {
   }
 }
 
+/// Per-zone "move inside" advisory shown at the top of outdoor zone tabs when
+/// a severe-weather alert is active for that zone's plants.
+class _ZoneMoveInsideCard extends StatelessWidget {
+  final List<String> plants;
+
+  const _ZoneMoveInsideCard({required this.plants});
+
+  @override
+  Widget build(BuildContext context) {
+    const ink = Color(0xFF3A2A00);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4B860),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFD99A3C), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: ink),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Move inside — severe weather',
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: ink),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Bring these in before the storm or frost:',
+            style: TextStyle(fontSize: 16, color: ink),
+          ),
+          const SizedBox(height: 4),
+          ...plants.map(
+            (n) => Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text('• $n', style: const TextStyle(fontSize: 16, color: ink)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Zone-level companion-planting overview shown at the top of a zone tab,
+/// aggregating every warning/tip that applies to the plants sharing it.
+class _ZoneCompanionSummaryCard extends StatelessWidget {
+  final Map<String, bool> advices;
+
+  const _ZoneCompanionSummaryCard({required this.advices});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.dividerColor, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.eco_rounded, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Companion planting',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.textTheme.titleMedium?.color),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...advices.entries.map(
+            (e) => Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    e.value
+                        ? Icons.warning_amber_rounded
+                        : Icons.lightbulb_rounded,
+                    size: 18,
+                    color: e.value ? Colors.orange : Colors.green,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      e.key,
+                      style: TextStyle(
+                          fontSize: 16, color: theme.textTheme.bodyMedium?.color),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Settings / navigation drawer. All toggles persist immediately to Isar via
 /// [SettingsNotifier], so preferences survive app restarts.
 class AppSettingsDrawer extends ConsumerWidget {
-  const AppSettingsDrawer();
+  const AppSettingsDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -382,7 +540,7 @@ class AppSettingsDrawer extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 180,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,

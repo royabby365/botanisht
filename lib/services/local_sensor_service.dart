@@ -35,7 +35,7 @@ class LocalSensorService {
     final json = await _fetchJson(url);
 
     // Helper to get a double from various possible keys
-    double? _getDouble(String key1, [String? key2]) {
+    double? getDouble(String key1, [String? key2]) {
       final v1 = json[key1] as double?;
       if (v1 != null) return v1;
       if (key2 != null) {
@@ -46,7 +46,7 @@ class LocalSensorService {
     }
 
     // Helper to get an int from various possible keys
-    int? _getInt(String key1, [String? key2]) {
+    int? getInt(String key1, [String? key2]) {
       final v1 = json[key1] as int?;
       if (v1 != null) return v1;
       if (key2 != null) {
@@ -57,9 +57,9 @@ class LocalSensorService {
     }
 
     final log = HydroponicLog()
-      ..waterPH = _getDouble('ph', 'waterPH')
-      ..nutrientTds = _getDouble('tds', 'nutrientTDS')
-      ..pumpCycleMinutes = _getInt('pumpInterval', 'pumpCycleMinutes')
+      ..waterPH = getDouble('ph', 'waterPH')
+      ..nutrientTds = getDouble('tds', 'nutrientTDS')
+      ..pumpCycleMinutes = getInt('pumpInterval', 'pumpCycleMinutes')
       ..timestamp = DateTime.now()
       ..notes = json['notes'] as String?;
 
@@ -79,7 +79,7 @@ class LocalSensorService {
       try {
         final log = await saveSensorData(url);
         yield log;
-      } catch (e, st) {
+      } catch (e) {
         // Optionally emit an error object; here we re‑throw to stop the stream.
         rethrow;
       }

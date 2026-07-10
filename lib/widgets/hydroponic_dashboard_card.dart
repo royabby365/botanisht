@@ -5,7 +5,7 @@ import '../providers/hydroponic_provider.dart';
 /// A card that displays the latest hydroponic telemetry (pH and TDS)
 /// in a clean, high‑contrast, technical layout.
 class HydroponicDashboardCard extends ConsumerWidget {
-  const HydroponicDashboardCard({Key? key}) : super(key: key);
+  const HydroponicDashboardCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

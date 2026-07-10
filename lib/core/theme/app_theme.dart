@@ -76,19 +76,19 @@ ThemeData buildCreamTheme() {
       onSurface: primaryGreen,
     ),
     scaffoldBackgroundColor: creamBackground,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: creamBackground,
       foregroundColor: primaryGreen,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         color: primaryGreen,
         fontSize: 28,
         fontWeight: FontWeight.bold,
         letterSpacing: -0.5,
       ),
-      iconTheme: const IconThemeData(color: primaryGreen, size: 28),
+      iconTheme: IconThemeData(color: primaryGreen, size: 28),
     ),
     cardTheme: CardTheme(
       color: cardDarkGreen,
@@ -207,19 +207,19 @@ ThemeData buildEvergreenTheme() {
       onSurface: Colors.white,
     ),
     scaffoldBackgroundColor: background,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: background,
       foregroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         color: Colors.white,
         fontSize: 28,
         fontWeight: FontWeight.bold,
         letterSpacing: -0.5,
       ),
-      iconTheme: const IconThemeData(color: accentGold, size: 28),
+      iconTheme: IconThemeData(color: accentGold, size: 28),
     ),
     cardTheme: CardTheme(
       color: surface,
@@ -262,7 +262,7 @@ ThemeData buildEvergreenTheme() {
         color: Colors.white,
         fontWeight: FontWeight.w500,
       ),
-      secondaryLabelStyle: TextStyle(
+      secondaryLabelStyle: const TextStyle(
         color: primaryGreen,
         fontWeight: FontWeight.w500,
       ),

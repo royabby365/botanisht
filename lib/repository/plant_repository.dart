@@ -310,28 +310,4 @@ class PlantRepository {
         customName: e.customName,
         isPetSafe: e.isPetSafe,
       );
-
-  PlantEntity _plantToEntity(Plant p) => PlantEntity()
-    ..id = p.id
-    ..name = p.name
-    ..description = p.description
-    ..scientificName = p.scientificName
-    ..imageUrl = p.imageUrl
-    ..sunRequirements = p.sunRequirements
-    ..waterRequirements = p.waterRequirements
-    ..propagationMethod = p.propagationMethod
-    ..daysToHarvest = p.daysToHarvest
-    ..companions = p.companions
-    ..antagonists = p.antagonists
-    ..spacing = p.spacing
-    ..rowSpacing = p.rowSpacing
-    ..seedDepth = p.seedDepth
-    ..sowMethod = p.sowMethod
-    ..sowRightBeforeLastFrostDate = p.sowRightBeforeLastFrostDate
-    ..sowLastBeforeLastFrostDate = p.sowLastBeforeLastFrostDate
-    ..sowFirstAfterLastFrostDate = p.sowFirstAfterLastFrostDate
-    ..sowLastAfterLastFrostDate = p.sowLastAfterLastFrostDate
-    ..category = p.category
-    ..customName = p.customName
-    ..isPetSafe = p.isPetSafe;
 }

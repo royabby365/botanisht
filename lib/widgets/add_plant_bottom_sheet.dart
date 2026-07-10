@@ -7,7 +7,7 @@ import 'package:botanisht/services/plant_catalog.dart';
 import 'package:botanisht/widgets/plant_preview_sheet.dart';
 
 class AddPlantBottomSheet extends ConsumerStatefulWidget {
-  const AddPlantBottomSheet();
+  const AddPlantBottomSheet({super.key});
 
   @override
   ConsumerState<AddPlantBottomSheet> createState() => _AddPlantBottomSheetState();
@@ -135,9 +135,9 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
               const SizedBox(height: 24),
               TextField(
                 controller: _searchController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search plants...',
-                  prefixIcon: const Icon(Icons.search_rounded),
+                  prefixIcon: Icon(Icons.search_rounded),
                 ),
               ),
               const SizedBox(height: 8),

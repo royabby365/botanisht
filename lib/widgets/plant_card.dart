@@ -342,10 +342,10 @@ class _CategoryBadge extends StatelessWidget {
   _CategoryConfig _getCategoryConfig(String category) {
     switch (category) {
       case 'indoor':
-        return _CategoryConfig(
+        return const _CategoryConfig(
           label: 'INDOOR',
           icon: Icons.park_rounded,
-          color: const Color(0xFF1B4332),
+          color: Color(0xFF1B4332),
         );
       case 'hydro':
         return _CategoryConfig(
@@ -436,9 +436,9 @@ class _CareIndicator extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
-                color: const Color(0xFFE2EFE9),
+                color: Color(0xFFE2EFE9),
               ),
             ),
             const SizedBox(height: 2),
@@ -554,12 +554,12 @@ class _HydroTelemetrySection extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.sensors_rounded, color: const Color(0xFFD4A843), size: 20),
+                  const Icon(Icons.sensors_rounded, color: Color(0xFFD4A843), size: 20),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     'Live Telemetry',
                     style: TextStyle(
-                      color: const Color(0xFFD4A843),
+                      color: Color(0xFFD4A843),
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -690,7 +690,7 @@ class _TelemetryCard extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -739,10 +739,10 @@ class _AddToGardenButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFFD4A843).withOpacity(0.3)),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.add_rounded,
             size: 20,
-            color: const Color(0xFFD4A843),
+            color: Color(0xFFD4A843),
           ),
         ),
       ),
@@ -915,7 +915,7 @@ class _QuantityStepper extends StatelessWidget {
             final next = (qty - 1).clamp(1, 9999);
             ref
                 .read(userPlantNotifierProvider.notifier)
-                .setQuantity(userPlant.id!, next);
+                .setQuantity(userPlant.id, next);
           },
           icon: const Icon(Icons.remove_circle_outline_rounded,
               color: Colors.white),
@@ -934,7 +934,7 @@ class _QuantityStepper extends StatelessWidget {
             final next = (qty + 1).clamp(1, 9999);
             ref
                 .read(userPlantNotifierProvider.notifier)
-                .setQuantity(userPlant.id!, next);
+                .setQuantity(userPlant.id, next);
           },
           icon: const Icon(Icons.add_circle_outline_rounded,
               color: Colors.white),
