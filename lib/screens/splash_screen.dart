@@ -70,7 +70,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BrandLogo(),
+            BrandLogo(height: 88),
             SizedBox(height: 30),
             SizedBox(
               width: 240,
