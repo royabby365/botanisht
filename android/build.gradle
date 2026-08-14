@@ -28,25 +28,3 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-
-// isar_flutter_libs ships a `package` attr in AndroidManifest.xml that AGP 8.11+ rejects.
-// Strip it before manifest processing to avoid the build error.
-gradle.projectsLoaded { g ->
-    g.rootProject.subprojects { sp ->
-        sp.afterEvaluate {
-            sp.tasks.matching { it.name.contains('processDebugManifest') || it.name.contains('processReleaseManifest') }.configureEach { task ->
-                task.doFirst {
-                    def manifestFiles = fileTree(dir: task.project.projectDir, includes: ['src/main/AndroidManifest.xml', '**/AndroidManifest.xml'])
-                    manifestFiles.each { file ->
-                        def original = file.text
-                        def cleaned = original.replaceAll(/\s*package="[^"]+"/, '')
-                        if (cleaned != original) {
-                            file.text = cleaned
-                            logger.info("Patched manifest package attr in ${file.path}")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
