@@ -162,3 +162,5 @@ assets/data/         # fallback_plants.json, plant_catalog.json
 
 See the repository license file. Botanisht is provided as-is for private,
 subscription-free garden management.
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/royabby)
