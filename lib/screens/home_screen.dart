@@ -64,6 +64,23 @@ class HomeScreen extends ConsumerWidget {
               title: const BrandLogo(),
               centerTitle: false,
               actions: [
+                // Day/Night toggle — mirrors the sun/moon icon in the website mockup
+                Consumer(
+                  builder: (ctx, ref, _) {
+                    final settings = ref.watch(settingsProvider);
+                    final isDark = settings.themeMode == 2;
+                    return IconButton(
+                      icon: Icon(
+                        isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                        semanticLabel: isDark ? 'Switch to Cream theme' : 'Switch to Evergreen theme',
+                      ),
+                      onPressed: () {
+                        ref.read(settingsProvider.notifier).setThemeMode(isDark ? 1 : 2);
+                      },
+                      tooltip: 'Toggle theme (Cream ↔ Evergreen)',
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.search_rounded),
                   onPressed: () => _showSearchDialog(context, ref),
@@ -74,7 +91,10 @@ class HomeScreen extends ConsumerWidget {
                 preferredSize: const Size.fromHeight(56),
                 child: TabBar(
                   isScrollable: true,
-                  tabs: tabTitles.map((t) => Tab(text: _pretty(t))).toList(),
+                  tabs: tabTitles.map((t) => Tab(
+                    icon: Icon(_zoneIcon(t)),
+                    text: _pretty(t),
+                  )).toList(),
                 ),
               ),
             ),
@@ -139,7 +159,7 @@ class HomeScreen extends ConsumerWidget {
     List<UserPlant> plants,
     List<UserPlant> all,
   ) {
-    if (plants.isEmpty) return _emptyState();
+    if (plants.isEmpty) return _emptyState(context, ref);
 
     // --- Zone-tab advisories (contextual to this zone) ---
     final headers = <Widget>[
@@ -219,7 +239,7 @@ class HomeScreen extends ConsumerWidget {
     WidgetRef ref,
     List<UserPlant> plants,
   ) {
-    if (plants.isEmpty) return _emptyState();
+    if (plants.isEmpty) return _emptyState(context, ref);
 
     final sorted = [...plants]
       ..sort((a, b) => _healthRank(b).compareTo(_healthRank(a)));
@@ -264,24 +284,68 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _emptyState() {
-    return const Center(
+  Widget _emptyState(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_florist_rounded, size: 72, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'Your garden is empty.',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            // Botanical illustration — a sprout in a pot
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: colors.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.eco_rounded,
+                    size: 64,
+                    color: colors.primary.withOpacity(0.25),
+                  ),
+                  Icon(
+                    Icons.spa_rounded,
+                    size: 32,
+                    color: colors.primary.withOpacity(0.4),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 24),
             Text(
-              'Tap the + button or use Search to add your first plant.',
-              style: TextStyle(fontSize: 18),
+              'Your garden is empty',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Tap the + button or use Search to browse our catalog of ${_kTotalPlants} plants and start building your green space.',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colors.onSurfaceVariant,
+                height: 1.4,
+              ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () => _showSearchDialog(context, ref),
+              icon: const Icon(Icons.search_rounded),
+              label: const Text('Browse Plants'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
             ),
           ],
         ),
@@ -304,6 +368,24 @@ class HomeScreen extends ConsumerWidget {
       builder: (context) => const AddPlantBottomSheet(),
     );
   }
+
+  /// Icon for each zone tab, matching the website mockup.
+  static IconData _zoneIcon(String z) {
+    switch (z) {
+      case 'indoor': return Icons.meeting_room_rounded;
+      case 'hydro': return Icons.science_rounded;
+      case 'kitchen': return Icons.kitchen_rounded;
+      case 'outdoor': return Icons.nature_people_rounded;
+      case 'garden': return Icons.local_florist_rounded;
+      case 'balcony': return Icons.deck_rounded;
+      case 'patio': return Icons.yard_rounded;
+      case 'yard': return Icons.grass_rounded;
+      case 'diagnostic': return Icons.analytics_rounded;
+      default: return Icons.eco_rounded;
+    }
+  }
+
+  static const int _kTotalPlants = 73;
 
   String _pretty(String z) {
     if (z == 'uncategorized') return 'Garden';

@@ -24,13 +24,37 @@ class HydroponicDashboardCard extends ConsumerWidget {
             // Title row
             Row(
               children: [
-                Icon(Icons.science_rounded, color: colors.primary, size: 24),
-                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.science_rounded, color: colors.primary, size: 20),
+                ),
+                const SizedBox(width: 12),
                 Text(
                   'Hydroponic Log',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colors.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    // TODO: Navigate to log entry screen
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Manual log entry coming soon')),
+                    );
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 16),
+                  label: const Text('Log', style: TextStyle(fontSize: 13)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ],
@@ -106,7 +130,7 @@ class HydroponicDashboardCard extends ConsumerWidget {
 
     return Column(
       children: [
-        // Main metric grid — 2 columns
+        // Metric grid — 2×2 matching the website mockup
         Row(
           children: [
             Expanded(child: _DashboardMetric(
@@ -125,18 +149,25 @@ class HydroponicDashboardCard extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // Sub-metric row
         Row(
           children: [
-            _SubMetric(label: 'Temp', value: temp != null ? '${temp.toStringAsFixed(1)}°C' : '--'),
-            const SizedBox(width: 16),
-            _SubMetric(label: 'Humidity', value: humidity != null ? '${humidity.round()}%' : '--'),
-            const SizedBox(width: 16),
-            _SubMetric(label: 'Pump', value: pump != null ? '${pump}min' : '--'),
+            Expanded(child: _DashboardMetric(
+              label: 'Temp',
+              value: temp != null ? '${temp.toStringAsFixed(1)}°' : '--',
+              unit: 'C',
+              isOptimal: true,
+            )),
+            const SizedBox(width: 12),
+            Expanded(child: _DashboardMetric(
+              label: 'Humidity',
+              value: humidity != null ? '${humidity.round()}' : '--',
+              unit: '%',
+              isOptimal: true,
+            )),
           ],
         ),
         const SizedBox(height: 16),
-        // Timestamp
+        // Timestamp row
         Row(
           children: [
             Icon(Icons.access_time_rounded, size: 14, color: colors.onSurfaceVariant),
@@ -281,49 +312,6 @@ class _DashboardMetric extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Compact sub-metric chip for secondary readings.
-class _SubMetric extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _SubMetric({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
