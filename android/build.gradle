@@ -13,6 +13,10 @@ subprojects {
         if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
             project.android {
                 compileSdk = 34
+                // isar_flutter_libs doesn't declare a namespace — default it
+                if (namespace == null) {
+                    namespace = "${project.group ?: 'com.botanisht'}.${project.name}"
+                }
             }
         }
     }
