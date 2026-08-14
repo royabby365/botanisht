@@ -33,6 +33,8 @@ class PlantCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final displayPlant = plant;
     final displayUserPlant = userPlant;
 
@@ -60,12 +62,10 @@ class PlantCard extends ConsumerWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -87,16 +87,14 @@ class PlantCard extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // MIDDLE — fixed-height image / icon area. Never collapses or
-            // expands regardless of whether a photo is available.
+            // MIDDLE — fixed-height image / icon area.
             SizedBox(
               height: 120,
               width: double.infinity,
-              child: _buildPlantImage(category, imageUrl),
+              child: _buildPlantImage(context, category, imageUrl),
             ),
             const SizedBox(height: 16),
-            // NAME + SCIENTIFIC — consistent block (scientific always occupies
-            // one line so the card height doesn't shift).
+            // NAME + SCIENTIFIC
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -104,9 +102,9 @@ class PlantCard extends ConsumerWidget {
                 children: [
                   Text(
                     name,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -116,9 +114,9 @@ class PlantCard extends ConsumerWidget {
                     height: 18,
                     child: Text(
                       scientificName ?? '',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontStyle: FontStyle.italic,
-                        color: const Color(0xFFE2EFE9),
+                        color: colors.onSurfaceVariant,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -132,14 +130,14 @@ class PlantCard extends ConsumerWidget {
                           Icon(
                             Icons.location_on_rounded,
                             size: 14,
-                            color: const Color(0xFF1B4332).withOpacity(0.5),
+                            color: colors.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               location,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: const Color(0xFF1B4332).withOpacity(0.6),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -160,7 +158,7 @@ class PlantCard extends ConsumerWidget {
                 ),
               ),
             const SizedBox(height: 16),
-            // BOTTOM — care indicators, consistent height.
+            // BOTTOM — care indicators.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -169,7 +167,7 @@ class PlantCard extends ConsumerWidget {
                     icon: Icons.water_drop_rounded,
                     label: 'Water',
                     value: _getWaterValue(displayPlant, displayUserPlant),
-                    color: Colors.blue.shade600,
+                    color: colors.primary,
                     isHydro: isHydro,
                   ),
                   const SizedBox(width: 12),
@@ -177,7 +175,7 @@ class PlantCard extends ConsumerWidget {
                     icon: Icons.wb_sunny_rounded,
                     label: 'Light',
                     value: _getLightValue(displayPlant),
-                    color: Colors.amber.shade700,
+                    color: colors.secondary,
                     isHydro: isHydro,
                   ),
                 ],
@@ -196,12 +194,12 @@ class PlantCard extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: Row(
                   children: [
-                    Icon(Icons.water_drop_rounded, size: 16, color: Colors.blue.shade600),
+                    Icon(Icons.water_drop_rounded, size: 16, color: colors.primary),
                     const SizedBox(width: 8),
                     Text(
                       'Last watered ${_formatRelativeTime(lastWatered)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.blue.shade700,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.primary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -224,7 +222,9 @@ class PlantCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildPlantImage(String category, String? imageUrl) {
+  Widget _buildPlantImage(BuildContext context, String category, String? imageUrl) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final icons = {
       'indoor': Icons.park_rounded,
       'hydro': Icons.science_rounded,
@@ -236,18 +236,9 @@ class PlantCard extends ConsumerWidget {
     };
 
     final icon = icons[category] ?? Icons.local_florist_rounded;
-    final colors = {
-      'indoor': const Color(0xFF2D6A4F),
-      'hydro': Colors.blue.shade700,
-      'kitchen': Colors.orange.shade700,
-    };
-
-    final color = colors[category] ?? const Color(0xFF1B4332);
+    final color = colors.primary;
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      // Robust, cached network image. On failure or while loading we fall
-      // back to a crisp, category-specific icon so the card never shows a
-      // broken-image glyph or the generic pine tree.
       return CachedNetworkImage(
         imageUrl: imageUrl,
         fit: BoxFit.cover,
@@ -312,14 +303,16 @@ class _CategoryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final config = _getCategoryConfig(category);
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: config.color.withOpacity(0.15),
+        color: config.color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: config.color.withOpacity(0.3)),
+        border: Border.all(color: config.color.withOpacity(0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -422,6 +415,8 @@ class _CareIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -436,9 +431,9 @@ class _CareIndicator extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFFE2EFE9),
+                color: colors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 2),
@@ -466,23 +461,24 @@ class _PetSafetyBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = isPetSafe ? const Color(0xFF388E3C) : const Color(0xFFD32F2F);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final bg = isPetSafe ? colors.primary : colors.error;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: bg.withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             isPetSafe ? '🐾 Pet Safe' : '⚠️ Toxic to Pets',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: colors.onPrimary,
             ),
           ),
         ],
@@ -498,19 +494,21 @@ class _HydroTelemetrySection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return asyncHydroLog.when(
       data: (log) {
         if (log == null) {
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: colors.primaryContainer.withOpacity(0.3),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.blue.shade100),
+              border: Border.all(color: colors.primary.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                Icon(Icons.sensors_off_rounded, color: Colors.blue.shade300, size: 24),
+                Icon(Icons.sensors_off_rounded, color: colors.primary, size: 24),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -520,14 +518,14 @@ class _HydroTelemetrySection extends ConsumerWidget {
                         'No readings yet',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
+                          color: colors.primary,
                         ),
                       ),
                       Text(
                         'Log pH, nutrients, or pump cycles manually — no hardware required.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.blue.shade500,
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -546,7 +544,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F2D1F),
+            color: colors.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Column(
@@ -554,12 +552,12 @@ class _HydroTelemetrySection extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.sensors_rounded, color: Color(0xFFD4A843), size: 20),
+                  Icon(Icons.sensors_rounded, color: colors.secondary, size: 20),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Live Telemetry',
                     style: TextStyle(
-                      color: Color(0xFFD4A843),
+                      color: colors.secondary,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -568,7 +566,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
                   Text(
                     'Updated ${_formatTimestamp(timestamp)}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: colors.onSurfaceVariant,
                       fontSize: 11,
                     ),
                   ),
@@ -581,7 +579,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
                     label: 'pH',
                     value: ph != null ? ph.toStringAsFixed(2) : '--',
                     unit: '',
-                    color: Colors.cyan.shade300,
+                    color: colors.primary,
                     isOptimal: ph != null && ph >= 5.5 && ph <= 6.5,
                   ),
                   const SizedBox(width: 12),
@@ -589,7 +587,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
                     label: 'TDS',
                     value: tds != null ? '${tds.round()}' : '--',
                     unit: 'ppm',
-                    color: Colors.amber.shade300,
+                    color: colors.secondary,
                     isOptimal: tds != null && tds >= 800 && tds <= 1500,
                   ),
                   const SizedBox(width: 12),
@@ -597,7 +595,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
                     label: 'Pump',
                     value: pump != null ? '$pump' : '--',
                     unit: 'min',
-                    color: Colors.blue.shade300,
+                    color: colors.primary,
                     isOptimal: pump != null,
                   ),
                 ],
@@ -609,7 +607,7 @@ class _HydroTelemetrySection extends ConsumerWidget {
       loading: () => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+          color: colors.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14),
         ),
         child: const Center(
@@ -623,14 +621,14 @@ class _HydroTelemetrySection extends ConsumerWidget {
       error: (e, _) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.red.shade50,
+          color: colors.error.withOpacity(0.1),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red.shade300),
+            Icon(Icons.error_outline, color: colors.error),
             const SizedBox(width: 12),
-            Text('Telemetry error', style: TextStyle(color: Colors.red.shade700)),
+            Text('Telemetry error', style: TextStyle(color: colors.error)),
           ],
         ),
       ),
@@ -664,14 +662,16 @@ class _TelemetryCard extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: colors.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isOptimal ? color.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+            color: isOptimal ? color.withOpacity(0.5) : colors.outline.withOpacity(0.3),
           ),
         ),
         child: Column(
@@ -680,7 +680,7 @@ class _TelemetryCard extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.white.withOpacity(0.6),
+                color: colors.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -690,10 +690,10 @@ class _TelemetryCard extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.onSurface,
                     ),
                   ),
                   if (unit.isNotEmpty)
@@ -701,7 +701,7 @@ class _TelemetryCard extends StatelessWidget {
                       text: ' $unit',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.white.withOpacity(0.6),
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                 ],
@@ -711,7 +711,7 @@ class _TelemetryCard extends StatelessWidget {
             Icon(
               isOptimal ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
               size: 14,
-              color: isOptimal ? Colors.green.shade300 : Colors.orange.shade300,
+              color: isOptimal ? colors.primary : colors.secondary,
             ),
           ],
         ),
@@ -727,6 +727,8 @@ class _AddToGardenButton extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -735,14 +737,14 @@ class _AddToGardenButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFD4A843).withOpacity(0.15),
+            color: colors.secondary.withOpacity(0.12),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFD4A843).withOpacity(0.3)),
+            border: Border.all(color: colors.secondary.withOpacity(0.25)),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.add_rounded,
             size: 20,
-            color: Color(0xFFD4A843),
+            color: colors.secondary,
           ),
         ),
       ),
@@ -754,7 +756,7 @@ class _HealthIndicator extends StatelessWidget {
   final String status;
   
   const _HealthIndicator({required this.status});
-  
+
   @override
   Widget build(BuildContext context) {
     final config = _getHealthConfig(status);
@@ -762,9 +764,9 @@ class _HealthIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: config.color.withOpacity(0.15),
+        color: config.color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: config.color.withOpacity(0.3)),
+        border: Border.all(color: config.color.withOpacity(0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -790,31 +792,31 @@ class _HealthIndicator extends StatelessWidget {
         return _HealthConfig(
           label: 'HEALTHY',
           icon: Icons.check_circle_rounded,
-          color: Colors.green.shade700,
+          color: const Color(0xFF2E7D4F),
         );
       case 'warning':
         return _HealthConfig(
           label: 'WARNING',
           icon: Icons.warning_amber_rounded,
-          color: Colors.orange.shade700,
+          color: const Color(0xFFE0913A),
         );
       case 'critical':
         return _HealthConfig(
           label: 'CRITICAL',
           icon: Icons.dangerous_rounded,
-          color: Colors.red.shade700,
+          color: const Color(0xFFD2553F),
         );
       case 'dormant':
         return _HealthConfig(
           label: 'DORMANT',
           icon: Icons.bedtime_rounded,
-          color: Colors.blue.shade700,
+          color: const Color(0xFF5A7A8A),
         );
       default:
         return _HealthConfig(
           label: 'UNKNOWN',
           icon: Icons.help_outline_rounded,
-          color: Colors.grey.shade600,
+          color: const Color(0xFF7C8B80),
         );
     }
   }
@@ -838,19 +840,16 @@ class _CompanionAdviceBox extends StatelessWidget {
   final String message;
   final bool isWarning;
 
-  const _CompanionAdviceBox({
-    required this.message,
-    required this.isWarning,
-  });
+  const _CompanionAdviceBox({required this.message, required this.isWarning});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final bg = isWarning
-        ? const Color(0xFF3A2A00)
-        : const Color(0xFF0F2D1F);
-    final border = isWarning
-        ? const Color(0xFFF4B860)
-        : const Color(0xFF52B788);
+        ? colors.secondaryContainer
+        : colors.primaryContainer;
+    final border = isWarning ? colors.secondary : colors.primary;
     final icon = isWarning
         ? Icons.warning_amber_rounded
         : Icons.eco_rounded;
@@ -869,9 +868,9 @@ class _CompanionAdviceBox extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 height: 1.3,
               ),
@@ -888,23 +887,21 @@ class _QuantityStepper extends StatelessWidget {
   final UserPlant userPlant;
   final WidgetRef ref;
 
-  const _QuantityStepper({
-    required this.userPlant,
-    required this.ref,
-  });
+  const _QuantityStepper({required this.userPlant, required this.ref});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final qty = userPlant.quantity;
     return Row(
       children: [
-        const Icon(Icons.numbers_rounded,
-            color: Color(0xFFE2EFE9), size: 20),
+        Icon(Icons.numbers_rounded, color: colors.onSurfaceVariant, size: 20),
         const SizedBox(width: 8),
-        const Text(
+        Text(
           'Qty:',
           style: TextStyle(
-            color: Color(0xFFE2EFE9),
+            color: colors.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -917,14 +914,13 @@ class _QuantityStepper extends StatelessWidget {
                 .read(userPlantNotifierProvider.notifier)
                 .setQuantity(userPlant.id, next);
           },
-          icon: const Icon(Icons.remove_circle_outline_rounded,
-              color: Colors.white),
+          icon: Icon(Icons.remove_circle_outline_rounded, color: colors.onSurface),
           tooltip: 'Decrease quantity',
         ),
         Text(
           '$qty',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: colors.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -936,8 +932,7 @@ class _QuantityStepper extends StatelessWidget {
                 .read(userPlantNotifierProvider.notifier)
                 .setQuantity(userPlant.id, next);
           },
-          icon: const Icon(Icons.add_circle_outline_rounded,
-              color: Colors.white),
+          icon: Icon(Icons.add_circle_outline_rounded, color: colors.primary),
           tooltip: 'Increase quantity',
         ),
       ],

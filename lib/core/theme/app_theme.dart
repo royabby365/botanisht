@@ -186,7 +186,7 @@ ThemeData buildCreamTheme() {
       titleTextStyle: text.titleLarge?.copyWith(fontSize: 28),
       iconTheme: const IconThemeData(color: leaf, size: 28),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: surface,
       elevation: 2,
       shadowColor: Color(0x1A14281C),
@@ -293,7 +293,7 @@ ThemeData buildEvergreenTheme() {
       titleTextStyle: text.titleLarge?.copyWith(fontSize: 28),
       iconTheme: const IconThemeData(color: leaf, size: 28),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: surface,
       elevation: 0,
       shadowColor: Color(0x66000000),
@@ -400,7 +400,7 @@ ThemeData buildHighContrastTheme() {
       titleTextStyle: text.titleLarge?.copyWith(fontSize: 28),
       iconTheme: const IconThemeData(color: ink, size: 28),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: surface,
       elevation: 0,
       shape: RoundedRectangleBorder(

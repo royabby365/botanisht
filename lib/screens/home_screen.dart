@@ -4,6 +4,8 @@ import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/providers/settings_provider.dart';
 import 'package:botanisht/providers/weather_provider.dart';
+import 'package:botanisht/widgets/hydroponic_dashboard_card.dart';
+import 'package:botanisht/widgets/garden_overview_card.dart';
 import 'package:botanisht/widgets/plant_card.dart';
 import 'package:botanisht/widgets/brand_logo.dart';
 import 'package:botanisht/widgets/add_plant_bottom_sheet.dart';
@@ -138,7 +140,13 @@ class HomeScreen extends ConsumerWidget {
     if (plants.isEmpty) return _emptyState();
 
     // --- Zone-tab advisories (contextual to this zone) ---
-    final headers = <Widget>[];
+    final headers = <Widget>[
+      GardenOverviewCard(
+        zoneName: zone,
+        plants: plants,
+        totalAcrossGarden: all.length,
+      ),
+    ];
 
     // Weather "move inside" advisory for physically-exposed (outdoor) zones.
     final alert = ref.watch(weatherAlertProvider).value;

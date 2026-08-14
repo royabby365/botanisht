@@ -64,23 +64,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF5F0E1),
+    final theme = Theme.of(context);
+    final bg = theme.scaffoldBackgroundColor;
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
+    return Scaffold(
+      backgroundColor: bg,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BrandLogo(height: 88),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             SizedBox(
               width: 240,
-              child: LeafLoadingBar(leafCount: 7),
+              child: LeafLoadingBar(
+                leafCount: 7,
+                color: primary,
+              ),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Text(
               'Growing your garden…',
               style: TextStyle(
-                color: Color(0xFF1B4332),
+                color: onSurface.withOpacity(0.7),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0.3,
@@ -97,8 +105,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 /// right and loop, evoking a "loading bar made of leaves".
 class LeafLoadingBar extends StatefulWidget {
   final int leafCount;
+  final Color color;
 
-  const LeafLoadingBar({super.key, this.leafCount = 7});
+  const LeafLoadingBar({super.key, this.leafCount = 7, this.color = const Color(0xFF1B4332)});
 
   @override
   State<LeafLoadingBar> createState() => _LeafLoadingBarState();
@@ -119,7 +128,6 @@ class _LeafLoadingBarState extends State<LeafLoadingBar>
 
   @override
   Widget build(BuildContext context) {
-    const brandGreen = Color(0xFF1B4332);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -136,10 +144,10 @@ class _LeafLoadingBarState extends State<LeafLoadingBar>
                 Icons.eco_rounded,
                 size: 22,
                 color: filled
-                    ? brandGreen
+                    ? widget.color
                     : partial
-                        ? brandGreen.withOpacity(leafProgress.clamp(0.0, 1.0))
-                        : brandGreen.withOpacity(0.22),
+                        ? widget.color.withOpacity(leafProgress.clamp(0.0, 1.0))
+                        : widget.color.withOpacity(0.22),
               ),
             );
           }),

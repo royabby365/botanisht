@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/widgets/delete_plant_dialog.dart';
+import 'package:botanisht/widgets/care_task_checklist.dart';
 
 class UserPlantDetailScreen extends ConsumerWidget {
   final int plantId;
@@ -37,9 +38,6 @@ class UserPlantDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(userPlant.customName ?? 'Plant Details'),
-        backgroundColor: Colors.green.shade50,
-        elevation: 0,
-        foregroundColor: Colors.green.shade800,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -49,8 +47,36 @@ class UserPlantDetailScreen extends ConsumerWidget {
             if (userPlant.isPetSafe != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: _buildPetSafetyBadge(userPlant.isPetSafe!),
+                child: _buildPetSafetyBadge(context, userPlant.isPetSafe!),
               ),
+            // Care task checklist
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: CareTaskChecklist(
+                title: '${userPlant.customName ?? 'Plant'} — Care Tasks',
+                tasks: CareTaskChecklist.fromUserPlant(
+                  userPlant,
+                  onWater: () {
+                    repo.recordWatering(userPlant.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('💧 Watering recorded!')),
+                    );
+                  },
+                  onFertilize: () {
+                    repo.recordFertilizing(userPlant.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('🧪 Fertilizing recorded!')),
+                    );
+                  },
+                  onPrune: () {
+                    repo.recordPruning(userPlant.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('✂️ Pruning recorded!')),
+                    );
+                  },
+                ),
+              ),
+            ),
             _buildSection(context, 'Basic Info', [
               _buildDetailRow(context, Icons.health_and_safety, 'Health',
                   userPlant.healthStatus?.capitalize() ?? 'Unknown'),
@@ -109,19 +135,19 @@ class UserPlantDetailScreen extends ConsumerWidget {
                   userPlant.healthNotes!.isNotEmpty)
                 ...userPlant.healthNotes!.asMap().entries.map((entry) =>
                     _buildHistoryItem(context,
-                        entry.key + 1, entry.value, Icons.health_and_safety, Colors.red)),
+                        entry.key + 1, entry.value, Icons.health_and_safety, Theme.of(context).colorScheme.error)),
               if (userPlant.lastWatered != null)
                 _buildHistoryItem(context, 0,
                     'Watered ${userPlant.lastWatered!.toLocal().toString().split(' ')[0]}',
-                    Icons.water_drop, Colors.blue),
+                    Icons.water_drop, Theme.of(context).colorScheme.primary),
               if (userPlant.lastFertilized != null)
                 _buildHistoryItem(context, 0,
                     'Fertilized ${userPlant.lastFertilized!.toLocal().toString().split(' ')[0]}',
-                    Icons.grass, Colors.brown),
+                    Icons.grass, Theme.of(context).colorScheme.secondary),
               if (userPlant.lastPruned != null)
                 _buildHistoryItem(context, 0,
                     'Pruned ${userPlant.lastPruned!.toLocal().toString().split(' ')[0]}',
-                    Icons.content_cut, Colors.green),
+                    Icons.content_cut, Theme.of(context).colorScheme.primary),
             ]),
             const SizedBox(height: 24),
             _buildSection(context, 'Measurements', [
@@ -137,26 +163,25 @@ class UserPlantDetailScreen extends ConsumerWidget {
             ]),
             const SizedBox(height: 24),
             _buildSection(context, 'Actions', [
-              _buildActionButton('Water', Icons.water_drop, Colors.blue, () {
+              _buildActionButton(context, 'Water', Icons.water_drop, () {
                 repo.recordWatering(userPlant.id);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('Watering recorded!')));
               }),
-              _buildActionButton('Fertilize', Icons.grass, Colors.brown, () {
+              _buildActionButton(context, 'Fertilize', Icons.grass, () {
                 repo.recordFertilizing(userPlant.id);
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Fertilizing recorded!')));
               }),
-              _buildActionButton('Prune', Icons.content_cut, Colors.green, () {
+              _buildActionButton(context, 'Prune', Icons.content_cut, () {
                 repo.recordPruning(userPlant.id);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(const SnackBar(content: Text('Pruning recorded!')));
               }),
-              _buildActionButton('Health', Icons.health_and_safety, Colors.red, () {
+              _buildActionButton(context, 'Health', Icons.health_and_safety, () {
                 _showHealthDialog(context, ref, userPlant);
               }),
-              _buildActionButton('Delete Plant', Icons.delete_rounded, Colors.red,
-                  () {
+              _buildDeleteButton(context, () {
                 confirmDeletePlant(context, ref, userPlant, popDetail: true);
               }),
             ]),
@@ -166,22 +191,22 @@ class UserPlantDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPetSafetyBadge(bool isPetSafe) {
-    final bg = isPetSafe ? const Color(0xFF388E3C) : const Color(0xFFD32F2F);
+  Widget _buildPetSafetyBadge(BuildContext context, bool isPetSafe) {
+    final theme = Theme.of(context);
+    final bg = isPetSafe ? theme.colorScheme.primary : theme.colorScheme.error;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: bg.withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             isPetSafe ? '🐾 Pet Safe' : '⚠️ Toxic to Pets',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.w700,
               fontSize: 13,
             ),
@@ -291,19 +316,41 @@ class UserPlantDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildActionButton(
-      String label, IconData icon, Color color, VoidCallback onPressed) {
+      BuildContext context, String label, IconData icon, VoidCallback onPressed) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: onPressed,
-          icon: Icon(icon, color: Colors.white),
-          label: Text(label, style: const TextStyle(color: Colors.white)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color,
+          icon: Icon(icon),
+          label: Text(label),
+          style: theme.elevatedButtonTheme.style,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton(BuildContext context, VoidCallback onPressed) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: onPressed,
+          icon: Icon(Icons.delete_rounded, color: theme.colorScheme.error),
+          label: Text(
+            'Delete Plant',
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: theme.colorScheme.error),
             padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(999),
+            ),
           ),
         ),
       ),

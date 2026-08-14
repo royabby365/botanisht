@@ -3,123 +3,328 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/hydroponic_provider.dart';
 
 /// A card that displays the latest hydroponic telemetry (pH and TDS)
-/// in a clean, high‑contrast, technical layout.
+/// as a polished metric grid with OPTIMAL/CAUTION status badges,
+/// matching the botanisht.com website mockup.
 class HydroponicDashboardCard extends ConsumerWidget {
   const HydroponicDashboardCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final asyncLog = ref.watch(latestLogForZoneProvider('hydro'));
 
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            const Text(
-              'Hydroponic Telemetry',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
+            // Title row
+            Row(
+              children: [
+                Icon(Icons.science_rounded, color: colors.primary, size: 24),
+                const SizedBox(width: 10),
+                Text(
+                  'Hydroponic Log',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            // Data rows
+            const SizedBox(height: 20),
+            // Data grid
             asyncLog.when(
               data: (log) {
                 if (log == null) {
-                  return const Text(
-                    'No data yet',
-                    style: TextStyle(color: Colors.grey),
-                  );
+                  return _buildEmptyState(context);
                 }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _MetricRow(
-                      label: 'pH',
-                      value: log.waterPH != null
-                          ? log.waterPH!.toStringAsFixed(2)
-                          : '–',
-                      unit: '',
-                    ),
-                    const SizedBox(height: 8),
-                    _MetricRow(
-                      label: 'TDS',
-                      value: log.nutrientTds != null ? '${(log.nutrientTds!.round())} ppm' : '–',
-                      unit: '',
-                    ),
-                    const SizedBox(height: 8),
-                    _MetricRow(
-                      label: 'Pump Cycle',
-                      value:
-                          log.pumpCycleMinutes != null
-                              ? '${log.pumpCycleMinutes} min'
-                              : '–',
-                      unit: '',
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Updated: ${log.timestamp.toLocal()}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                );
+                return _buildMetricGrid(context, log);
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Text(
-                'Error: $e',
-                style: const TextStyle(color: Colors.red),
+              loading: () => const SizedBox(
+                height: 80,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               ),
+              error: (e, _) => _buildErrorState(context, e.toString()),
             ),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildEmptyState(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outline.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.sensors_off_rounded, size: 36, color: colors.onSurfaceVariant.withOpacity(0.5)),
+          const SizedBox(height: 12),
+          Text(
+            'No readings yet',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Start tracking your hydro system — no hardware required',
+            style: TextStyle(
+              fontSize: 12,
+              color: colors.onSurfaceVariant.withOpacity(0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricGrid(BuildContext context, dynamic log) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    final ph = log.waterPH;
+    final tds = log.nutrientTds;
+    final pump = log.pumpCycleMinutes;
+    final temp = log.temperature;
+    final humidity = log.humidity;
+    final timestamp = log.timestamp;
+
+    final phOptimal = ph != null && ph >= 5.5 && ph <= 6.5;
+    final tdsOptimal = tds != null && tds >= 800 && tds <= 1500;
+
+    return Column(
+      children: [
+        // Main metric grid — 2 columns
+        Row(
+          children: [
+            Expanded(child: _DashboardMetric(
+              label: 'pH',
+              value: ph != null ? ph.toStringAsFixed(2) : '--',
+              unit: '',
+              isOptimal: phOptimal,
+            )),
+            const SizedBox(width: 12),
+            Expanded(child: _DashboardMetric(
+              label: 'TDS',
+              value: tds != null ? '${tds.round()}' : '--',
+              unit: 'ppm',
+              isOptimal: tdsOptimal,
+            )),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Sub-metric row
+        Row(
+          children: [
+            _SubMetric(label: 'Temp', value: temp != null ? '${temp.toStringAsFixed(1)}°C' : '--'),
+            const SizedBox(width: 16),
+            _SubMetric(label: 'Humidity', value: humidity != null ? '${humidity.round()}%' : '--'),
+            const SizedBox(width: 16),
+            _SubMetric(label: 'Pump', value: pump != null ? '${pump}min' : '--'),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Timestamp
+        Row(
+          children: [
+            Icon(Icons.access_time_rounded, size: 14, color: colors.onSurfaceVariant),
+            const SizedBox(width: 6),
+            Text(
+              'Logged ${_formatTimestamp(timestamp)}',
+              style: TextStyle(
+                fontSize: 12,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String error) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.error.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, color: colors.error, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Could not load telemetry',
+              style: TextStyle(color: colors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final diff = now.difference(timestamp);
+    if (diff.inMinutes < 1) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
 }
 
-/// Helper widget for a single metric line.
-class _MetricRow extends StatelessWidget {
+/// Large metric card with OPTIMAL/CAUTION status badge.
+class _DashboardMetric extends StatelessWidget {
   final String label;
   final String value;
   final String unit;
+  final bool isOptimal;
 
-  const _MetricRow({
+  const _DashboardMetric({
     required this.label,
     required this.value,
     required this.unit,
+    required this.isOptimal,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        Text(
-          '$value$unit',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColor = isOptimal ? const Color(0xFF2E7D4F) : const Color(0xFFE0913A);
+    final statusBg = isOptimal ? const Color(0xFF2E7D4F).withOpacity(0.1) : const Color(0xFFE0913A).withOpacity(0.1);
+    final statusLabel = isOptimal ? 'OPTIMAL' : 'CAUTION';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: colors.onSurfaceVariant,
+              letterSpacing: 0.6,
+            ),
           ),
+          const SizedBox(height: 8),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: value,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: colors.onSurface,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                if (unit.isNotEmpty)
+                  TextSpan(
+                    text: ' $unit',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: statusBg,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isOptimal ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
+                  size: 12,
+                  color: statusColor,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  statusLabel,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact sub-metric chip for secondary readings.
+class _SubMetric extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _SubMetric({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(8),
         ),
-      ],
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
