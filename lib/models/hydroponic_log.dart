@@ -14,6 +14,9 @@ class HydroponicLog {
   double? waterPH;
   double? nutrientTds;
   int? pumpCycleMinutes;
+  double? temperature;
+  double? humidity;
+  double? lightHours;
   DateTime timestamp = DateTime.now();
   String? notes;
 

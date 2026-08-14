@@ -17,38 +17,53 @@ const HydroponicLogSchema = CollectionSchema(
   name: r'HydroponicLog',
   id: 3170886616306439373,
   properties: {
-    r'notes': PropertySchema(
+    r'humidity': PropertySchema(
       id: 0,
+      name: r'humidity',
+      type: IsarType.double,
+    ),
+    r'lightHours': PropertySchema(
+      id: 1,
+      name: r'lightHours',
+      type: IsarType.double,
+    ),
+    r'notes': PropertySchema(
+      id: 2,
       name: r'notes',
       type: IsarType.string,
     ),
     r'nutrientTds': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'nutrientTds',
       type: IsarType.double,
     ),
     r'plantId': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'plantId',
       type: IsarType.long,
     ),
     r'pumpCycleMinutes': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'pumpCycleMinutes',
       type: IsarType.long,
     ),
+    r'temperature': PropertySchema(
+      id: 6,
+      name: r'temperature',
+      type: IsarType.double,
+    ),
     r'timestamp': PropertySchema(
-      id: 4,
+      id: 7,
       name: r'timestamp',
       type: IsarType.dateTime,
     ),
     r'waterPH': PropertySchema(
-      id: 5,
+      id: 8,
       name: r'waterPH',
       type: IsarType.double,
     ),
     r'zone': PropertySchema(
-      id: 6,
+      id: 9,
       name: r'zone',
       type: IsarType.string,
     )
@@ -94,13 +109,16 @@ void _hydroponicLogSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.notes);
-  writer.writeDouble(offsets[1], object.nutrientTds);
-  writer.writeLong(offsets[2], object.plantId);
-  writer.writeLong(offsets[3], object.pumpCycleMinutes);
-  writer.writeDateTime(offsets[4], object.timestamp);
-  writer.writeDouble(offsets[5], object.waterPH);
-  writer.writeString(offsets[6], object.zone);
+  writer.writeDouble(offsets[0], object.humidity);
+  writer.writeDouble(offsets[1], object.lightHours);
+  writer.writeString(offsets[2], object.notes);
+  writer.writeDouble(offsets[3], object.nutrientTds);
+  writer.writeLong(offsets[4], object.plantId);
+  writer.writeLong(offsets[5], object.pumpCycleMinutes);
+  writer.writeDouble(offsets[6], object.temperature);
+  writer.writeDateTime(offsets[7], object.timestamp);
+  writer.writeDouble(offsets[8], object.waterPH);
+  writer.writeString(offsets[9], object.zone);
 }
 
 HydroponicLog _hydroponicLogDeserialize(
@@ -110,14 +128,17 @@ HydroponicLog _hydroponicLogDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = HydroponicLog();
+  object.humidity = reader.readDoubleOrNull(offsets[0]);
   object.id = id;
-  object.notes = reader.readStringOrNull(offsets[0]);
-  object.nutrientTds = reader.readDoubleOrNull(offsets[1]);
-  object.plantId = reader.readLong(offsets[2]);
-  object.pumpCycleMinutes = reader.readLongOrNull(offsets[3]);
-  object.timestamp = reader.readDateTime(offsets[4]);
-  object.waterPH = reader.readDoubleOrNull(offsets[5]);
-  object.zone = reader.readStringOrNull(offsets[6]);
+  object.lightHours = reader.readDoubleOrNull(offsets[1]);
+  object.notes = reader.readStringOrNull(offsets[2]);
+  object.nutrientTds = reader.readDoubleOrNull(offsets[3]);
+  object.plantId = reader.readLong(offsets[4]);
+  object.pumpCycleMinutes = reader.readLongOrNull(offsets[5]);
+  object.temperature = reader.readDoubleOrNull(offsets[6]);
+  object.timestamp = reader.readDateTime(offsets[7]);
+  object.waterPH = reader.readDoubleOrNull(offsets[8]);
+  object.zone = reader.readStringOrNull(offsets[9]);
   return object;
 }
 
@@ -129,18 +150,24 @@ P _hydroponicLogDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 1:
       return (reader.readDoubleOrNull(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
-    case 4:
-      return (reader.readDateTime(offset)) as P;
-    case 5:
       return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 7:
+      return (reader.readDateTime(offset)) as P;
+    case 8:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -243,6 +270,90 @@ extension HydroponicLogQueryWhere
 
 extension HydroponicLogQueryFilter
     on QueryBuilder<HydroponicLog, HydroponicLog, QFilterCondition> {
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'humidity',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'humidity',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'humidity',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'humidity',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'humidity',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      humidityBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'humidity',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -293,6 +404,90 @@ extension HydroponicLogQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lightHours',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lightHours',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lightHours',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lightHours',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lightHours',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      lightHoursBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lightHours',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -666,6 +861,90 @@ extension HydroponicLogQueryFilter
   }
 
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'temperature',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'temperature',
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'temperature',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'temperature',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'temperature',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
+      temperatureBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'temperature',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterFilterCondition>
       timestampEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -967,6 +1246,32 @@ extension HydroponicLogQueryLinks
 
 extension HydroponicLogQuerySortBy
     on QueryBuilder<HydroponicLog, HydroponicLog, QSortBy> {
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByHumidity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'humidity', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      sortByHumidityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'humidity', Sort.desc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByLightHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightHours', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      sortByLightHoursDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightHours', Sort.desc);
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByNotes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.asc);
@@ -1018,6 +1323,19 @@ extension HydroponicLogQuerySortBy
     });
   }
 
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByTemperature() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperature', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      sortByTemperatureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperature', Sort.desc);
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> sortByTimestamp() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timestamp', Sort.asc);
@@ -1058,6 +1376,19 @@ extension HydroponicLogQuerySortBy
 
 extension HydroponicLogQuerySortThenBy
     on QueryBuilder<HydroponicLog, HydroponicLog, QSortThenBy> {
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByHumidity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'humidity', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      thenByHumidityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'humidity', Sort.desc);
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1067,6 +1398,19 @@ extension HydroponicLogQuerySortThenBy
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByLightHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightHours', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      thenByLightHoursDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lightHours', Sort.desc);
     });
   }
 
@@ -1121,6 +1465,19 @@ extension HydroponicLogQuerySortThenBy
     });
   }
 
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByTemperature() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperature', Sort.asc);
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy>
+      thenByTemperatureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperature', Sort.desc);
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QAfterSortBy> thenByTimestamp() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timestamp', Sort.asc);
@@ -1161,6 +1518,18 @@ extension HydroponicLogQuerySortThenBy
 
 extension HydroponicLogQueryWhereDistinct
     on QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> {
+  QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> distinctByHumidity() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'humidity');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> distinctByLightHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lightHours');
+    });
+  }
+
   QueryBuilder<HydroponicLog, HydroponicLog, QDistinct> distinctByNotes(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1185,6 +1554,13 @@ extension HydroponicLogQueryWhereDistinct
       distinctByPumpCycleMinutes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'pumpCycleMinutes');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, HydroponicLog, QDistinct>
+      distinctByTemperature() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'temperature');
     });
   }
 
@@ -1216,6 +1592,18 @@ extension HydroponicLogQueryProperty
     });
   }
 
+  QueryBuilder<HydroponicLog, double?, QQueryOperations> humidityProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'humidity');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, double?, QQueryOperations> lightHoursProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lightHours');
+    });
+  }
+
   QueryBuilder<HydroponicLog, String?, QQueryOperations> notesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'notes');
@@ -1238,6 +1626,12 @@ extension HydroponicLogQueryProperty
       pumpCycleMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'pumpCycleMinutes');
+    });
+  }
+
+  QueryBuilder<HydroponicLog, double?, QQueryOperations> temperatureProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'temperature');
     });
   }
 

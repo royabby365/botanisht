@@ -120,17 +120,20 @@ class HydroponicDashboardCard extends ConsumerWidget {
 
     final ph = log.waterPH;
     final tds = log.nutrientTds;
-    final pump = log.pumpCycleMinutes;
     final temp = log.temperature;
     final humidity = log.humidity;
+    final lightHours = log.lightHours;
     final timestamp = log.timestamp;
 
     final phOptimal = ph != null && ph >= 5.5 && ph <= 6.5;
     final tdsOptimal = tds != null && tds >= 800 && tds <= 1500;
+    final tempDisplay = temp != null ? '${temp.toStringAsFixed(1)}°' : '--';
+    final humidityDisplay = humidity != null ? '${humidity.round()}' : '--';
+    final lightDisplay = lightHours != null ? '${lightHours.toStringAsFixed(0)}h' : '--';
 
     return Column(
       children: [
-        // Metric grid — 2×2 matching the website mockup
+        // Metric grid — matching the website mockup
         Row(
           children: [
             Expanded(child: _DashboardMetric(
@@ -153,17 +156,29 @@ class HydroponicDashboardCard extends ConsumerWidget {
           children: [
             Expanded(child: _DashboardMetric(
               label: 'Temp',
-              value: temp != null ? '${temp.toStringAsFixed(1)}°' : '--',
+              value: tempDisplay,
               unit: 'C',
-              isOptimal: true,
+              isOptimal: temp != null && temp >= 18 && temp <= 28,
             )),
             const SizedBox(width: 12),
             Expanded(child: _DashboardMetric(
               label: 'Humidity',
-              value: humidity != null ? '${humidity.round()}' : '--',
+              value: humidityDisplay,
               unit: '%',
-              isOptimal: true,
+              isOptimal: humidity != null && humidity >= 50 && humidity <= 80,
             )),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(child: _DashboardMetric(
+              label: 'Light',
+              value: lightDisplay,
+              unit: '',
+              isOptimal: lightHours != null && lightHours >= 6,
+            )),
+            const Expanded(child: SizedBox()),
           ],
         ),
         const SizedBox(height: 16),
