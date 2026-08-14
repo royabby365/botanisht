@@ -1,3 +1,5 @@
+My goal is to make sure all of my projects stay free, local, and private. If you have a philanthropic side of you that just HAS to contribute, or if you like my projects and want to see more of them, click the badge! I'll also take GH Stars, every little "attaboy" is appreciated.
+
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/royabby)
 
 # Botanisht 🌱
