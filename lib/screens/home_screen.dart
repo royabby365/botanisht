@@ -4,6 +4,7 @@ import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/providers/settings_provider.dart';
 import 'package:botanisht/providers/weather_provider.dart';
+import 'package:botanisht/widgets/garden_score_card.dart';
 import 'package:botanisht/widgets/hydroponic_dashboard_card.dart';
 import 'package:botanisht/widgets/garden_overview_card.dart';
 import 'package:botanisht/widgets/plant_card.dart';
@@ -79,6 +80,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             body: Column(
               children: [
+                const GardenScoreCard(),
                 if (alert != null) _WeatherAlertCard(alert: alert),
                 if (!locationReady) const _GardenLocationHint(),
                 Expanded(

@@ -4,6 +4,8 @@ import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/widgets/delete_plant_dialog.dart';
 import 'package:botanisht/widgets/care_task_checklist.dart';
+import 'package:botanisht/widgets/garden_score_card.dart';
+import 'package:botanisht/widgets/pro_feature.dart';
 
 class UserPlantDetailScreen extends ConsumerWidget {
   final int plantId;
@@ -59,22 +61,31 @@ class UserPlantDetailScreen extends ConsumerWidget {
                   onWater: () {
                     repo.recordWatering(userPlant.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('💧 Watering recorded!')),
+                      const SnackBar(content: Text('💧 Watering recorded! +10 XP')),
                     );
                   },
                   onFertilize: () {
                     repo.recordFertilizing(userPlant.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('🧪 Fertilizing recorded!')),
+                      const SnackBar(content: Text('🧪 Fertilizing recorded! +15 XP')),
                     );
                   },
                   onPrune: () {
                     repo.recordPruning(userPlant.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('✂️ Pruning recorded!')),
+                      const SnackBar(content: Text('✂️ Pruning recorded! +10 XP')),
                     );
                   },
                 ),
+              ),
+            ),
+            // Gamification: XP, level, streak (Pro)
+            ProFeature(
+              title: 'Plant Growth',
+              teaser: 'Track this plant\'s XP, level, and care streaks with Botanisht Pro',
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: _buildGamificationSection(context, userPlant),
               ),
             ),
             _buildSection(context, 'Basic Info', [
@@ -166,17 +177,17 @@ class UserPlantDetailScreen extends ConsumerWidget {
               _buildActionButton(context, 'Water', Icons.water_drop, () {
                 repo.recordWatering(userPlant.id);
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Watering recorded!')));
+                    .showSnackBar(const SnackBar(content: Text('💧 +10 XP — Watering recorded!')));
               }),
               _buildActionButton(context, 'Fertilize', Icons.grass, () {
                 repo.recordFertilizing(userPlant.id);
                 ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Fertilizing recorded!')));
+                    const SnackBar(content: Text('🧪 +15 XP — Fertilizing recorded!')));
               }),
               _buildActionButton(context, 'Prune', Icons.content_cut, () {
                 repo.recordPruning(userPlant.id);
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Pruning recorded!')));
+                    .showSnackBar(const SnackBar(content: Text('✂️ +10 XP — Pruning recorded!')));
               }),
               _buildActionButton(context, 'Health', Icons.health_and_safety, () {
                 _showHealthDialog(context, ref, userPlant);
@@ -187,6 +198,163 @@ class UserPlantDetailScreen extends ConsumerWidget {
             ]),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGamificationSection(BuildContext context, UserPlant plant) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Level color
+    final Color levelColor;
+    if (plant.level >= 15) {
+      levelColor = const Color(0xFFFFD700);
+    } else if (plant.level >= 10) {
+      levelColor = const Color(0xFFC0C0C0);
+    } else if (plant.level >= 5) {
+      levelColor = const Color(0xFFCD7F32);
+    } else {
+      levelColor = colorScheme.primary;
+    }
+
+    // XP progress
+    final currentThreshold = xpForCurrentLevel(plant.xp);
+    final nextThreshold = xpForNextLevel(plant.xp);
+    final progress = nextThreshold > currentThreshold
+        ? (plant.xp - currentThreshold) / (nextThreshold - currentThreshold)
+        : 0.0;
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [
+              levelColor.withValues(alpha: 0.06),
+              levelColor.withValues(alpha: 0.01),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: levelColor.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: levelColor, width: 2),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${plant.level}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: levelColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Level ${plant.level} — ${plant.customName ?? 'Plant'}',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value: progress.clamp(0.0, 1.0),
+                          backgroundColor: levelColor.withValues(alpha: 0.12),
+                          valueColor: AlwaysStoppedAnimation<Color>(levelColor),
+                          minHeight: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${plant.xp} XP — ${nextThreshold - plant.xp} to next level',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Streak info row
+            Row(
+              children: [
+                _buildStreakItem(
+                  context,
+                  Icons.local_fire_department,
+                  'Care Streak',
+                  '${plant.careStreak} days',
+                  plant.careStreak >= 7 ? Colors.deepOrange : (plant.careStreak >= 3 ? Colors.orange : Colors.grey),
+                ),
+                const SizedBox(width: 16),
+                _buildStreakItem(
+                  context,
+                  Icons.water_drop,
+                  'Water Streak',
+                  '${plant.wateringStreak} days',
+                  plant.wateringStreak >= 7 ? Colors.blue : Colors.blue.shade300,
+                ),
+                const SizedBox(width: 16),
+                _buildStreakItem(
+                  context,
+                  Icons.emoji_events,
+                  'Total XP',
+                  '${plant.xp} XP',
+                  levelColor,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStreakItem(BuildContext context, IconData icon, String label, String value, Color color) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

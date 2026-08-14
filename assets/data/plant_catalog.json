@@ -166,5 +166,1139 @@
       "pet_safe": true,
       "category": "indoor"
     }
+  },
+  {
+    "id": 213,
+    "type": "herb",
+    "attributes": {
+      "name": "Thyme",
+      "scientific_name": "Thymus vulgaris",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Thyme",
+      "description": "A compact Mediterranean herb with tiny aromatic leaves; excellent for borders and containers.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Strawberry", "Eggplant", "Potato"],
+      "antagonists": ["Onion", "Chives"],
+      "spacing": "12 in",
+      "propagation": "Seed or cutting"
+    }
+  },
+  {
+    "id": 214,
+    "type": "herb",
+    "attributes": {
+      "name": "Cilantro",
+      "scientific_name": "Coriandrum sativum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cilantro",
+      "description": "A fast-growing annual herb; leaves are cilantro, seeds are coriander spice.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Tomato", "Pepper", "Spinach"],
+      "antagonists": ["Fennel"],
+      "spacing": "6 in",
+      "days_to_harvest": 21,
+      "propagation": "Seed"
+    }
+  },
+  {
+    "id": 215,
+    "type": "herb",
+    "attributes": {
+      "name": "Dill",
+      "scientific_name": "Anethum graveolens",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Dill",
+      "description": "A feathery annual herb with distinctive flavor; attracts beneficial insects.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Cucumber", "Lettuce", "Onion"],
+      "antagonists": ["Carrot", "Fennel", "Tomato"],
+      "spacing": "12 in",
+      "days_to_harvest": 60,
+      "propagation": "Seed"
+    }
+  },
+  {
+    "id": 216,
+    "type": "herb",
+    "attributes": {
+      "name": "Sage",
+      "scientific_name": "Salvia officinalis",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Sage",
+      "description": "A woody perennial herb with soft gray-green leaves and a strong earthy aroma.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Rosemary", "Cabbage", "Carrot"],
+      "antagonists": ["Cucumber", "Onion"],
+      "spacing": "24 in",
+      "propagation": "Seed, cutting, or division"
+    }
+  },
+  {
+    "id": 217,
+    "type": "herb",
+    "attributes": {
+      "name": "Parsley",
+      "scientific_name": "Petroselinum crispum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Parsley",
+      "description": "A biennial herb often grown as an annual; curly or flat-leaf varieties available.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Tomato", "Pepper", "Rose"],
+      "antagonists": ["Lettuce"],
+      "spacing": "8 in",
+      "days_to_harvest": 75,
+      "propagation": "Seed"
+    }
+  },
+  {
+    "id": 218,
+    "type": "herb",
+    "attributes": {
+      "name": "Chives",
+      "scientific_name": "Allium schoenoprasum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Chives",
+      "description": "A mild onion-flavored perennial herb with edible purple flowers.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Carrot", "Tomato", "Rose", "Apple"],
+      "antagonists": ["Pea", "Bean"],
+      "spacing": "8 in",
+      "propagation": "Seed or division"
+    }
+  },
+  {
+    "id": 219,
+    "type": "herb",
+    "attributes": {
+      "name": "Oregano",
+      "scientific_name": "Origanum vulgare",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Oregano",
+      "description": "A pungent perennial herb essential in Mediterranean cuisine; drought-tolerant.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Tomato", "Pepper", "Eggplant"],
+      "antagonists": ["Basil"],
+      "spacing": "12 in",
+      "propagation": "Seed, cutting, or division"
+    }
+  },
+  {
+    "id": 220,
+    "type": "herb",
+    "attributes": {
+      "name": "Tarragon",
+      "scientific_name": "Artemisia dracunculus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Tarragon",
+      "description": "A perennial herb with narrow leaves and a subtle licorice-anise flavor.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Eggplant", "Pepper"],
+      "antagonists": ["Fennel"],
+      "spacing": "18 in",
+      "propagation": "Cutting or division"
+    }
+  },
+  {
+    "id": 221,
+    "type": "herb",
+    "attributes": {
+      "name": "Lavender",
+      "scientific_name": "Lavandula angustifolia",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Lavender",
+      "description": "A fragrant perennial shrub with purple flower spikes; attracts pollinators.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "pollinator",
+      "companions": ["Rose", "Echinacea", "Yarrow"],
+      "antagonists": ["Mint"],
+      "spacing": "18 in",
+      "propagation": "Seed, cutting, or layering"
+    }
+  },
+  {
+    "id": 222,
+    "type": "herb",
+    "attributes": {
+      "name": "Lemongrass",
+      "scientific_name": "Cymbopogon citratus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Lemongrass",
+      "description": "A tropical grass with citrusy stalks used in teas and Asian cuisine.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Cilantro", "Mint", "Pepper"],
+      "antagonists": ["Fennel"],
+      "spacing": "24 in",
+      "propagation": "Division or stalk"
+    }
+  },
+  {
+    "id": 223,
+    "type": "crops",
+    "attributes": {
+      "name": "Bell Pepper",
+      "scientific_name": "Capsicum annuum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Pepper",
+      "description": "A warm-season vegetable producing colorful, sweet, crisp fruit.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Basil", "Tomato", "Carrot"],
+      "antagonists": ["Fennel", "Cabbage", "Kale"],
+      "spacing": "18 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 75,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 224,
+    "type": "crops",
+    "attributes": {
+      "name": "Jalapeño",
+      "scientific_name": "Capsicum annuum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Jalapeno",
+      "description": "A popular medium-hot chili pepper; green when ripe, red if left longer.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Basil", "Oregano", "Cilantro"],
+      "antagonists": ["Fennel", "Kohlrabi"],
+      "spacing": "18 in",
+      "days_to_harvest": 70,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 225,
+    "type": "crops",
+    "attributes": {
+      "name": "Carrot",
+      "scientific_name": "Daucus carota subsp. sativus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Carrot",
+      "description": "A root vegetable prized for its sweet, crunchy taproot; needs loose soil.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Tomato", "Lettuce", "Onion", "Chives"],
+      "antagonists": ["Dill", "Celery"],
+      "spacing": "2 in",
+      "row_spacing": "12 in",
+      "seed_depth": "1/4 in",
+      "days_to_harvest": 70,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 226,
+    "type": "crops",
+    "attributes": {
+      "name": "Radish",
+      "scientific_name": "Raphanus sativus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Radish",
+      "description": "A fast-growing root crop; perfect for interplanting and succession sowing.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Lettuce", "Carrot", "Spinach", "Cucumber"],
+      "antagonists": ["Hyssop", "Cabbage"],
+      "spacing": "1 in",
+      "row_spacing": "6 in",
+      "seed_depth": "1/2 in",
+      "days_to_harvest": 25,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 227,
+    "type": "crops",
+    "attributes": {
+      "name": "Broccoli",
+      "scientific_name": "Brassica oleracea var. italica",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Broccoli",
+      "description": "A cool-season brassica grown for its large edible flower heads.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Onion", "Oregano", "Rosemary"],
+      "antagonists": ["Tomato", "Strawberry", "Pepper"],
+      "spacing": "18 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 85,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 228,
+    "type": "crops",
+    "attributes": {
+      "name": "Cauliflower",
+      "scientific_name": "Brassica oleracea var. botrytis",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cauliflower",
+      "description": "A cool-season brassica requiring consistent moisture for tight white curds.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Celery", "Spinach", "Onion"],
+      "antagonists": ["Tomato", "Strawberry", "Pepper"],
+      "spacing": "18 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 80,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 229,
+    "type": "crops",
+    "attributes": {
+      "name": "Kale",
+      "scientific_name": "Brassica oleracea var. sabellica",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Kale",
+      "description": "A hardy, nutrient-packed leafy green that sweetens after frost.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Onion", "Garlic", "Beet"],
+      "antagonists": ["Tomato", "Strawberry", "Pepper"],
+      "spacing": "12 in",
+      "row_spacing": "18 in",
+      "days_to_harvest": 50,
+      "propagation": "Direct sow or seed (start indoors)"
+    }
+  },
+  {
+    "id": 230,
+    "type": "crops",
+    "attributes": {
+      "name": "Swiss Chard",
+      "scientific_name": "Beta vulgaris subsp. vulgaris",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Chard",
+      "description": "A colorful leafy green with rainbow stems; cut-and-come-again harvest.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Bean", "Onion", "Tomato"],
+      "antagonists": ["Corn", "Potato"],
+      "spacing": "8 in",
+      "row_spacing": "12 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 55,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 231,
+    "type": "crops",
+    "attributes": {
+      "name": "Peas",
+      "scientific_name": "Pisum sativum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Peas",
+      "description": "A cool-season legume that fixes nitrogen; needs trellising for tall varieties.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Carrot", "Radish", "Cucumber"],
+      "antagonists": ["Onion", "Garlic", "Chives"],
+      "spacing": "2 in",
+      "row_spacing": "18 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 60,
+      "propagation": "Direct sow (early spring)"
+    }
+  },
+  {
+    "id": 232,
+    "type": "crops",
+    "attributes": {
+      "name": "Corn",
+      "scientific_name": "Zea mays",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Corn",
+      "description": "A tall annual grass grown for sweet kernels; plant in blocks for pollination.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Bean", "Squash", "Cucumber"],
+      "antagonists": ["Tomato", "Celery"],
+      "spacing": "12 in",
+      "row_spacing": "30 in",
+      "seed_depth": "1.5 in",
+      "days_to_harvest": 80,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 233,
+    "type": "crops",
+    "attributes": {
+      "name": "Potato",
+      "scientific_name": "Solanum tuberosum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Potato",
+      "description": "A starchy tuber crop grown from seed potatoes; hilling improves yield.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Bean", "Corn", "Cabbage"],
+      "antagonists": ["Tomato", "Cucumber", "Squash"],
+      "spacing": "12 in",
+      "row_spacing": "30 in",
+      "seed_depth": "4 in",
+      "days_to_harvest": 100,
+      "propagation": "Seed potato"
+    }
+  },
+  {
+    "id": 234,
+    "type": "crops",
+    "attributes": {
+      "name": "Sweet Potato",
+      "scientific_name": "Ipomoea batatas",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Sweet+Potato",
+      "description": "A warm-season root vegetable with vining growth; needs loose sandy soil.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Bean", "Onion"],
+      "antagonists": ["Squash"],
+      "spacing": "12 in",
+      "row_spacing": "36 in",
+      "days_to_harvest": 120,
+      "propagation": "Slips from tuber"
+    }
+  },
+  {
+    "id": 235,
+    "type": "crops",
+    "attributes": {
+      "name": "Onion",
+      "scientific_name": "Allium cepa",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Onion",
+      "description": "A bulb vegetable that deters many pests; available in yellow, red, and white.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Carrot", "Lettuce", "Strawberry", "Tomato"],
+      "antagonists": ["Pea", "Bean", "Sage"],
+      "spacing": "4 in",
+      "row_spacing": "12 in",
+      "seed_depth": "1/2 in",
+      "days_to_harvest": 100,
+      "propagation": "Seed, set, or transplant"
+    }
+  },
+  {
+    "id": 236,
+    "type": "crops",
+    "attributes": {
+      "name": "Garlic",
+      "scientific_name": "Allium sativum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Garlic",
+      "description": "A pungent bulb grown from individual cloves; planted in fall for summer harvest.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Tomato", "Pepper", "Rose", "Cabbage"],
+      "antagonists": ["Pea", "Bean"],
+      "spacing": "6 in",
+      "row_spacing": "12 in",
+      "seed_depth": "2 in",
+      "days_to_harvest": 240,
+      "propagation": "Clove"
+    }
+  },
+  {
+    "id": 237,
+    "type": "crops",
+    "attributes": {
+      "name": "Eggplant",
+      "scientific_name": "Solanum melongena",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Eggplant",
+      "description": "A warm-season fruiting vegetable with glossy purple fruit; loves heat.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Pepper", "Tomato", "Tarragon"],
+      "antagonists": ["Fennel", "Cabbage"],
+      "spacing": "24 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 80,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 238,
+    "type": "crops",
+    "attributes": {
+      "name": "Celery",
+      "scientific_name": "Apium graveolens",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Celery",
+      "description": "A crisp, slow-growing vegetable that needs consistent moisture and rich soil.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Cabbage", "Cauliflower", "Tomato"],
+      "antagonists": ["Carrot", "Parsley", "Corn"],
+      "spacing": "8 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 120,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 239,
+    "type": "crops",
+    "attributes": {
+      "name": "Asparagus",
+      "scientific_name": "Asparagus officinalis",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Asparagus",
+      "description": "A long-lived perennial vegetable; takes 3 years to establish, then produces for decades.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Tomato", "Basil", "Parsley"],
+      "antagonists": ["Onion", "Garlic"],
+      "spacing": "12 in",
+      "row_spacing": "36 in",
+      "days_to_harvest": 365,
+      "propagation": "Crown or seed"
+    }
+  },
+  {
+    "id": 240,
+    "type": "crops",
+    "attributes": {
+      "name": "Cabbage",
+      "scientific_name": "Brassica oleracea var. capitata",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cabbage",
+      "description": "A cool-season brassica forming dense heads; stores well into winter.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Onion", "Garlic", "Potato", "Dill"],
+      "antagonists": ["Tomato", "Strawberry", "Pepper"],
+      "spacing": "18 in",
+      "row_spacing": "24 in",
+      "days_to_harvest": 90,
+      "propagation": "Seed (start indoors)"
+    }
+  },
+  {
+    "id": 241,
+    "type": "crops",
+    "attributes": {
+      "name": "Spinach",
+      "scientific_name": "Spinacia oleracea",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Spinach",
+      "description": "A fast-growing cool-season leafy green packed with iron and vitamins.",
+      "sun_requirements": ["Partial shade"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Strawberry", "Pea", "Radish"],
+      "antagonists": ["Potato"],
+      "spacing": "3 in",
+      "row_spacing": "8 in",
+      "seed_depth": "1/2 in",
+      "days_to_harvest": 40,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 242,
+    "type": "crops",
+    "attributes": {
+      "name": "Blueberry",
+      "scientific_name": "Vaccinium corymbosum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Blueberry",
+      "description": "A deciduous shrub producing antioxidant-rich berries; needs acidic soil.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Strawberry", "Rhododendron", "Azalea"],
+      "antagonists": ["Cabbage", "Kale"],
+      "spacing": "48 in",
+      "row_spacing": "60 in",
+      "days_to_harvest": 365,
+      "propagation": "Bare-root or container plant"
+    }
+  },
+  {
+    "id": 243,
+    "type": "crops",
+    "attributes": {
+      "name": "Raspberry",
+      "scientific_name": "Rubus idaeus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Raspberry",
+      "description": "A bramble fruit producing sweet berries on biennial canes.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "kitchen",
+      "companions": ["Garlic", "Chives", "Marigold"],
+      "antagonists": ["Tomato", "Potato", "Pepper"],
+      "spacing": "24 in",
+      "row_spacing": "60 in",
+      "days_to_harvest": 365,
+      "propagation": "Cane cutting or sucker"
+    }
+  },
+  {
+    "id": 244,
+    "type": "crops",
+    "attributes": {
+      "name": "Watermelon",
+      "scientific_name": "Citrullus lanatus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Watermelon",
+      "description": "A sprawling warm-season vine producing large, sweet, juicy fruit.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Corn", "Bean", "Radish"],
+      "antagonists": ["Potato", "Cucumber"],
+      "spacing": "36 in",
+      "row_spacing": "72 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 85,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 245,
+    "type": "crops",
+    "attributes": {
+      "name": "Cantaloupe",
+      "scientific_name": "Cucumis melo var. cantalupensis",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cantaloupe",
+      "description": "A warm-season melon with netted rind and sweet orange flesh.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Corn", "Squash", "Radish"],
+      "antagonists": ["Potato", "Cucumber"],
+      "spacing": "24 in",
+      "row_spacing": "60 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 80,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 246,
+    "type": "crops",
+    "attributes": {
+      "name": "Pumpkin",
+      "scientific_name": "Cucurbita pepo",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Pumpkin",
+      "description": "A sprawling vine grown for large orange fruit; great for carving and pies.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["High"],
+      "pet_safe": false,
+      "category": "kitchen",
+      "companions": ["Corn", "Bean", "Marigold"],
+      "antagonists": ["Potato"],
+      "spacing": "36 in",
+      "row_spacing": "72 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 110,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 247,
+    "type": "flower",
+    "attributes": {
+      "name": "Knock Out Rose",
+      "scientific_name": "Rosa 'Knock Out'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Knock+Out+Rose",
+      "description": "A disease-resistant, easy-care shrub rose with continuous blooms from spring to frost.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Lavender", "Garlic", "Chives", "Marigold"],
+      "antagonists": ["Blackberry", "Black walnut"],
+      "spacing": "36 in",
+      "propagation": "Cutting or bare-root plant"
+    }
+  },
+  {
+    "id": 248,
+    "type": "flower",
+    "attributes": {
+      "name": "Peace Rose",
+      "scientific_name": "Rosa 'Peace'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Peace+Rose",
+      "description": "A classic hybrid tea rose with large, fragrant yellow-pink blooms.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Lavender", "Garlic", "Chives", "Marigold"],
+      "antagonists": ["Blackberry", "Black walnut"],
+      "spacing": "30 in",
+      "propagation": "Bare-root or container plant"
+    }
+  },
+  {
+    "id": 249,
+    "type": "flower",
+    "attributes": {
+      "name": "David Austin Rose",
+      "scientific_name": "Rosa 'David Austin'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=David+Austin+Rose",
+      "description": "An English shrub rose with old-fashioned fragrance and repeat-flowering habit.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Lavender", "Garlic", "Chives", "Marigold"],
+      "antagonists": ["Blackberry", "Black walnut"],
+      "spacing": "36 in",
+      "propagation": "Bare-root or container plant"
+    }
+  },
+  {
+    "id": 250,
+    "type": "flower",
+    "attributes": {
+      "name": "Climbing Rose",
+      "scientific_name": "Rosa 'Climbing'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Climbing+Rose",
+      "description": "A vigorous climbing rose trained on trellises, arches, and walls.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Lavender", "Garlic", "Chives", "Marigold"],
+      "antagonists": ["Blackberry", "Black walnut"],
+      "spacing": "48 in",
+      "propagation": "Bare-root or container plant"
+    }
+  },
+  {
+    "id": 251,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Pothos",
+      "scientific_name": "Epipremnum aureum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Pothos",
+      "description": "An incredibly easy trailing vine with heart-shaped, variegated leaves.",
+      "sun_requirements": ["Indirect light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Stem cutting in water"
+    }
+  },
+  {
+    "id": 252,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Peace Lily",
+      "scientific_name": "Spathiphyllum wallisii",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Peace+Lily",
+      "description": "A graceful flowering houseplant with glossy leaves and white spathes.",
+      "sun_requirements": ["Low light"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Division"
+    }
+  },
+  {
+    "id": 253,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Spider Plant",
+      "scientific_name": "Chlorophytum comosum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Spider+Plant",
+      "description": "A resilient, fast-growing houseplant that produces baby plantlets on runners.",
+      "sun_requirements": ["Indirect light"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "indoor",
+      "propagation": "Plantlet division"
+    }
+  },
+  {
+    "id": 254,
+    "type": "houseplant",
+    "attributes": {
+      "name": "ZZ Plant",
+      "scientific_name": "Zamioculcas zamiifolia",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=ZZ+Plant",
+      "description": "An ultra-low-maintenance plant with waxy, dark green foliage; thrives on neglect.",
+      "sun_requirements": ["Low light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Leaf cutting or division"
+    }
+  },
+  {
+    "id": 255,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Jade Plant",
+      "scientific_name": "Crassula ovata",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Jade+Plant",
+      "description": "A succulent shrub with thick, oval leaves and tree-like stems; considered lucky.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Stem or leaf cutting"
+    }
+  },
+  {
+    "id": 256,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Fiddle Leaf Fig",
+      "scientific_name": "Ficus lyrata",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Fiddle+Leaf+Fig",
+      "description": "A trendy indoor tree with large, violin-shaped leaves; a dramatic statement plant.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Stem cutting"
+    }
+  },
+  {
+    "id": 257,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Rubber Plant",
+      "scientific_name": "Ficus elastica",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Rubber+Plant",
+      "description": "A bold, tall houseplant with large, glossy dark green to burgundy leaves.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Stem cutting or air layering"
+    }
+  },
+  {
+    "id": 258,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Echeveria",
+      "scientific_name": "Echeveria elegans",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Echeveria",
+      "description": "A rosette-forming succulent with plump, spoon-shaped leaves; popular in arrangements.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "indoor",
+      "propagation": "Leaf cutting or offset"
+    }
+  },
+  {
+    "id": 259,
+    "type": "houseplant",
+    "attributes": {
+      "name": "String of Pearls",
+      "scientific_name": "Curio rowleyanus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=String+of+Pearls",
+      "description": "A trailing succulent with bead-like leaves; looks stunning in hanging baskets.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "indoor",
+      "propagation": "Stem cutting"
+    }
+  },
+  {
+    "id": 260,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Burro's Tail",
+      "scientific_name": "Sedum morganianum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Burro%27s+Tail",
+      "description": "A trailing succulent with plump, overlapping blue-green leaves that resemble braids.",
+      "sun_requirements": ["Bright light"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "indoor",
+      "propagation": "Leaf or stem cutting"
+    }
+  },
+  {
+    "id": 261,
+    "type": "houseplant",
+    "attributes": {
+      "name": "Hens and Chicks",
+      "scientific_name": "Sempervivum tectorum",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Hens+and+Chicks",
+      "description": "A cold-hardy succulent forming tight rosettes; offsets (chicks) spread around mother (hen).",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "indoor",
+      "propagation": "Offset division"
+    }
+  },
+  {
+    "id": 262,
+    "type": "flower",
+    "attributes": {
+      "name": "Sunflower",
+      "scientific_name": "Helianthus annuus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Sunflower",
+      "description": "A tall, fast-growing annual with large yellow flower heads that follow the sun.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "pollinator",
+      "companions": ["Cucumber", "Corn", "Squash"],
+      "antagonists": ["Potato", "Bean"],
+      "spacing": "12 in",
+      "row_spacing": "24 in",
+      "seed_depth": "1 in",
+      "days_to_harvest": 70,
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 263,
+    "type": "flower",
+    "attributes": {
+      "name": "Marigold",
+      "scientific_name": "Tagetes erecta",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Marigold",
+      "description": "A cheerful annual flower that repels nematodes and attracts beneficial insects.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Tomato", "Pepper", "Rose", "Bean"],
+      "antagonists": ["Cabbage", "Bean"],
+      "spacing": "8 in",
+      "propagation": "Seed"
+    }
+  },
+  {
+    "id": 264,
+    "type": "flower",
+    "attributes": {
+      "name": "Zinnia",
+      "scientific_name": "Zinnia elegans",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Zinnia",
+      "description": "A heat-tolerant annual with vibrant, long-lasting blooms that attract butterflies.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "pollinator",
+      "companions": ["Tomato", "Pepper", "Cucumber"],
+      "antagonists": ["Sage"],
+      "spacing": "12 in",
+      "propagation": "Seed"
+    }
+  },
+  {
+    "id": 265,
+    "type": "flower",
+    "attributes": {
+      "name": "Petunia",
+      "scientific_name": "Petunia × atkinsiana",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Petunia",
+      "description": "A prolific annual with trumpet-shaped flowers in a wide range of colors.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": true,
+      "category": "pollinator",
+      "companions": ["Geranium", "Alyssum", "Lobelia"],
+      "antagonists": ["Fennel"],
+      "spacing": "10 in",
+      "propagation": "Seed or transplant"
+    }
+  },
+  {
+    "id": 266,
+    "type": "flower",
+    "attributes": {
+      "name": "Cosmos",
+      "scientific_name": "Cosmos bipinnatus",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Cosmos",
+      "description": "An airy, easy-growing annual with daisy-like flowers on tall, slender stems.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": true,
+      "category": "pollinator",
+      "companions": ["Zinnia", "Marigold", "Sunflower"],
+      "antagonists": ["Fennel"],
+      "spacing": "12 in",
+      "propagation": "Direct sow"
+    }
+  },
+  {
+    "id": 267,
+    "type": "flower",
+    "attributes": {
+      "name": "Bee Balm",
+      "scientific_name": "Monarda didyma",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Bee+Balms",
+      "description": "A native perennial with showy red blooms that attract bees, butterflies, and hummingbirds.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Echinacea", "Black-Eyed Susan", "Lavender"],
+      "antagonists": ["Fennel"],
+      "spacing": "18 in",
+      "propagation": "Seed or division"
+    }
+  },
+  {
+    "id": 268,
+    "type": "flower",
+    "attributes": {
+      "name": "Coneflower",
+      "scientific_name": "Echinacea purpurea",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Coneflower",
+      "description": "A hardy native perennial with purple-pink daisy-like flowers and prominent cones.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Black-Eyed Susan", "Lavender", "Bee Balm"],
+      "antagonists": ["Fennel"],
+      "spacing": "18 in",
+      "propagation": "Seed or division"
+    }
+  },
+  {
+    "id": 269,
+    "type": "flower",
+    "attributes": {
+      "name": "Black-Eyed Susan",
+      "scientific_name": "Rudbeckia hirta",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Black-Eyed+Susan",
+      "description": "A cheerful native wildflower with golden petals and dark chocolate centers.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Low"],
+      "pet_safe": false,
+      "category": "pollinator",
+      "companions": ["Coneflower", "Lavender", "Bee Balm"],
+      "antagonists": ["Fennel"],
+      "spacing": "12 in",
+      "propagation": "Seed or division"
+    }
+  },
+  {
+    "id": 270,
+    "type": "crops",
+    "attributes": {
+      "name": "Dwarf Lemon",
+      "scientific_name": "Citrus × limon 'Improved Meyer'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Dwarf+Lemon",
+      "description": "A compact citrus tree perfect for containers; produces fragrant flowers and fruit.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoors",
+      "companions": ["Lavender", "Marigold"],
+      "antagonists": ["Fennel", "Black walnut"],
+      "spacing": "36 in",
+      "days_to_harvest": 365,
+      "propagation": "Grafted tree"
+    }
+  },
+  {
+    "id": 271,
+    "type": "crops",
+    "attributes": {
+      "name": "Dwarf Lime",
+      "scientific_name": "Citrus × aurantiifolia",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Dwarf+Lime",
+      "description": "A compact citrus tree bearing tart green fruit; thrives in warm, sunny spots.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoors",
+      "companions": ["Lavender", "Marigold"],
+      "antagonists": ["Fennel", "Black walnut"],
+      "spacing": "36 in",
+      "days_to_harvest": 365,
+      "propagation": "Grafted tree"
+    }
+  },
+  {
+    "id": 272,
+    "type": "crops",
+    "attributes": {
+      "name": "Dwarf Apple",
+      "scientific_name": "Malus domestica 'Dwarf'",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Dwarf+Apple",
+      "description": "A compact apple tree suitable for small gardens; needs a pollinator partner.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoors",
+      "companions": ["Chives", "Garlic", "Marigold"],
+      "antagonists": ["Black walnut", "Grass"],
+      "spacing": "72 in",
+      "days_to_harvest": 365,
+      "propagation": "Grafted tree"
+    }
+  },
+  {
+    "id": 273,
+    "type": "crops",
+    "attributes": {
+      "name": "Fig",
+      "scientific_name": "Ficus carica",
+      "photo_url": "https://placehold.co/200x200/1B4332/F5F0E1?text=Fig",
+      "description": "A deciduous small tree producing sweet, teardrop-shaped fruit; thrives in warm climates.",
+      "sun_requirements": ["Full sun"],
+      "water_requirements": ["Moderate"],
+      "pet_safe": false,
+      "category": "indoors",
+      "companions": ["Lavender", "Marjoram"],
+      "antagonists": ["Black walnut", "Fennel"],
+      "spacing": "72 in",
+      "days_to_harvest": 365,
+      "propagation": "Cutting or bare-root tree"
+    }
   }
 ]

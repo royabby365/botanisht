@@ -5,6 +5,80 @@ import 'package:botanisht/models/hydroponic_log.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/services/plant_api_service.dart';
 
+/// Thresholds for plant level progression.
+const _xpToLevel = [
+  0, 50, 120, 220, 350, 520, 730, 980, 1280, 1630, 2030,
+  2480, 2980, 3530, 4130, 4780, 5480, 6230, 7030, 7880,
+];
+
+int _computeLevel(int xp) {
+  for (int i = _xpToLevel.length - 1; i >= 1; i--) {
+    if (xp >= _xpToLevel[i]) return i + 1;
+  }
+  return 1;
+}
+
+/// Date-only (no time) today, for streak comparisons.
+DateTime _today() {
+  final n = DateTime.now();
+  return DateTime(n.year, n.month, n.day);
+}
+
+/// Updates [plant]'s streak fields given a care action on [actionDate] and
+/// returns the number of XP to award for this action (separate from streak
+/// XP, which is handled inside this method).
+int _updateStreaks(UserPlant plant, DateTime actionDate) {
+  final today = _today();
+  final actionDay = DateTime(actionDate.year, actionDate.month, actionDate.day);
+  final lastDay = plant.lastCareDate;
+
+  int streakXp = 0;
+
+  if (lastDay == null) {
+    // First care action ever.
+    plant.careStreak = 1;
+    plant.wateringStreak = 1;
+    streakXp = 5; // First-care bonus.
+  } else {
+    final diff = actionDay.difference(lastDay).inDays;
+    if (diff == 1) {
+      // Consecutive day — increment streak.
+      plant.careStreak += 1;
+      // Streak milestone bonus every 7 days.
+      if (plant.careStreak > 0 && plant.careStreak % 7 == 0) {
+        streakXp = 25;
+      }
+    } else if (diff == 0) {
+      // Same day — keep streak, no bonus.
+    } else {
+      // Gap of 2+ days — streak broken.
+      plant.careStreak = 1;
+      plant.wateringStreak = 1;
+    }
+  }
+
+  plant.lastCareDate = actionDay;
+  return streakXp;
+}
+
+/// Adds [xp] to the plant, checking for level-up.
+void _awardXp(UserPlant plant, int xp) {
+  plant.xp += xp;
+  final newLevel = _computeLevel(plant.xp);
+  if (newLevel > plant.level) {
+    plant.level = newLevel;
+  }
+}
+
+/// Copy gamification fields from source to target.
+void _copyGamification(UserPlant target, UserPlant source) {
+  target.xp = source.xp;
+  target.level = source.level;
+  target.wateringStreak = source.wateringStreak;
+  target.careStreak = source.careStreak;
+  target.lastCareDate = source.lastCareDate;
+}
+
 class PlantRepository {
   PlantRepository() {
     _init();
@@ -48,7 +122,7 @@ class PlantRepository {
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
   }
-  
+
   Stream<HydroponicLog?> watchLatestHydroponicLogForZone(String zone) {
     return _isar.hydroponicLogs
         .filter()
@@ -117,6 +191,9 @@ class PlantRepository {
       ..photoPaths = []
       ..tags = [];
 
+    // Starting XP bonus for adding a plant.
+    _awardXp(userPlant, 10);
+
     await _isar.writeTxn(() => _isar.userPlants.put(userPlant));
   }
 
@@ -156,6 +233,8 @@ class PlantRepository {
       ..healthNotes = []
       ..photoPaths = [];
 
+    _awardXp(userPlant, 10);
+
     await _isar.writeTxn(() => _isar.userPlants.put(userPlant));
   }
 
@@ -190,11 +269,25 @@ class PlantRepository {
   Future<void> recordWatering(int id, {String? notes, double? amount}) async {
     final plant = await _isar.userPlants.get(id);
     if (plant != null) {
-      plant.lastWatered = DateTime.now();
+      final now = DateTime.now();
+      plant.lastWatered = now;
       plant.healthNotes ??= [];
       if (notes != null && notes.isNotEmpty) {
         plant.healthNotes!.add('Watered: $notes');
       }
+      // Gamification: watering streak + XP.
+      if (plant.wateringStreak > 0) {
+        // Only increment watering streak separately if it's a new day.
+        final today = _today();
+        if (plant.lastCareDate == null || today.difference(plant.lastCareDate!).inDays >= 1) {
+          plant.wateringStreak += 1;
+        }
+      } else {
+        plant.wateringStreak = 1;
+      }
+      _awardXp(plant, 10);
+      final bonus = _updateStreaks(plant, now);
+      if (bonus > 0) _awardXp(plant, bonus);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
   }
@@ -202,11 +295,15 @@ class PlantRepository {
   Future<void> recordFertilizing(int id, {String? notes, String? fertilizerType}) async {
     final plant = await _isar.userPlants.get(id);
     if (plant != null) {
-      plant.lastFertilized = DateTime.now();
+      final now = DateTime.now();
+      plant.lastFertilized = now;
       plant.healthNotes ??= [];
       if (notes != null && notes.isNotEmpty) {
         plant.healthNotes!.add('Fertilized: $notes${fertilizerType != null ? ' ($fertilizerType)' : ''}');
       }
+      _awardXp(plant, 15);
+      final bonus = _updateStreaks(plant, now);
+      if (bonus > 0) _awardXp(plant, bonus);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
   }
@@ -214,11 +311,15 @@ class PlantRepository {
   Future<void> recordPruning(int id, {String? notes}) async {
     final plant = await _isar.userPlants.get(id);
     if (plant != null) {
-      plant.lastPruned = DateTime.now();
+      final now = DateTime.now();
+      plant.lastPruned = now;
       plant.healthNotes ??= [];
       if (notes != null && notes.isNotEmpty) {
         plant.healthNotes!.add('Pruned: $notes');
       }
+      _awardXp(plant, 10);
+      final bonus = _updateStreaks(plant, now);
+      if (bonus > 0) _awardXp(plant, bonus);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
   }
@@ -226,8 +327,10 @@ class PlantRepository {
   Future<void> updateHealthStatus(int id, String status, String note) async {
     final plant = await _isar.userPlants.get(id);
     if (plant == null) return;
-    // Create a COPY of the object with the new status and persist it
-    // explicitly within a write transaction so Isar actually saves it.
+
+    final wasCritical = plant.healthStatus == 'critical';
+    final wasWarning = plant.healthStatus == 'warning';
+
     final updated = UserPlant()
       ..id = plant.id
       ..plantEntityId = plant.plantEntityId
@@ -259,7 +362,23 @@ class PlantRepository {
       ..photoPaths = plant.photoPaths
       ..zone = plant.zone
       ..quantity = plant.quantity
-      ..tags = plant.tags;
+      ..tags = plant.tags
+      // Gamification: carry forward.
+      ..xp = plant.xp
+      ..level = plant.level
+      ..wateringStreak = plant.wateringStreak
+      ..careStreak = plant.careStreak
+      ..lastCareDate = plant.lastCareDate;
+
+    // XP bonus for improving health.
+    if (wasCritical && status == 'warning') {
+      _awardXp(updated, 25);
+    } else if ((wasCritical || wasWarning) && status == 'healthy') {
+      _awardXp(updated, 15);
+    } else {
+      _awardXp(updated, 2);
+    }
+
     await _isar.writeTxn(() => _isar.userPlants.put(updated));
   }
 
@@ -269,6 +388,7 @@ class PlantRepository {
       if (heightCm != null) plant.heightCm = heightCm;
       if (widthCm != null) plant.widthCm = widthCm;
       plant.lastMeasured = DateTime.now();
+      _awardXp(plant, 5);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
   }
@@ -278,6 +398,7 @@ class PlantRepository {
     if (plant != null) {
       plant.photoPaths ??= [];
       plant.photoPaths!.add(photoPath);
+      _awardXp(plant, 2);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
   }

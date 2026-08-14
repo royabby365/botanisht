@@ -22,148 +22,173 @@ const UserPlantSchema = CollectionSchema(
       name: r'acquiredDate',
       type: IsarType.dateTime,
     ),
-    r'customName': PropertySchema(
+    r'careStreak': PropertySchema(
       id: 1,
+      name: r'careStreak',
+      type: IsarType.long,
+    ),
+    r'customName': PropertySchema(
+      id: 2,
       name: r'customName',
       type: IsarType.string,
     ),
     r'fertilizingReminderEnabled': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'fertilizingReminderEnabled',
       type: IsarType.bool,
     ),
     r'fertilizingSchedule': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'fertilizingSchedule',
       type: IsarType.string,
     ),
     r'healthNotes': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'healthNotes',
       type: IsarType.stringList,
     ),
     r'healthStatus': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'healthStatus',
       type: IsarType.string,
     ),
     r'heightCm': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'heightCm',
       type: IsarType.double,
     ),
     r'humidityLevel': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'humidityLevel',
       type: IsarType.string,
     ),
     r'isPetSafe': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'isPetSafe',
       type: IsarType.bool,
     ),
+    r'lastCareDate': PropertySchema(
+      id: 10,
+      name: r'lastCareDate',
+      type: IsarType.dateTime,
+    ),
     r'lastFertilized': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'lastFertilized',
       type: IsarType.dateTime,
     ),
     r'lastMeasured': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'lastMeasured',
       type: IsarType.dateTime,
     ),
     r'lastPruned': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'lastPruned',
       type: IsarType.dateTime,
     ),
     r'lastWatered': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'lastWatered',
       type: IsarType.dateTime,
     ),
+    r'level': PropertySchema(
+      id: 15,
+      name: r'level',
+      type: IsarType.long,
+    ),
     r'lightConditions': PropertySchema(
-      id: 13,
+      id: 16,
       name: r'lightConditions',
       type: IsarType.string,
     ),
     r'lightExposure': PropertySchema(
-      id: 14,
+      id: 17,
       name: r'lightExposure',
       type: IsarType.long,
     ),
     r'location': PropertySchema(
-      id: 15,
+      id: 18,
       name: r'location',
       type: IsarType.string,
     ),
     r'photoPaths': PropertySchema(
-      id: 16,
+      id: 19,
       name: r'photoPaths',
       type: IsarType.stringList,
     ),
     r'plantEntityId': PropertySchema(
-      id: 17,
+      id: 20,
       name: r'plantEntityId',
       type: IsarType.long,
     ),
     r'potSize': PropertySchema(
-      id: 18,
+      id: 21,
       name: r'potSize',
       type: IsarType.string,
     ),
     r'pruningReminderEnabled': PropertySchema(
-      id: 19,
+      id: 22,
       name: r'pruningReminderEnabled',
       type: IsarType.bool,
     ),
     r'pruningSchedule': PropertySchema(
-      id: 20,
+      id: 23,
       name: r'pruningSchedule',
       type: IsarType.string,
     ),
     r'quantity': PropertySchema(
-      id: 21,
+      id: 24,
       name: r'quantity',
       type: IsarType.long,
     ),
     r'soilType': PropertySchema(
-      id: 22,
+      id: 25,
       name: r'soilType',
       type: IsarType.string,
     ),
     r'source': PropertySchema(
-      id: 23,
+      id: 26,
       name: r'source',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 24,
+      id: 27,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'temperatureRange': PropertySchema(
-      id: 25,
+      id: 28,
       name: r'temperatureRange',
       type: IsarType.string,
     ),
     r'wateringReminderEnabled': PropertySchema(
-      id: 26,
+      id: 29,
       name: r'wateringReminderEnabled',
       type: IsarType.bool,
     ),
     r'wateringSchedule': PropertySchema(
-      id: 27,
+      id: 30,
       name: r'wateringSchedule',
       type: IsarType.string,
     ),
+    r'wateringStreak': PropertySchema(
+      id: 31,
+      name: r'wateringStreak',
+      type: IsarType.long,
+    ),
     r'widthCm': PropertySchema(
-      id: 28,
+      id: 32,
       name: r'widthCm',
       type: IsarType.double,
     ),
+    r'xp': PropertySchema(
+      id: 33,
+      name: r'xp',
+      type: IsarType.long,
+    ),
     r'zone': PropertySchema(
-      id: 29,
+      id: 34,
       name: r'zone',
       type: IsarType.string,
     )
@@ -312,35 +337,40 @@ void _userPlantSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.acquiredDate);
-  writer.writeString(offsets[1], object.customName);
-  writer.writeBool(offsets[2], object.fertilizingReminderEnabled);
-  writer.writeString(offsets[3], object.fertilizingSchedule);
-  writer.writeStringList(offsets[4], object.healthNotes);
-  writer.writeString(offsets[5], object.healthStatus);
-  writer.writeDouble(offsets[6], object.heightCm);
-  writer.writeString(offsets[7], object.humidityLevel);
-  writer.writeBool(offsets[8], object.isPetSafe);
-  writer.writeDateTime(offsets[9], object.lastFertilized);
-  writer.writeDateTime(offsets[10], object.lastMeasured);
-  writer.writeDateTime(offsets[11], object.lastPruned);
-  writer.writeDateTime(offsets[12], object.lastWatered);
-  writer.writeString(offsets[13], object.lightConditions);
-  writer.writeLong(offsets[14], object.lightExposure);
-  writer.writeString(offsets[15], object.location);
-  writer.writeStringList(offsets[16], object.photoPaths);
-  writer.writeLong(offsets[17], object.plantEntityId);
-  writer.writeString(offsets[18], object.potSize);
-  writer.writeBool(offsets[19], object.pruningReminderEnabled);
-  writer.writeString(offsets[20], object.pruningSchedule);
-  writer.writeLong(offsets[21], object.quantity);
-  writer.writeString(offsets[22], object.soilType);
-  writer.writeString(offsets[23], object.source);
-  writer.writeStringList(offsets[24], object.tags);
-  writer.writeString(offsets[25], object.temperatureRange);
-  writer.writeBool(offsets[26], object.wateringReminderEnabled);
-  writer.writeString(offsets[27], object.wateringSchedule);
-  writer.writeDouble(offsets[28], object.widthCm);
-  writer.writeString(offsets[29], object.zone);
+  writer.writeLong(offsets[1], object.careStreak);
+  writer.writeString(offsets[2], object.customName);
+  writer.writeBool(offsets[3], object.fertilizingReminderEnabled);
+  writer.writeString(offsets[4], object.fertilizingSchedule);
+  writer.writeStringList(offsets[5], object.healthNotes);
+  writer.writeString(offsets[6], object.healthStatus);
+  writer.writeDouble(offsets[7], object.heightCm);
+  writer.writeString(offsets[8], object.humidityLevel);
+  writer.writeBool(offsets[9], object.isPetSafe);
+  writer.writeDateTime(offsets[10], object.lastCareDate);
+  writer.writeDateTime(offsets[11], object.lastFertilized);
+  writer.writeDateTime(offsets[12], object.lastMeasured);
+  writer.writeDateTime(offsets[13], object.lastPruned);
+  writer.writeDateTime(offsets[14], object.lastWatered);
+  writer.writeLong(offsets[15], object.level);
+  writer.writeString(offsets[16], object.lightConditions);
+  writer.writeLong(offsets[17], object.lightExposure);
+  writer.writeString(offsets[18], object.location);
+  writer.writeStringList(offsets[19], object.photoPaths);
+  writer.writeLong(offsets[20], object.plantEntityId);
+  writer.writeString(offsets[21], object.potSize);
+  writer.writeBool(offsets[22], object.pruningReminderEnabled);
+  writer.writeString(offsets[23], object.pruningSchedule);
+  writer.writeLong(offsets[24], object.quantity);
+  writer.writeString(offsets[25], object.soilType);
+  writer.writeString(offsets[26], object.source);
+  writer.writeStringList(offsets[27], object.tags);
+  writer.writeString(offsets[28], object.temperatureRange);
+  writer.writeBool(offsets[29], object.wateringReminderEnabled);
+  writer.writeString(offsets[30], object.wateringSchedule);
+  writer.writeLong(offsets[31], object.wateringStreak);
+  writer.writeDouble(offsets[32], object.widthCm);
+  writer.writeLong(offsets[33], object.xp);
+  writer.writeString(offsets[34], object.zone);
 }
 
 UserPlant _userPlantDeserialize(
@@ -351,36 +381,41 @@ UserPlant _userPlantDeserialize(
 ) {
   final object = UserPlant();
   object.acquiredDate = reader.readDateTimeOrNull(offsets[0]);
-  object.customName = reader.readStringOrNull(offsets[1]);
-  object.fertilizingReminderEnabled = reader.readBool(offsets[2]);
-  object.fertilizingSchedule = reader.readStringOrNull(offsets[3]);
-  object.healthNotes = reader.readStringList(offsets[4]);
-  object.healthStatus = reader.readStringOrNull(offsets[5]);
-  object.heightCm = reader.readDoubleOrNull(offsets[6]);
-  object.humidityLevel = reader.readStringOrNull(offsets[7]);
+  object.careStreak = reader.readLong(offsets[1]);
+  object.customName = reader.readStringOrNull(offsets[2]);
+  object.fertilizingReminderEnabled = reader.readBool(offsets[3]);
+  object.fertilizingSchedule = reader.readStringOrNull(offsets[4]);
+  object.healthNotes = reader.readStringList(offsets[5]);
+  object.healthStatus = reader.readStringOrNull(offsets[6]);
+  object.heightCm = reader.readDoubleOrNull(offsets[7]);
+  object.humidityLevel = reader.readStringOrNull(offsets[8]);
   object.id = id;
-  object.isPetSafe = reader.readBoolOrNull(offsets[8]);
-  object.lastFertilized = reader.readDateTimeOrNull(offsets[9]);
-  object.lastMeasured = reader.readDateTimeOrNull(offsets[10]);
-  object.lastPruned = reader.readDateTimeOrNull(offsets[11]);
-  object.lastWatered = reader.readDateTimeOrNull(offsets[12]);
-  object.lightConditions = reader.readStringOrNull(offsets[13]);
-  object.lightExposure = reader.readLong(offsets[14]);
-  object.location = reader.readStringOrNull(offsets[15]);
-  object.photoPaths = reader.readStringList(offsets[16]);
-  object.plantEntityId = reader.readLongOrNull(offsets[17]);
-  object.potSize = reader.readStringOrNull(offsets[18]);
-  object.pruningReminderEnabled = reader.readBool(offsets[19]);
-  object.pruningSchedule = reader.readStringOrNull(offsets[20]);
-  object.quantity = reader.readLong(offsets[21]);
-  object.soilType = reader.readStringOrNull(offsets[22]);
-  object.source = reader.readStringOrNull(offsets[23]);
-  object.tags = reader.readStringList(offsets[24]);
-  object.temperatureRange = reader.readStringOrNull(offsets[25]);
-  object.wateringReminderEnabled = reader.readBool(offsets[26]);
-  object.wateringSchedule = reader.readStringOrNull(offsets[27]);
-  object.widthCm = reader.readDoubleOrNull(offsets[28]);
-  object.zone = reader.readStringOrNull(offsets[29]);
+  object.isPetSafe = reader.readBoolOrNull(offsets[9]);
+  object.lastCareDate = reader.readDateTimeOrNull(offsets[10]);
+  object.lastFertilized = reader.readDateTimeOrNull(offsets[11]);
+  object.lastMeasured = reader.readDateTimeOrNull(offsets[12]);
+  object.lastPruned = reader.readDateTimeOrNull(offsets[13]);
+  object.lastWatered = reader.readDateTimeOrNull(offsets[14]);
+  object.level = reader.readLong(offsets[15]);
+  object.lightConditions = reader.readStringOrNull(offsets[16]);
+  object.lightExposure = reader.readLong(offsets[17]);
+  object.location = reader.readStringOrNull(offsets[18]);
+  object.photoPaths = reader.readStringList(offsets[19]);
+  object.plantEntityId = reader.readLongOrNull(offsets[20]);
+  object.potSize = reader.readStringOrNull(offsets[21]);
+  object.pruningReminderEnabled = reader.readBool(offsets[22]);
+  object.pruningSchedule = reader.readStringOrNull(offsets[23]);
+  object.quantity = reader.readLong(offsets[24]);
+  object.soilType = reader.readStringOrNull(offsets[25]);
+  object.source = reader.readStringOrNull(offsets[26]);
+  object.tags = reader.readStringList(offsets[27]);
+  object.temperatureRange = reader.readStringOrNull(offsets[28]);
+  object.wateringReminderEnabled = reader.readBool(offsets[29]);
+  object.wateringSchedule = reader.readStringOrNull(offsets[30]);
+  object.wateringStreak = reader.readLong(offsets[31]);
+  object.widthCm = reader.readDoubleOrNull(offsets[32]);
+  object.xp = reader.readLong(offsets[33]);
+  object.zone = reader.readStringOrNull(offsets[34]);
   return object;
 }
 
@@ -394,23 +429,23 @@ P _userPlantDeserializeProp<P>(
     case 0:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 6:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 7:
       return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 8:
-      return (reader.readBoolOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 9:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 10:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 11:
@@ -418,38 +453,48 @@ P _userPlantDeserializeProp<P>(
     case 12:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 13:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 14:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 15:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 16:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 17:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 18:
       return (reader.readStringOrNull(offset)) as P;
     case 19:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 20:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 21:
-      return (reader.readLong(offset)) as P;
-    case 22:
       return (reader.readStringOrNull(offset)) as P;
+    case 22:
+      return (reader.readBool(offset)) as P;
     case 23:
       return (reader.readStringOrNull(offset)) as P;
     case 24:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 25:
       return (reader.readStringOrNull(offset)) as P;
     case 26:
-      return (reader.readBool(offset)) as P;
-    case 27:
       return (reader.readStringOrNull(offset)) as P;
+    case 27:
+      return (reader.readStringList(offset)) as P;
     case 28:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 29:
+      return (reader.readBool(offset)) as P;
+    case 30:
+      return (reader.readStringOrNull(offset)) as P;
+    case 31:
+      return (reader.readLong(offset)) as P;
+    case 32:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 33:
+      return (reader.readLong(offset)) as P;
+    case 34:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -612,6 +657,60 @@ extension UserPlantQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'acquiredDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> careStreakEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'careStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      careStreakGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'careStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> careStreakLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'careStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> careStreakBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'careStreak',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1645,6 +1744,79 @@ extension UserPlantQueryFilter
   }
 
   QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lastCareDateIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastCareDate',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lastCareDateIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastCareDate',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> lastCareDateEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastCareDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lastCareDateGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastCareDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      lastCareDateLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastCareDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> lastCareDateBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastCareDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
       lastFertilizedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1926,6 +2098,59 @@ extension UserPlantQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'lastWatered',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> levelEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'level',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> levelGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'level',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> levelLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'level',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> levelBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'level',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -3819,6 +4044,62 @@ extension UserPlantQueryFilter
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringStreakEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'wateringStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringStreakGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'wateringStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringStreakLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'wateringStreak',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringStreakBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'wateringStreak',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> widthCmIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -3893,6 +4174,59 @@ extension UserPlantQueryFilter
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> xpEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'xp',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> xpGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'xp',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> xpLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'xp',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition> xpBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'xp',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -4063,6 +4397,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByCareStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'careStreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByCareStreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'careStreak', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByCustomName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'customName', Sort.asc);
@@ -4150,6 +4496,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLastCareDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCareDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLastCareDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCareDate', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLastFertilized() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastFertilized', Sort.asc);
@@ -4195,6 +4553,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLastWateredDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastWatered', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLevel() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'level', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByLevelDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'level', Sort.desc);
     });
   }
 
@@ -4360,6 +4730,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByWateringStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringStreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByWateringStreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringStreak', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByWidthCm() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.asc);
@@ -4369,6 +4751,18 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByWidthCmDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByXp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'xp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> sortByXpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'xp', Sort.desc);
     });
   }
 
@@ -4396,6 +4790,18 @@ extension UserPlantQuerySortThenBy
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByAcquiredDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'acquiredDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByCareStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'careStreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByCareStreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'careStreak', Sort.desc);
     });
   }
 
@@ -4498,6 +4904,18 @@ extension UserPlantQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLastCareDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCareDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLastCareDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCareDate', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLastFertilized() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastFertilized', Sort.asc);
@@ -4543,6 +4961,18 @@ extension UserPlantQuerySortThenBy
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLastWateredDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastWatered', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLevel() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'level', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByLevelDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'level', Sort.desc);
     });
   }
 
@@ -4708,6 +5138,18 @@ extension UserPlantQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByWateringStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringStreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByWateringStreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringStreak', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByWidthCm() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.asc);
@@ -4717,6 +5159,18 @@ extension UserPlantQuerySortThenBy
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByWidthCmDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widthCm', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByXp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'xp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy> thenByXpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'xp', Sort.desc);
     });
   }
 
@@ -4738,6 +5192,12 @@ extension UserPlantQueryWhereDistinct
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByAcquiredDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'acquiredDate');
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByCareStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'careStreak');
     });
   }
 
@@ -4796,6 +5256,12 @@ extension UserPlantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLastCareDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastCareDate');
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLastFertilized() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastFertilized');
@@ -4817,6 +5283,12 @@ extension UserPlantQueryWhereDistinct
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLastWatered() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastWatered');
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByLevel() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'level');
     });
   }
 
@@ -4924,9 +5396,21 @@ extension UserPlantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByWateringStreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'wateringStreak');
+    });
+  }
+
   QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByWidthCm() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'widthCm');
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByXp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'xp');
     });
   }
 
@@ -4949,6 +5433,12 @@ extension UserPlantQueryProperty
   QueryBuilder<UserPlant, DateTime?, QQueryOperations> acquiredDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'acquiredDate');
+    });
+  }
+
+  QueryBuilder<UserPlant, int, QQueryOperations> careStreakProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'careStreak');
     });
   }
 
@@ -5003,6 +5493,12 @@ extension UserPlantQueryProperty
     });
   }
 
+  QueryBuilder<UserPlant, DateTime?, QQueryOperations> lastCareDateProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastCareDate');
+    });
+  }
+
   QueryBuilder<UserPlant, DateTime?, QQueryOperations>
       lastFertilizedProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -5025,6 +5521,12 @@ extension UserPlantQueryProperty
   QueryBuilder<UserPlant, DateTime?, QQueryOperations> lastWateredProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastWatered');
+    });
+  }
+
+  QueryBuilder<UserPlant, int, QQueryOperations> levelProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'level');
     });
   }
 
@@ -5123,9 +5625,21 @@ extension UserPlantQueryProperty
     });
   }
 
+  QueryBuilder<UserPlant, int, QQueryOperations> wateringStreakProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'wateringStreak');
+    });
+  }
+
   QueryBuilder<UserPlant, double?, QQueryOperations> widthCmProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'widthCm');
+    });
+  }
+
+  QueryBuilder<UserPlant, int, QQueryOperations> xpProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'xp');
     });
   }
 

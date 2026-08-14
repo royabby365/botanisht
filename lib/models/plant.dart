@@ -77,7 +77,7 @@ class Plant {
       // The local plant catalogue carries a category we can persist on add.
       category: attributes['category'] as String?,
       customName: null,
-      isPetSafe: null,
+      isPetSafe: attributes['pet_safe'] as bool?,
     );
   }
 

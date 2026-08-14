@@ -68,5 +68,22 @@ class UserPlant {
   // Tags for filtering
   List<String>? tags; // ["succulent", "beginner", "gift", "propagation"]
 
+  // --- Gamification ---
+
+  /// Total XP earned from care actions (watering, fertilizing, pruning, etc.)
+  int xp = 0;
+
+  /// Current plant level. Starts at 1, levels up every N XP.
+  int level = 1;
+
+  /// Consecutive days this plant has been watered (resets if a day is missed).
+  int wateringStreak = 0;
+
+  /// Consecutive days any care action was recorded.
+  int careStreak = 0;
+
+  /// Most recent date a care action was performed (date-only, for streak calc).
+  DateTime? lastCareDate;
+
   UserPlant();
 }

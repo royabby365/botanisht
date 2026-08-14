@@ -6,6 +6,8 @@ import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/hydroponic_provider.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/models/hydroponic_log.dart';
+import 'package:botanisht/widgets/plant_level_badge.dart';
+import 'package:botanisht/widgets/pro_feature.dart';
 
 class PlantCard extends ConsumerWidget {
   final Plant? plant;
@@ -78,6 +80,17 @@ class PlantCard extends ConsumerWidget {
                   _CategoryBadge(category: category),
                   const SizedBox(width: 8),
                   if (isPetSafe != null) _PetSafetyBadge(isPetSafe: isPetSafe),
+                  if (isUserPlant && displayUserPlant != null && ref.watch(isProProvider)) ...[
+                    const SizedBox(width: 6),
+                    PlantLevelBadge(
+                      xp: displayUserPlant.xp,
+                      level: displayUserPlant.level,
+                      size: 28,
+                      showXpBar: false,
+                    ),
+                    const SizedBox(width: 4),
+                    StreakBadge(streak: displayUserPlant.careStreak, size: 13),
+                  ],
                   const Spacer(),
                   if (isUserPlant && healthStatus != null)
                     _HealthIndicator(status: healthStatus)
