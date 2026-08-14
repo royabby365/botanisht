@@ -316,8 +316,6 @@ class _CategoryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final config = _getCategoryConfig(category);
     
     return Container(
@@ -774,28 +772,10 @@ class _HealthIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = _getHealthConfig(status);
     
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: config.color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: config.color.withOpacity(0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(config.icon, size: 12, color: config.color),
-          const SizedBox(width: 4),
-          Text(
-            config.label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: config.color,
-            ),
-          ),
-        ],
-      ),
+    return Icon(
+      config.icon,
+      size: 20,
+      color: config.color,
     );
   }
   

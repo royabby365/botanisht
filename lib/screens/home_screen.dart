@@ -170,6 +170,9 @@ class HomeScreen extends ConsumerWidget {
       ),
     ];
 
+    // Watering reminders — "Water raised bed — in 2h" style
+    headers.add(_buildWateringReminders(context, plants));
+
     // Weather "move inside" advisory for physically-exposed (outdoor) zones.
     final alert = ref.watch(weatherAlertProvider).value;
     final isOutdoor = _outdoorZones.any((k) => zone.toLowerCase().contains(k));
@@ -195,6 +198,9 @@ class HomeScreen extends ConsumerWidget {
     if (companionAdvices.isNotEmpty) {
       headers.add(_ZoneCompanionSummaryCard(advices: companionAdvices));
     }
+
+    // Hydroponic dashboard card — only for non-diagnostic zone tabs
+    headers.add(HydroponicDashboardCard(zone: zone));
 
     return RefreshIndicator(
       onRefresh: () async => ref.invalidate(userPlantsProvider),
@@ -230,6 +236,75 @@ class HomeScreen extends ConsumerWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildWateringReminders(BuildContext context, List<UserPlant> plants) {
+    final dueForWater = plants.where((p) =>
+      p.wateringReminderEnabled &&
+      (p.lastWatered == null || DateTime.now().difference(p.lastWatered!).inHours > 24)
+    ).toList();
+    if (dueForWater.isEmpty) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.primary.withOpacity(0.3), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.water_drop_rounded, color: colors.primary, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Watering reminders',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colors.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...dueForWater.map((p) {
+            final name = p.customName ?? 'Plant';
+            final hoursSince = p.lastWatered != null
+                ? DateTime.now().difference(p.lastWatered!).inHours
+                : null;
+            final timeText = hoursSince != null
+                ? '— ${hoursSince}h overdue'
+                : '— never watered';
+            return Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Row(
+                children: [
+                  Icon(Icons.water_drop_rounded, size: 16, color: colors.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Water $name $timeText',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
       ),
     );
   }

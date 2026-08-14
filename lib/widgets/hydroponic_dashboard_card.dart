@@ -6,13 +6,14 @@ import '../providers/hydroponic_provider.dart';
 /// as a polished metric grid with OPTIMAL/CAUTION status badges,
 /// matching the botanisht.com website mockup.
 class HydroponicDashboardCard extends ConsumerWidget {
-  const HydroponicDashboardCard({super.key});
+  final String zone;
+  const HydroponicDashboardCard({super.key, required this.zone});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final asyncLog = ref.watch(latestLogForZoneProvider('hydro'));
+    final asyncLog = ref.watch(latestLogForZoneProvider(zone));
 
     return Card(
       child: Padding(
@@ -43,9 +44,8 @@ class HydroponicDashboardCard extends ConsumerWidget {
                 const Spacer(),
                 OutlinedButton.icon(
                   onPressed: () {
-                    // TODO: Navigate to log entry screen
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Manual log entry coming soon')),
+                      SnackBar(content: Text('Log entry for "$zone" zone — coming soon')),
                     );
                   },
                   icon: const Icon(Icons.add_rounded, size: 16),
