@@ -110,6 +110,7 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
     List<String>? tags,
     String? zone,
     int quantity = 1,
+    int wateringIntervalHours = 24,
   }) async {
     state = const AsyncLoading();
     try {
@@ -129,6 +130,7 @@ class UserPlantNotifier extends StateNotifier<AsyncValue<void>> {
         tags: tags,
         zone: zone,
         quantity: quantity,
+        wateringIntervalHours: wateringIntervalHours,
       );
       state = const AsyncData(null);
     } catch (e, stack) {

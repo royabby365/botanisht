@@ -34,6 +34,9 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
     'Grow Lights',
   ];
 
+  // Watering interval
+  int _wateringIntervalHours = 24;
+
   @override
   void initState() {
     super.initState();
@@ -232,6 +235,35 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                 ],
               ),
               const SizedBox(height: 12),
+              // Watering interval selector.
+              Text(
+                'Watering Interval',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<int>(
+                selected: {_wateringIntervalHours},
+                onSelectionChanged: (s) =>
+                    setState(() => _wateringIntervalHours = s.first),
+                segments: const [
+                  ButtonSegment(
+                      value: 12,
+                      label: Text('12h', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 24,
+                      label: Text('Daily', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 48,
+                      label: Text('2d', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 72,
+                      label: Text('3d', style: TextStyle(fontSize: 13))),
+                  ButtonSegment(
+                      value: 168,
+                      label: Text('Week', style: TextStyle(fontSize: 13))),
+                ],
+              ),
+              const SizedBox(height: 12),
               TextField(
                 controller: _locationController,
                 decoration: const InputDecoration(
@@ -260,6 +292,7 @@ class _AddPlantBottomSheetState extends ConsumerState<AddPlantBottomSheet> {
                                 temperatureRange:
                                     _selectedZone == 'hydro' ? '68-75°F' : null,
                                 zone: _selectedZone,
+                                wateringIntervalHours: _wateringIntervalHours,
                               );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(

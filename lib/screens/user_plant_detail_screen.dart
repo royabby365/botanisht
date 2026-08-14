@@ -5,7 +5,6 @@ import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/widgets/delete_plant_dialog.dart';
 import 'package:botanisht/widgets/care_task_checklist.dart';
 import 'package:botanisht/widgets/garden_score_card.dart';
-import 'package:botanisht/widgets/pro_feature.dart';
 
 class UserPlantDetailScreen extends ConsumerWidget {
   final int plantId;
@@ -79,14 +78,10 @@ class UserPlantDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            // Gamification: XP, level, streak (Pro)
-            ProFeature(
-              title: 'Plant Growth',
-              teaser: 'Track this plant\'s XP, level, and care streaks with Botanisht Pro',
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: _buildGamificationSection(context, userPlant),
-              ),
+            // Gamification: XP, level, streak
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _buildGamificationSection(context, userPlant),
             ),
             _buildSection(context, 'Basic Info', [
               _buildDetailRow(context, Icons.health_and_safety, 'Health',

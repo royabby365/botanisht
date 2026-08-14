@@ -61,6 +61,11 @@ const AppSettingsSchema = CollectionSchema(
       id: 8,
       name: r'units',
       type: IsarType.long,
+    ),
+    r'zoneConfigs': PropertySchema(
+      id: 9,
+      name: r'zoneConfigs',
+      type: IsarType.string,
     )
   },
   estimateSize: _appSettingsEstimateSize,
@@ -107,6 +112,12 @@ int _appSettingsEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.zoneConfigs;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -125,6 +136,7 @@ void _appSettingsSerialize(
   writer.writeLong(offsets[6], object.temperatureScale);
   writer.writeLong(offsets[7], object.themeMode);
   writer.writeLong(offsets[8], object.units);
+  writer.writeString(offsets[9], object.zoneConfigs);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -144,6 +156,7 @@ AppSettings _appSettingsDeserialize(
   object.temperatureScale = reader.readLong(offsets[6]);
   object.themeMode = reader.readLong(offsets[7]);
   object.units = reader.readLong(offsets[8]);
+  object.zoneConfigs = reader.readStringOrNull(offsets[9]);
   return object;
 }
 
@@ -172,6 +185,8 @@ P _appSettingsDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 8:
       return (reader.readLong(offset)) as P;
+    case 9:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1135,6 +1150,160 @@ extension AppSettingsQueryFilter
       ));
     });
   }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'zoneConfigs',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'zoneConfigs',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'zoneConfigs',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'zoneConfigs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'zoneConfigs',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zoneConfigs',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      zoneConfigsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'zoneConfigs',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension AppSettingsQueryObject
@@ -1246,6 +1415,18 @@ extension AppSettingsQuerySortBy
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByUnitsDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'units', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByZoneConfigs() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zoneConfigs', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByZoneConfigsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zoneConfigs', Sort.desc);
     });
   }
 }
@@ -1367,6 +1548,18 @@ extension AppSettingsQuerySortThenBy
       return query.addSortBy(r'units', Sort.desc);
     });
   }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByZoneConfigs() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zoneConfigs', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByZoneConfigsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'zoneConfigs', Sort.desc);
+    });
+  }
 }
 
 extension AppSettingsQueryWhereDistinct
@@ -1429,6 +1622,13 @@ extension AppSettingsQueryWhereDistinct
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByUnits() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'units');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByZoneConfigs(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'zoneConfigs', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1495,6 +1695,12 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, int, QQueryOperations> unitsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'units');
+    });
+  }
+
+  QueryBuilder<AppSettings, String?, QQueryOperations> zoneConfigsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'zoneConfigs');
     });
   }
 }

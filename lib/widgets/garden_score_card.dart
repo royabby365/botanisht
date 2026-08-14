@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/core/theme/app_theme.dart';
-import 'package:botanisht/widgets/pro_feature.dart';
 
 /// XP thresholds for each level.
 const List<int> xpToLevel = [
@@ -134,11 +133,7 @@ class GardenScoreCard extends ConsumerWidget {
     return userPlantsAsync.when(
       data: (plants) {
         final stats = GardenStats.fromPlants(plants);
-        return ProFeature(
-          title: 'Garden Score',
-          teaser: 'Track your garden\'s overall health, XP, and level with Botanisht Pro',
-          child: _buildScoreCard(context, theme, stats),
-        );
+        return _buildScoreCard(context, theme, stats);
       },
       loading: () => _buildShimmer(context, theme),
       error: (e, _) => SizedBox.shrink(),
@@ -147,6 +142,18 @@ class GardenScoreCard extends ConsumerWidget {
 
   Widget _buildScoreCard(BuildContext context, ThemeData theme, GardenStats stats) {
     final colorScheme = theme.colorScheme;
+    final hasPlants = stats.totalPlants > 0;
+
+    // Compute aggregate XP progress
+    final currentThreshold = xpForCurrentLevel(stats.totalXp);
+    final nextThreshold = xpForNextLevel(stats.totalXp);
+    final progress = nextThreshold > currentThreshold
+        ? (stats.totalXp - currentThreshold) / (nextThreshold - currentThreshold)
+        : 0.0;
+    final gardenLevel = currentLevelFromXp(stats.totalXp);
+
+    // Best streak
+    final bestStreak = stats.bestStreak;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -168,7 +175,7 @@ class GardenScoreCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: Garden Score
+            // Header: Garden Score + score badge
             Row(
               children: [
                 Icon(Icons.emoji_nature, color: colorScheme.primary, size: 22),
@@ -180,49 +187,115 @@ class GardenScoreCard extends ConsumerWidget {
                     color: colorScheme.onSurface,
                   ),
                 ),
-                Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${stats.gardenScore}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimary,
+                const Spacer(),
+                if (hasPlants) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${stats.gardenScore}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
+                ],
+                // Best streak badge
+                if (bestStreak >= 7)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: Colors.deepOrange.withValues(alpha: 0.3), width: 0.5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.local_fire_department,
+                            size: 14, color: Colors.deepOrange),
+                        const SizedBox(width: 2),
+                        Text(
+                          '$bestStreak🔥',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            if (hasPlants) ...[
+              const SizedBox(height: 12),
+
+              // XP progress bar for aggregated garden
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.10),
+                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                  minHeight: 8,
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Garden Lv.$gardenLevel — ${stats.totalXp} XP · ${nextThreshold - stats.totalXp} XP to next level',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 12),
 
-            // Health distribution
-            Row(
-              children: [
-                _HealthPill('Healthy', stats.healthyCount, colorScheme.primary, Icons.check_circle),
-                const SizedBox(width: 6),
-                _HealthPill('Warning', stats.warningCount, Colors.orange, Icons.warning_amber),
-                const SizedBox(width: 6),
-                _HealthPill('Critical', stats.criticalCount, Colors.redAccent, Icons.report),
-                const SizedBox(width: 6),
-                _HealthPill('Dormant', stats.dormantCount, Colors.grey, Icons.nights_stay),
-              ],
-            ),
-            const SizedBox(height: 12),
+              // Health distribution
+              Row(
+                children: [
+                  _HealthPill('Healthy', stats.healthyCount, colorScheme.primary, Icons.check_circle),
+                  if (stats.warningCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Warning', stats.warningCount, Colors.orange, Icons.warning_amber),
+                  ],
+                  if (stats.criticalCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Critical', stats.criticalCount, Colors.redAccent, Icons.report),
+                  ],
+                  if (stats.dormantCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Dormant', stats.dormantCount, Colors.grey, Icons.nights_stay),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 12),
 
-            // Stats row
-            Row(
-              children: [
-                _StatChip(Icons.eco, '${stats.totalPlants}', 'Plants', colorScheme),
-                const SizedBox(width: 12),
-                _StatChip(Icons.auto_awesome, '${stats.totalXp}', 'Total XP', colorScheme),
-                const SizedBox(width: 12),
-                _StatChip(Icons.trending_up, 'Lv.${stats.averageLevel}', 'Avg Level', colorScheme),
-              ],
-            ),
+              // Stats row
+              Row(
+                children: [
+                  _StatChip(Icons.eco, '${stats.totalPlants}', 'Plants', colorScheme),
+                  const SizedBox(width: 12),
+                  _StatChip(Icons.auto_awesome, '${stats.totalXp}', 'Total XP', colorScheme),
+                  const SizedBox(width: 12),
+                  _StatChip(Icons.trending_up, 'Lv.${stats.averageLevel}', 'Avg Level', colorScheme),
+                ],
+              ),
+            ] else ...[
+              const SizedBox(height: 12),
+              Text(
+                'Add your first plant to see your Garden Score!',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ],
         ),
       ),

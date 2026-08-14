@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_app_settings.dart';
 import 'package:botanisht/repository/settings_repository.dart';
@@ -80,6 +82,46 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       cachedWeatherMessage: alert?.message,
       cachedWeatherPlantNames: alert?.plantNames,
     );
+    _repo.saveSettings(state);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Zone config helpers
+  // ---------------------------------------------------------------------------
+
+  /// Deserialises the zone config map from [state.zoneConfigs].
+  Map<String, ZoneConfig> getAllZoneConfigs() {
+    final raw = state.zoneConfigs;
+    if (raw == null || raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return decoded.map((k, v) =>
+          MapEntry(k, ZoneConfig.fromJson(v as Map<String, dynamic>)));
+    } catch (_) {
+      return {};
+    }
+  }
+
+  /// Returns the [ZoneConfig] for a single zone, or `null` if none is stored.
+  ZoneConfig? getZoneConfig(String zoneName) {
+    return getAllZoneConfigs()[zoneName.toLowerCase().trim()];
+  }
+
+  /// Merges [config] into the stored settings for [zoneName] and persists.
+  void updateZoneConfig(String zoneName, String config) {
+    final key = zoneName.toLowerCase().trim();
+    final all = getAllZoneConfigs();
+    all[key] = ZoneConfig.fromJson(jsonDecode(config) as Map<String, dynamic>);
+    state = state.copyWith(zoneConfigs: jsonEncode(all));
+    _repo.saveSettings(state);
+  }
+
+  /// Convenience: accepts a [ZoneConfig] object directly.
+  void setZoneConfig(String zoneName, ZoneConfig config) {
+    final key = zoneName.toLowerCase().trim();
+    final all = getAllZoneConfigs();
+    all[key] = config;
+    state = state.copyWith(zoneConfigs: jsonEncode(all));
     _repo.saveSettings(state);
   }
 }

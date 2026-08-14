@@ -38,6 +38,29 @@ class UserPlant {
   String? healthStatus; // "healthy", "warning", "critical", "dormant"
   List<String>? healthNotes; // User observations
   DateTime? lastWatered;
+
+  /// How often this plant should be watered (in hours).
+  /// Default: 24 (once per day). Options: 12, 24, 48, 72, 168 (weekly).
+  int wateringIntervalHours = 24;
+
+  /// Human-readable label for the watering interval.
+  String get wateringIntervalLabel {
+    switch (wateringIntervalHours) {
+      case 12:
+        return 'Every 12h';
+      case 24:
+        return 'Every day';
+      case 48:
+        return 'Every 2 days';
+      case 72:
+        return 'Every 3 days';
+      case 168:
+        return 'Weekly';
+      default:
+        return 'Every ${wateringIntervalHours}h';
+    }
+  }
+
   DateTime? lastFertilized;
   DateTime? lastPruned;
 

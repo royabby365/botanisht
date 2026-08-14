@@ -162,33 +162,43 @@ const UserPlantSchema = CollectionSchema(
       name: r'temperatureRange',
       type: IsarType.string,
     ),
-    r'wateringReminderEnabled': PropertySchema(
+    r'wateringIntervalHours': PropertySchema(
       id: 29,
+      name: r'wateringIntervalHours',
+      type: IsarType.long,
+    ),
+    r'wateringIntervalLabel': PropertySchema(
+      id: 30,
+      name: r'wateringIntervalLabel',
+      type: IsarType.string,
+    ),
+    r'wateringReminderEnabled': PropertySchema(
+      id: 31,
       name: r'wateringReminderEnabled',
       type: IsarType.bool,
     ),
     r'wateringSchedule': PropertySchema(
-      id: 30,
+      id: 32,
       name: r'wateringSchedule',
       type: IsarType.string,
     ),
     r'wateringStreak': PropertySchema(
-      id: 31,
+      id: 33,
       name: r'wateringStreak',
       type: IsarType.long,
     ),
     r'widthCm': PropertySchema(
-      id: 32,
+      id: 34,
       name: r'widthCm',
       type: IsarType.double,
     ),
     r'xp': PropertySchema(
-      id: 33,
+      id: 35,
       name: r'xp',
       type: IsarType.long,
     ),
     r'zone': PropertySchema(
-      id: 34,
+      id: 36,
       name: r'zone',
       type: IsarType.string,
     )
@@ -315,6 +325,7 @@ int _userPlantEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.wateringIntervalLabel.length * 3;
   {
     final value = object.wateringSchedule;
     if (value != null) {
@@ -365,12 +376,14 @@ void _userPlantSerialize(
   writer.writeString(offsets[26], object.source);
   writer.writeStringList(offsets[27], object.tags);
   writer.writeString(offsets[28], object.temperatureRange);
-  writer.writeBool(offsets[29], object.wateringReminderEnabled);
-  writer.writeString(offsets[30], object.wateringSchedule);
-  writer.writeLong(offsets[31], object.wateringStreak);
-  writer.writeDouble(offsets[32], object.widthCm);
-  writer.writeLong(offsets[33], object.xp);
-  writer.writeString(offsets[34], object.zone);
+  writer.writeLong(offsets[29], object.wateringIntervalHours);
+  writer.writeString(offsets[30], object.wateringIntervalLabel);
+  writer.writeBool(offsets[31], object.wateringReminderEnabled);
+  writer.writeString(offsets[32], object.wateringSchedule);
+  writer.writeLong(offsets[33], object.wateringStreak);
+  writer.writeDouble(offsets[34], object.widthCm);
+  writer.writeLong(offsets[35], object.xp);
+  writer.writeString(offsets[36], object.zone);
 }
 
 UserPlant _userPlantDeserialize(
@@ -410,12 +423,13 @@ UserPlant _userPlantDeserialize(
   object.source = reader.readStringOrNull(offsets[26]);
   object.tags = reader.readStringList(offsets[27]);
   object.temperatureRange = reader.readStringOrNull(offsets[28]);
-  object.wateringReminderEnabled = reader.readBool(offsets[29]);
-  object.wateringSchedule = reader.readStringOrNull(offsets[30]);
-  object.wateringStreak = reader.readLong(offsets[31]);
-  object.widthCm = reader.readDoubleOrNull(offsets[32]);
-  object.xp = reader.readLong(offsets[33]);
-  object.zone = reader.readStringOrNull(offsets[34]);
+  object.wateringIntervalHours = reader.readLong(offsets[29]);
+  object.wateringReminderEnabled = reader.readBool(offsets[31]);
+  object.wateringSchedule = reader.readStringOrNull(offsets[32]);
+  object.wateringStreak = reader.readLong(offsets[33]);
+  object.widthCm = reader.readDoubleOrNull(offsets[34]);
+  object.xp = reader.readLong(offsets[35]);
+  object.zone = reader.readStringOrNull(offsets[36]);
   return object;
 }
 
@@ -485,16 +499,20 @@ P _userPlantDeserializeProp<P>(
     case 28:
       return (reader.readStringOrNull(offset)) as P;
     case 29:
-      return (reader.readBool(offset)) as P;
-    case 30:
-      return (reader.readStringOrNull(offset)) as P;
-    case 31:
       return (reader.readLong(offset)) as P;
+    case 30:
+      return (reader.readString(offset)) as P;
+    case 31:
+      return (reader.readBool(offset)) as P;
     case 32:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 33:
       return (reader.readLong(offset)) as P;
     case 34:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 35:
+      return (reader.readLong(offset)) as P;
+    case 36:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3881,6 +3899,199 @@ extension UserPlantQueryFilter
   }
 
   QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalHoursEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'wateringIntervalHours',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalHoursGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'wateringIntervalHours',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalHoursLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'wateringIntervalHours',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalHoursBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'wateringIntervalHours',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'wateringIntervalLabel',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'wateringIntervalLabel',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'wateringIntervalLabel',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'wateringIntervalLabel',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
+      wateringIntervalLabelIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'wateringIntervalLabel',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterFilterCondition>
       wateringReminderEnabledEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -4704,6 +4915,34 @@ extension UserPlantQuerySortBy on QueryBuilder<UserPlant, UserPlant, QSortBy> {
   }
 
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      sortByWateringIntervalHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalHours', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      sortByWateringIntervalHoursDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalHours', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      sortByWateringIntervalLabel() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalLabel', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      sortByWateringIntervalLabelDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalLabel', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
       sortByWateringReminderEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wateringReminderEnabled', Sort.asc);
@@ -5112,6 +5351,34 @@ extension UserPlantQuerySortThenBy
   }
 
   QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      thenByWateringIntervalHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalHours', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      thenByWateringIntervalHoursDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalHours', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      thenByWateringIntervalLabel() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalLabel', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
+      thenByWateringIntervalLabelDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wateringIntervalLabel', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QAfterSortBy>
       thenByWateringReminderEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wateringReminderEnabled', Sort.asc);
@@ -5382,6 +5649,21 @@ extension UserPlantQueryWhereDistinct
   }
 
   QueryBuilder<UserPlant, UserPlant, QDistinct>
+      distinctByWateringIntervalHours() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'wateringIntervalHours');
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct> distinctByWateringIntervalLabel(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'wateringIntervalLabel',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<UserPlant, UserPlant, QDistinct>
       distinctByWateringReminderEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'wateringReminderEnabled');
@@ -5608,6 +5890,20 @@ extension UserPlantQueryProperty
       temperatureRangeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'temperatureRange');
+    });
+  }
+
+  QueryBuilder<UserPlant, int, QQueryOperations>
+      wateringIntervalHoursProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'wateringIntervalHours');
+    });
+  }
+
+  QueryBuilder<UserPlant, String, QQueryOperations>
+      wateringIntervalLabelProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'wateringIntervalLabel');
     });
   }
 

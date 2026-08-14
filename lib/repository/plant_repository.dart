@@ -161,8 +161,8 @@ class PlantRepository {
     final allPlants = await _isar.userPlants.where().findAll();
     return allPlants.where((p) {
       if (p.lastWatered == null) return true;
-      final diff = now.difference(p.lastWatered!).inDays;
-      return diff >= 7;
+      final diff = now.difference(p.lastWatered!).inHours;
+      return diff >= p.wateringIntervalHours;
     }).toList();
   }
 
@@ -213,6 +213,7 @@ class PlantRepository {
     List<String>? tags,
     String? zone,
     int quantity = 1,
+    int wateringIntervalHours = 24,
   }) async {
     final userPlant = UserPlant()
       ..customName = customName ?? name
@@ -231,6 +232,7 @@ class PlantRepository {
       ..tags = tags ?? []
       ..healthStatus = 'healthy'
       ..healthNotes = []
+      ..wateringIntervalHours = wateringIntervalHours
       ..photoPaths = [];
 
     _awardXp(userPlant, 10);
@@ -346,6 +348,7 @@ class PlantRepository {
       ..healthStatus = status
       ..healthNotes = [...?plant.healthNotes, '$status: $note']
       ..lastWatered = plant.lastWatered
+      ..wateringIntervalHours = plant.wateringIntervalHours
       ..lastFertilized = plant.lastFertilized
       ..lastPruned = plant.lastPruned
       ..wateringReminderEnabled = plant.wateringReminderEnabled
@@ -401,6 +404,53 @@ class PlantRepository {
       _awardXp(plant, 2);
       await _isar.writeTxn(() => _isar.userPlants.put(plant));
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Data portability (export / import)
+  // ---------------------------------------------------------------------------
+
+  /// All hydroponic readings, newest first.
+  Future<List<HydroponicLog>> getAllHydroponicLogs() async {
+    return await _isar.hydroponicLogs
+        .where()
+        .sortByTimestampDesc()
+        .findAll();
+  }
+
+  /// Inserts imported plants as brand-new rows (fresh ids) so an import never
+  /// overwrites an existing garden. Returns the inserted plants with their
+  /// new ids so callers can remap foreign keys (e.g. hydroponic log plantId).
+  Future<List<UserPlant>> importUserPlants(List<UserPlant> plants) async {
+    if (plants.isEmpty) return const <UserPlant>[];
+    final existing = await _isar.userPlants.where().findAll();
+    var nextId = existing.fold<int>(0, (max, p) => p.id > max ? p.id : max) + 1;
+    final inserted = <UserPlant>[];
+    await _isar.writeTxn(() async {
+      for (final plant in plants) {
+        plant.id = nextId++;
+        await _isar.userPlants.put(plant);
+        inserted.add(plant);
+      }
+    });
+    return inserted;
+  }
+
+  /// Inserts imported hydroponic logs as brand-new rows (fresh ids).
+  Future<List<HydroponicLog>> importHydroponicLogs(
+      List<HydroponicLog> logs) async {
+    if (logs.isEmpty) return const <HydroponicLog>[];
+    final existing = await _isar.hydroponicLogs.where().findAll();
+    var nextId = existing.fold<int>(0, (max, l) => l.id > max ? l.id : max) + 1;
+    final inserted = <HydroponicLog>[];
+    await _isar.writeTxn(() async {
+      for (final log in logs) {
+        log.id = nextId++;
+        await _isar.hydroponicLogs.put(log);
+        inserted.add(log);
+      }
+    });
+    return inserted;
   }
 
   void dispose() {
