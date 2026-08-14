@@ -17,7 +17,7 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build apk --debug --android-skip-build-dependency-validation
+      - run: flutter build apk --debug
 
       # Tagged releases → publish to GitHub Releases
       - name: Release
