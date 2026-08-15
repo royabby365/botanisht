@@ -214,8 +214,18 @@ ThemeData buildCreamTheme() {
     chipTheme: ChipThemeData(
       backgroundColor: leafSoft,
       selectedColor: leaf,
-      labelStyle: const TextStyle(color: leafDeep, fontWeight: FontWeight.w500),
-      secondaryLabelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+      // State-aware label color: dark ink on the light unselected chip,
+      // white on the dark-green selected chip (fixes invisible chip text).
+      labelStyle: TextStyle(
+        color: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? Colors.white
+              : leafDeep,
+        ),
+        fontWeight: FontWeight.w500,
+      ),
+      secondaryLabelStyle: const TextStyle(
+          color: Colors.white, fontWeight: FontWeight.w500),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     ),
@@ -324,8 +334,16 @@ ThemeData buildEvergreenTheme() {
     chipTheme: ChipThemeData(
       backgroundColor: leafSoft,
       selectedColor: leaf,
-      labelStyle: const TextStyle(color: leaf, fontWeight: FontWeight.w500),
-      secondaryLabelStyle: const TextStyle(color: bg, fontWeight: FontWeight.w500),
+      // State-aware label color: bright leaf on the dark unselected chip,
+      // dark evergreen on the bright selected chip (fixes invisible chip text).
+      labelStyle: TextStyle(
+        color: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected) ? bg : leaf,
+        ),
+        fontWeight: FontWeight.w500,
+      ),
+      secondaryLabelStyle: const TextStyle(
+          color: bg, fontWeight: FontWeight.w500),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     ),
@@ -435,8 +453,18 @@ ThemeData buildHighContrastTheme() {
     chipTheme: ChipThemeData(
       backgroundColor: bg,
       selectedColor: accent,
-      labelStyle: const TextStyle(color: ink, fontWeight: FontWeight.w700),
-      secondaryLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.w800),
+      // State-aware label color: white on the black unselected chip, black on
+      // the gold selected chip (fixes invisible chip text).
+      labelStyle: TextStyle(
+        color: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? Colors.black
+              : ink,
+        ),
+        fontWeight: FontWeight.w700,
+      ),
+      secondaryLabelStyle: const TextStyle(
+          color: Colors.black, fontWeight: FontWeight.w800),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(999),

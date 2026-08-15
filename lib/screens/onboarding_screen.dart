@@ -210,7 +210,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             children: zones
                 .map(
                   (z) => SizedBox(
-                    width: 140,
+                    width: 160,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -222,16 +222,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             Text(
                               z.label,
                               style: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w700,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 4),
                             Text(
                               z.subtitle,
                               style: theme.textTheme.bodyMedium!.copyWith(
-                                fontSize: 14,
+                                fontSize: 13,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             ),
                           ],

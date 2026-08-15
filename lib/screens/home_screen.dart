@@ -949,7 +949,13 @@ class AppSettingsDrawer extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   'Settings',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  // Inter (not Fraunces): small serif sizes render with
+                  // uneven/wide letter spacing — the sidebar kerning issue.
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0,
+                      ),
                 ),
               ],
             ),
