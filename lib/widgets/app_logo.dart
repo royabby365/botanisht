@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 /// Renders the stylized word "Botanisht" where the letter **O is a green
 /// thumb** (so it reads "B[thumb]tanisht" — a play on "botanist" for a
 /// beginner-friendly gardening app) and "ish" is italicized, with a small
-/// leaf at the end. All glyphs use the brand deep-forest green (#1B4332).
+/// leaf at the end. Colors follow the active theme: brand deep-forest green
+/// on light surfaces, bright leaf green on dark surfaces (so the wordmark is
+/// always easy to read — e.g. on the dark first-run onboarding).
 class AppLogo extends StatelessWidget {
   final double fontSize;
 
@@ -13,7 +15,10 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const brandGreen = Color(0xFF1B4332);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final brandGreen = isDark
+        ? const Color(0xFF5CC98A)
+        : const Color(0xFF1B4332);
     final textStyle = TextStyle(
       color: brandGreen,
       fontSize: fontSize,
@@ -28,10 +33,10 @@ class AppLogo extends StatelessWidget {
           style: DefaultTextStyle.of(context).style,
           children: [
             TextSpan(text: 'B', style: textStyle),
-            const WidgetSpan(
+            WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.0),
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
                 child: Icon(
                   Icons.thumb_up_rounded,
                   size: 28,
@@ -45,10 +50,10 @@ class AppLogo extends StatelessWidget {
               style: textStyle.copyWith(fontStyle: FontStyle.italic),
             ),
             TextSpan(text: 't', style: textStyle),
-            const WidgetSpan(
+            WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
-                padding: EdgeInsets.only(left: 4.0),
+                padding: const EdgeInsets.only(left: 4.0),
                 child: Icon(
                   Icons.eco_rounded,
                   size: 24,

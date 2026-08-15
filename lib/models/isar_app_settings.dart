@@ -80,7 +80,9 @@ class AppSettings {
   Id id = Isar.autoIncrement;
 
   // 0 = System default, 1 = Natural Cream (light), 2 = Evergreen (dark)
-  int themeMode = 0;
+  // Evergreen is the app default (first-run onboarding renders in dark,
+  // where all text is guaranteed high-contrast); Cream is an in-app choice.
+  int themeMode = 2;
 
   // High-contrast accessibility mode.
   bool highContrast = false;

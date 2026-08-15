@@ -33,9 +33,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // Slide 4 — user preferences (defaults match the AppSettings model).
   int _units = 0; // 0 = Metric, 1 = Imperial
   int _temperatureScale = 0; // 0 = Celsius, 1 = Fahrenheit
-  int _themeMode = 1; // 1 = Natural Cream (light) by default
+  int _themeMode = 2; // 2 = Deep Evergreen (dark) is the app default
   bool _highContrast = false;
   String _gardenZip = ''; // optional garden ZIP (no GPS)
+
+  /// Responsive scale: sizes are tuned at 411dp reference width (our primary
+  /// emulator). On smaller screens text shrinks slightly so it never wraps
+  /// or clips; on larger screens it grows to stay balanced.
+  double _scale(BuildContext context) =>
+      (MediaQuery.sizeOf(context).width / 411).clamp(0.85, 1.3);
 
   @override
   void dispose() {
@@ -126,6 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _welcomeSlide(BuildContext context) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
       child: Column(
@@ -134,19 +141,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           const SizedBox(height: 24),
           Semantics(
             label: 'Botanisht logo',
-            child: const AppLogo(fontSize: 58),
+            child: AppLogo(fontSize: 58 * s),
           ),
           const SizedBox(height: 28),
           Icon(
             Icons.eco_rounded,
-            size: 72,
+            size: 72 * s,
             color: theme.colorScheme.tertiary,
           ),
           const SizedBox(height: 28),
           Text(
             'Welcome to your garden',
             style: theme.textTheme.headlineMedium!.copyWith(
-              fontSize: 28,
+              fontSize: 28 * s,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -157,7 +164,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'tracker. Your plants, your data — everything stays on your '
             'device. No accounts, no cloud, no subscriptions.',
             style: theme.textTheme.bodyLarge!.copyWith(
-              fontSize: 19,
+              fontSize: 19 * s,
               height: 1.55,
             ),
             textAlign: TextAlign.center,
@@ -170,6 +177,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _zonesSlide(BuildContext context) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     const zones = [
       _ZoneInfo(Icons.park_rounded, 'Indoor', 'Houseplants & tropicals'),
       _ZoneInfo(Icons.science_rounded, 'Hydro', 'Hydroponic systems'),
@@ -185,7 +193,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Text(
             'The Multi-Zone System',
             style: theme.textTheme.headlineMedium!.copyWith(
-              fontSize: 28,
+              fontSize: 28 * s,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -197,7 +205,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'by category, so your indoor jungle, hydroponic rig, and kitchen '
             'garden each get their own focused view.',
             style: theme.textTheme.bodyLarge!.copyWith(
-              fontSize: 19,
+              fontSize: 19 * s,
               height: 1.55,
             ),
             textAlign: TextAlign.center,
@@ -210,22 +218,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             children: zones
                 .map(
                   (z) => SizedBox(
-                    width: 160,
+                    width: 160 * s,
                     child: Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16 * s),
                         child: Column(
                           children: [
-                            Icon(z.icon, size: 40,
+                            Icon(z.icon, size: 40 * s,
                                 color: theme.colorScheme.tertiary),
                             const SizedBox(height: 10),
                             Text(
                               z.label,
-                              style: const TextStyle(
-                                fontSize: 18,
+                              style: TextStyle(
+                                fontSize: 17 * s,
                                 fontWeight: FontWeight.w700,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             ),
@@ -233,7 +241,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             Text(
                               z.subtitle,
                               style: theme.textTheme.bodyMedium!.copyWith(
-                                fontSize: 13,
+                                fontSize: 13 * s,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -255,6 +263,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _smartSlide(BuildContext context) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
       child: Column(
@@ -264,7 +273,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Text(
             'Smart Cultivation',
             style: theme.textTheme.headlineMedium!.copyWith(
-              fontSize: 28,
+              fontSize: 28 * s,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -298,6 +307,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     String body,
   ) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -306,8 +316,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             color: theme.colorScheme.tertiary.withOpacity(0.15),
             borderRadius: BorderRadius.circular(14),
           ),
-          padding: const EdgeInsets.all(12),
-          child: Icon(icon, size: 30, color: theme.colorScheme.tertiary),
+          padding: EdgeInsets.all(12 * s),
+          child: Icon(icon, size: 30 * s, color: theme.colorScheme.tertiary),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -316,8 +326,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: 22 * s,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -325,7 +335,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               Text(
                 body,
                 style: theme.textTheme.bodyLarge!.copyWith(
-                  fontSize: 18,
+                  fontSize: 18 * s,
                   height: 1.5,
                 ),
               ),
@@ -338,16 +348,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _preferencesSlide(BuildContext context) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 16),
           Text(
             'Set Your Preferences',
             style: theme.textTheme.headlineMedium!.copyWith(
-              fontSize: 28,
+              fontSize: 28 * s,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -357,7 +368,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'Choose your defaults now — you can change these anytime in '
                 'Settings.',
             style: theme.textTheme.bodyLarge!.copyWith(
-              fontSize: 18,
+              fontSize: 18 * s,
               height: 1.5,
             ),
             textAlign: TextAlign.center,
@@ -388,10 +399,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Where is your garden? (Enter ZIP Code)',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18 * s,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
                 ),
@@ -443,13 +454,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     required T selected,
     required ValueChanged<T> onSelected,
   }) {
+    final s = _scale(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 18,
+          style: TextStyle(
+            fontSize: 18 * s,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.2,
           ),
@@ -464,8 +476,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   label: Text(o.label),
                   selected: o.value == selected,
                   onSelected: (_) => onSelected(o.value),
-                  labelStyle: const TextStyle(
-                    fontSize: 16,
+                  labelStyle: TextStyle(
+                    fontSize: 16 * s,
                     fontWeight: FontWeight.w600,
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -487,6 +499,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildBottomBar(BuildContext context) {
     final theme = Theme.of(context);
+    final s = _scale(context);
     final isLast = _currentPage == _numPages - 1;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -502,19 +515,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               if (isLast)
                 TextButton(
                   onPressed: () => _goToPage(_currentPage - 1),
-                  child: const Text('Back', style: TextStyle(fontSize: 16)),
+                  child: Text('Back', style: TextStyle(fontSize: 16 * s)),
                 )
               else
                 TextButton(
                   onPressed: _finish,
-                  child: const Text('Skip', style: TextStyle(fontSize: 16)),
+                  child: Text('Skip', style: TextStyle(fontSize: 16 * s)),
                 ),
               const Spacer(),
               ElevatedButton(
                 onPressed: isLast ? _finish : () => _goToPage(_currentPage + 1),
                 child: Text(
                   isLast ? 'Get Started' : 'Next',
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      fontSize: 17 * s, fontWeight: FontWeight.w700),
                 ),
               ),
             ],

@@ -62,9 +62,11 @@ class BotanishtPalette {
 /// Resolves the active [ThemeData] from persisted [AppSettings] values.
 ///
 /// [themeMode] follows the model convention:
-///  * `0` — System default (renders as Natural Cream for a calm first impression)
+///  * `0` — System default (follows device brightness)
 ///  * `1` — Natural Cream (light)
-///  * `2` — Deep Evergreen (dark)
+///  * `2` — Deep Evergreen (dark) — the app default (default mode in
+///    [AppSettings]), so first-run onboarding always renders dark where
+///    text is guaranteed high-contrast; Cream is an in-app choice.
 ///
 /// When [highContrast] is `true` a dedicated high-contrast scheme is returned
 /// regardless of the base mode, satisfying WCAG AAA contrast requirements for
