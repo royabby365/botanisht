@@ -969,22 +969,24 @@ class AppSettingsDrawer extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: SegmentedButton<int>(
-              selected: {settings.themeMode},
-              onSelectionChanged: (s) => notifier.setThemeMode(s.first),
-              segments: const [
-                ButtonSegment(
-                  value: 0,
-                  label: Text('System', style: TextStyle(fontSize: 16)),
-                ),
-                ButtonSegment(
-                  value: 1,
-                  label: Text('Cream', style: TextStyle(fontSize: 16)),
-                ),
-                ButtonSegment(
-                  value: 2,
-                  label: Text('Evergreen', style: TextStyle(fontSize: 16)),
-                ),
+            // ChoiceChips (same as onboarding) so 'Evergreen' never squishes:
+            // chips size to their content and wrap instead of being forced
+            // into equal thirds of the drawer width.
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final (value, label)
+                    in [(0, 'System'), (1, 'Cream'), (2, 'Evergreen')])
+                  ChoiceChip(
+                    label: Text(
+                      label,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                    selected: settings.themeMode == value,
+                    onSelected: (_) => notifier.setThemeMode(value),
+                  ),
               ],
             ),
           ),
