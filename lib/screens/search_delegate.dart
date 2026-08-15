@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:botanisht/services/plant_catalog.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/widgets/plant_preview_sheet.dart';
+import 'package:botanisht/widgets/pro_feature.dart' show freeCatalogLimit;
 
 /// In-app plant search.
 ///
@@ -9,7 +10,11 @@ import 'package:botanisht/widgets/plant_preview_sheet.dart';
 /// or other free-text web search — so results are always real plant species
 /// with a reference thumbnail for visual cross-referencing.
 class PlantSearchDelegate extends SearchDelegate<Plant?> {
-  PlantSearchDelegate();
+  /// When false (free tier), results are limited to the first
+  /// [freeCatalogLimit] plants of the catalogue.
+  final bool fullCatalog;
+
+  PlantSearchDelegate({this.fullCatalog = false});
 
   @override
   List<Widget> buildActions(BuildContext context) => [
@@ -55,7 +60,10 @@ class PlantSearchDelegate extends SearchDelegate<Plant?> {
     return FutureBuilder<List<Plant>>(
       // Keyed by query so a new keystroke triggers a fresh catalogue lookup.
       key: ValueKey(q),
-      future: PlantCatalog.search(q),
+      future: PlantCatalog.search(
+        q,
+        limit: fullCatalog ? null : freeCatalogLimit,
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());

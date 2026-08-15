@@ -22,6 +22,7 @@ import 'package:botanisht/screens/diagnostics_screen.dart';
 import 'package:botanisht/screens/plant_profiles_screen.dart';
 import 'package:botanisht/screens/companion_alerts_screen.dart';
 import 'package:botanisht/core/theme/app_theme.dart';
+import 'package:botanisht/widgets/pro_feature.dart';
 
 /// Shows the zone settings bottom sheet.
 void _showZoneSettingsSheet(BuildContext context, WidgetRef ref, String zone) {
@@ -102,6 +103,55 @@ class HomeScreen extends ConsumerWidget {
             title: const BrandLogo(),
             centerTitle: false,
             actions: [
+              // Pro pill — opens the upgrade sheet (honor system)
+              Consumer(
+                builder: (ctx, ref, _) {
+                  final isPro = ref.watch(isProProvider);
+                  const gold = Color(0xFFD4A843);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(999),
+                      onTap: () => showBotanishtUpgradeSheet(ctx, ref),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isPro
+                              ? gold
+                              : gold.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: gold.withValues(alpha: isPro ? 1 : 0.5),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isPro
+                                  ? Icons.workspace_premium_rounded
+                                  : Icons.workspace_premium_outlined,
+                              size: 15,
+                              color: isPro ? Colors.white : gold,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              isPro ? 'PRO' : 'Pro',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                                color: isPro ? Colors.white : gold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
               Consumer(
                 builder: (ctx, ref, _) {
                   final settings = ref.watch(settingsProvider);
@@ -145,6 +195,9 @@ class HomeScreen extends ConsumerWidget {
                 
                 // Garden Score
                 const SliverToBoxAdapter(child: GardenScoreCard()),
+                
+                // Pro Gamification — XP & Streaks (teaser for free, live for Pro)
+                const SliverToBoxAdapter(child: _ProGamificationSection()),
                 
                 // Weather Alert
                 if (alert != null) SliverToBoxAdapter(child: _WeatherAlertCard(alert: alert)),
@@ -532,7 +585,7 @@ class HomeScreen extends ConsumerWidget {
   void _showSearchDialog(BuildContext context, WidgetRef ref) {
     showSearch(
       context: context,
-      delegate: PlantSearchDelegate(),
+      delegate: PlantSearchDelegate(fullCatalog: ref.read(isProProvider)),
     );
   }
 
@@ -2064,63 +2117,69 @@ class _AddPlantPreviewCard extends StatelessWidget {
   }
 }
 
-/// Quick Actions Row - matches website feature cards
+/// Quick Actions Row - matches website feature cards.
+/// 2x2 grid so every label fits on a single line (no wrapping).
 class _QuickActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: _QuickActionCard(
-              icon: Icons.science_rounded,
-              label: 'Hydroponic Log',
-              color: colorScheme.primary,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HydroponicLogScreen()),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.science_rounded,
+                  label: 'Hydroponic Log',
+                  color: Theme.of(context).colorScheme.primary,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HydroponicLogScreen()),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.analytics_rounded,
+                  label: 'Diagnostics',
+                  color: Theme.of(context).colorScheme.secondary,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _QuickActionCard(
-              icon: Icons.analytics_rounded,
-              label: 'Diagnostics',
-              color: colorScheme.secondary,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.eco_rounded,
+                  label: 'Plant Profiles',
+                  color: const Color(0xFF52B788),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PlantProfilesScreen()),
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _QuickActionCard(
-              icon: Icons.eco_rounded,
-              label: 'Plant Profiles',
-              color: Color(0xFF52B788),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PlantProfilesScreen()),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.warning_amber_rounded,
+                  label: 'Companion Alerts',
+                  color: const Color(0xFFD98A2B),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CompanionAlertsScreen()),
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _QuickActionCard(
-              icon: Icons.warning_amber_rounded,
-              label: 'Companion Alerts',
-              color: Color(0xFFD98A2B),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CompanionAlertsScreen()),
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -2180,7 +2239,7 @@ class _QuickActionCard extends StatelessWidget {
                 color: colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -2501,3 +2560,191 @@ class _IllustratedFeatureCard extends StatelessWidget {
 
 // Keep existing _WeatherAlertCard and _GardenLocationHint classes...
 // They are already defined later in the file, just need to make sure they're not duplicated
+
+/// Pro gamification — per-plant XP, level, and care streak progress.
+/// Free users see a ProFeature teaser card; Pro users see live progress.
+class _ProGamificationSection extends ConsumerWidget {
+  const _ProGamificationSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plantsAsync = ref.watch(userPlantsProvider);
+    final plants = plantsAsync.value ?? const <UserPlant>[];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: ProFeature(
+        title: 'XP & Levels',
+        teaser: 'Track XP, levels, and care streaks for every plant with Botanisht Pro',
+        child: _buildProContent(context, ref, plants),
+      ),
+    );
+  }
+
+  Widget _buildProContent(BuildContext context, WidgetRef ref, List<UserPlant> plants) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    const gold = Color(0xFFD4A843);
+
+    if (plants.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final visible = plants.take(6).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: gold.withValues(alpha: 0.4), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: gold.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.star_rounded, color: gold, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'XP & Streaks',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: gold,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'PRO',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          for (final plant in visible) ...[
+            _PlantXpRow(plant: plant),
+            if (plant != visible.last) const SizedBox(height: 10),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PlantXpRow extends StatelessWidget {
+  final UserPlant plant;
+
+  const _PlantXpRow({required this.plant});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final level = currentLevelFromXp(plant.xp);
+    final current = xpForCurrentLevel(plant.xp);
+    final next = xpForNextLevel(plant.xp);
+    final progress = (next - current) <= 0
+        ? 1.0
+        : ((plant.xp - current) / (next - current)).clamp(0.0, 1.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'Lv$level',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                plant.customName ?? 'Plant #${plant.plantEntityId}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (plant.careStreak > 0)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.local_fire_department_rounded,
+                      size: 15, color: Color(0xFFD98A2B)),
+                  const SizedBox(width: 2),
+                  Text(
+                    '${plant.careStreak}d',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFD98A2B),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 6,
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            color: colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          '${plant.xp} / $next XP',
+          style: TextStyle(
+            fontSize: 11,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}

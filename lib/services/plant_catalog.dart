@@ -25,15 +25,21 @@ class PlantCatalog {
 
   /// Returns plants whose name or scientific name contains [query]
   /// (case-insensitive). Returns an empty list when [query] is blank.
-  static Future<List<Plant>> search(String query) async {
+  ///
+  /// When [limit] is set (free-tier catalog gating), only plants that appear
+  /// within the first [limit] entries of the full catalogue are returned —
+  /// results stay in catalogue order.
+  static Future<List<Plant>> search(String query, {int? limit}) async {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) return [];
     final all = await _load();
-    return all.where((p) {
+    final filtered = all.where((p) {
       final name = p.name.toLowerCase();
       final sci = (p.scientificName ?? '').toLowerCase();
       return name.contains(q) || sci.contains(q);
     }).toList();
+    if (limit == null || limit >= all.length) return filtered;
+    return filtered.where((p) => all.indexOf(p) < limit).toList();
   }
 
   /// Optional enrichment hook: query a botanical API (e.g. Perenual) when an

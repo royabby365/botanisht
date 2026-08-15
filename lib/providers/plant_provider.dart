@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/repository/plant_repository.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
+import 'package:botanisht/widgets/pro_feature.dart';
 
 // Provider for the PlantRepository (singleton)
 final plantRepositoryProvider = Provider<PlantRepository>((ref) {
@@ -9,9 +10,14 @@ final plantRepositoryProvider = Provider<PlantRepository>((ref) {
 });
 
 // Provider that returns a list of all plants from the local database (cached API plants).
+// Free users get the first `freeCatalogLimit` plants; Pro unlocks the full catalog.
 final allPlantsProvider = FutureProvider<List<Plant>>((ref) {
+  final isPro = ref.watch(isProProvider);
   final repo = ref.read(plantRepositoryProvider);
-  return repo.getAllPlants();
+  return repo.getAllPlants().then((plants) {
+    if (isPro || plants.length <= freeCatalogLimit) return plants;
+    return plants.sublist(0, freeCatalogLimit);
+  });
 });
 
 // Provider for user's plants (their garden) - stream for real-time updates.

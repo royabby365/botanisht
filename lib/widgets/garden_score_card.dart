@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/isar_user_plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/core/theme/app_theme.dart';
+import 'package:botanisht/widgets/pro_feature.dart';
 
 /// XP thresholds for each level.
 const List<int> xpToLevel = [
@@ -128,21 +129,24 @@ class GardenScoreCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isPro = ref.watch(isProProvider);
     final userPlantsAsync = ref.watch(userPlantsProvider);
 
     return userPlantsAsync.when(
       data: (plants) {
         final stats = GardenStats.fromPlants(plants);
-        return _buildScoreCard(context, theme, stats);
+        return _buildScoreCard(context, theme, stats, isPro, ref);
       },
       loading: () => _buildShimmer(context, theme),
       error: (e, _) => SizedBox.shrink(),
     );
   }
 
-  Widget _buildScoreCard(BuildContext context, ThemeData theme, GardenStats stats) {
+  Widget _buildScoreCard(BuildContext context, ThemeData theme,
+      GardenStats stats, bool isPro, WidgetRef ref) {
     final colorScheme = theme.colorScheme;
     final hasPlants = stats.totalPlants > 0;
+    final gold = const Color(0xFFD4A843);
 
     // Compute aggregate XP progress
     final currentThreshold = xpForCurrentLevel(stats.totalXp);
@@ -175,7 +179,7 @@ class GardenScoreCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: Garden Score + score badge
+            // Header: Garden Score + score badge (Pro) or lock chip (free)
             Row(
               children: [
                 Icon(Icons.emoji_nature, color: colorScheme.primary, size: 22),
@@ -188,7 +192,7 @@ class GardenScoreCard extends ConsumerWidget {
                   ),
                 ),
                 const Spacer(),
-                if (hasPlants) ...[
+                if (isPro && hasPlants) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
@@ -205,8 +209,32 @@ class GardenScoreCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                 ],
-                // Best streak badge
-                if (bestStreak >= 7)
+                if (!isPro)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: gold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: gold.withValues(alpha: 0.3), width: 0.5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lock_rounded, size: 13, color: gold),
+                        const SizedBox(width: 3),
+                        Text(
+                          'Pro',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: gold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                // Best streak badge (Pro only)
+                if (isPro && bestStreak >= 7)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -234,7 +262,15 @@ class GardenScoreCard extends ConsumerWidget {
                   ),
               ],
             ),
-            if (hasPlants) ...[
+            if (!hasPlants) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Add your first plant to see your Garden Score!',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ] else if (isPro) ...[
               const SizedBox(height: 12),
 
               // XP progress bar for aggregated garden
@@ -280,7 +316,7 @@ class GardenScoreCard extends ConsumerWidget {
               // Stats row
               Row(
                 children: [
-                  _StatChip(Icons.eco, '${stats.totalPlants}', 'Plants', colorScheme),
+                  _StatChip(Icons.eco, '${stats.totalPlants}', stats.totalPlants == 1 ? 'Plant' : 'Plants', colorScheme),
                   const SizedBox(width: 12),
                   _StatChip(Icons.auto_awesome, '${stats.totalXp}', 'Total XP', colorScheme),
                   const SizedBox(width: 12),
@@ -288,11 +324,40 @@ class GardenScoreCard extends ConsumerWidget {
                 ],
               ),
             ] else ...[
+              // Free tier: basic garden info + Pro unlock prompt
               const SizedBox(height: 12),
-              Text(
-                'Add your first plant to see your Garden Score!',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              Row(
+                children: [
+                  _HealthPill('Plants', stats.totalPlants, colorScheme.primary, Icons.eco),
+                  if (stats.healthyCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Healthy', stats.healthyCount, colorScheme.primary, Icons.check_circle),
+                  ],
+                  if (stats.warningCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Warning', stats.warningCount, Colors.orange, Icons.warning_amber),
+                  ],
+                  if (stats.criticalCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _HealthPill('Critical', stats.criticalCount, Colors.redAccent, Icons.report),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => showBotanishtUpgradeSheet(context, ref),
+                  icon: Icon(Icons.workspace_premium_rounded, size: 18, color: gold),
+                  label: const Text('Unlock XP, levels & streaks with Pro'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: gold,
+                    side: BorderSide(color: gold.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -363,27 +428,46 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Row(
-        children: [
-          Icon(icon, size: 14, color: colorScheme.primary),
-          const SizedBox(width: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: colorScheme.onSurface,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 14, color: colorScheme.primary),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
