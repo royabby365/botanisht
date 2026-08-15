@@ -1,4 +1,4 @@
-package com.example.botanisht
+package com.royabernathy.botanisht
 
 import io.flutter.embedding.android.FlutterActivity
 

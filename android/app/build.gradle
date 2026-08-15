@@ -5,9 +5,18 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Load the release signing config from android/key.properties (gitignored).
+// The upload keystore itself (android/upload-keystore.jks) must be backed up
+// somewhere safe — it is the only way to publish updates to Google Play.
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace = "com.example.botanisht"
-    compileSdk = 34
+    namespace = "com.royabernathy.botanisht"
+    compileSdk = 35
     ndkVersion = "26.1.10909125"
 
     compileOptions {
@@ -22,21 +31,32 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.botanisht"
+        // Unique application ID (reverse-DNS of royabernathy.info).
+        applicationId = "com.royabernathy.botanisht"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        release {
+            keyAlias = keystoreProperties["keyAlias"]
+            keyPassword = keystoreProperties["keyPassword"]
+            storeFile = keystoreProperties["storeFile"]
+                ? file("${rootProject.projectDir}/${keystoreProperties["storeFile"]}")
+                : null
+            storePassword = keystoreProperties["storePassword"]
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            // Signed with the upload keystore (Play App Signing holds the
+            // actual app-signing key after first upload).
+            signingConfig = signingConfigs.release
         }
     }
 }

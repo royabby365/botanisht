@@ -605,7 +605,7 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
-  static const int _kTotalPlants = 73;
+  static const int _kTotalPlants = 121;
 
   String _pretty(String z) {
     if (z == 'uncategorized') return 'Garden';
@@ -1888,7 +1888,7 @@ class _GardenHeroSelector extends StatelessWidget {
     );
     final mainPlants = zoneGroups[mainZone] ?? [];
     final plantCount = userPlants.length;
-    const totalCatalog = 73;
+    const totalCatalog = 121;
 
     return Container(
       margin: const EdgeInsets.all(16),

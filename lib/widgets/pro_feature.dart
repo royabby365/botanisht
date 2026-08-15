@@ -62,7 +62,7 @@ void showBotanishtUpgradeSheet(BuildContext context, WidgetRef ref) {
           Text(
             isPro
                 ? 'XP, levels, streaks, and the full catalog are unlocked.\nThanks for supporting the garden! 🌿'
-                : 'XP & levels • Care streaks • Garden score\nExpanded catalog with 70+ plants',
+                : 'XP & levels • Care streaks • Garden score\nExpanded catalog with 121+ plants',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.colorScheme.onSurfaceVariant,
