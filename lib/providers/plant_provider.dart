@@ -32,6 +32,12 @@ final plantsNeedingWaterProvider = FutureProvider<List<UserPlant>>((ref) {
   return repo.getPlantsNeedingWater();
 });
 
+// Provider for unique zones.
+final uniqueZonesProvider = FutureProvider<List<String>>((ref) {
+  final repo = ref.read(plantRepositoryProvider);
+  return repo.getUniqueZones();
+});
+
 // Optional: a notifier to allow refreshing or filtering cached API plants.
 class PlantListNotifier extends StateNotifier<AsyncValue<List<Plant>>> {
   final PlantRepository _repository;

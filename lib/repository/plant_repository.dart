@@ -141,6 +141,14 @@ class PlantRepository {
         .watch(fireImmediately: true);
   }
 
+  /// Stream of ALL hydroponic logs across all zones
+  Stream<List<HydroponicLog>> watchAllHydroponicLogs() {
+    return _isar.hydroponicLogs
+        .where()
+        .sortByTimestampDesc()
+        .watch(fireImmediately: true);
+  }
+
   // User Plant methods
   Stream<List<UserPlant>> watchUserPlants() {
     return _isar.userPlants
@@ -416,6 +424,11 @@ class PlantRepository {
         .where()
         .sortByTimestampDesc()
         .findAll();
+  }
+
+  /// Adds a new hydroponic log entry.
+  Future<void> addHydroponicLog(HydroponicLog log) async {
+    await _isar.writeTxn(() => _isar.hydroponicLogs.put(log));
   }
 
   /// Inserts imported plants as brand-new rows (fresh ids) so an import never

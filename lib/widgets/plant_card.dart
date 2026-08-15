@@ -272,13 +272,21 @@ class PlantCard extends ConsumerWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.14), color.withOpacity(0.04)],
+          colors: [color.withValues(alpha: 0.14), color.withValues(alpha: 0.04)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
       child: Center(
-        child: Icon(icon, size: 56, color: color.withOpacity(0.35)),
+        child: Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(icon, size: 32, color: color.withValues(alpha: 0.55)),
+        ),
       ),
     );
   }

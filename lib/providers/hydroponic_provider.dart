@@ -15,3 +15,9 @@ final hydroponicLogsForZoneProvider = StreamProvider.family.autoDispose<List<Hyd
   final repository = ref.read(plantRepositoryProvider);
   return repository.watchHydroponicLogsForZone(zone);
 });
+
+/// Stream of ALL hydroponic logs (for the Hydroponic Log screen)
+final hydroponicLogsProvider = StreamProvider.autoDispose<List<HydroponicLog>>((ref) {
+  final repository = ref.read(plantRepositoryProvider);
+  return repository.watchAllHydroponicLogs();
+});

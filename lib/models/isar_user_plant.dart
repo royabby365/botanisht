@@ -61,6 +61,12 @@ class UserPlant {
     }
   }
 
+  /// When this plant is next due for watering, based on lastWatered and wateringIntervalHours.
+  DateTime? get nextWateringDue {
+    if (lastWatered == null) return null;
+    return lastWatered!.add(Duration(hours: wateringIntervalHours));
+  }
+
   DateTime? lastFertilized;
   DateTime? lastPruned;
 

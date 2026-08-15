@@ -17,6 +17,23 @@ import 'package:botanisht/screens/user_plant_detail_screen.dart';
 import 'package:botanisht/data/companion_rules.dart';
 import 'package:botanisht/services/weather_alert_service.dart';
 import 'package:botanisht/services/garden_data_service.dart';
+import 'package:botanisht/screens/hydroponic_log_screen.dart';
+import 'package:botanisht/screens/diagnostics_screen.dart';
+import 'package:botanisht/screens/plant_profiles_screen.dart';
+import 'package:botanisht/screens/companion_alerts_screen.dart';
+import 'package:botanisht/core/theme/app_theme.dart';
+
+/// Shows the zone settings bottom sheet.
+void _showZoneSettingsSheet(BuildContext context, WidgetRef ref, String zone) {
+  final notifier = ref.read(settingsProvider.notifier);
+  final existing = notifier.getZoneConfig(zone);
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => _ZoneSettingsSheet(zone: zone, initial: existing),
+  );
+}
 
 const List<String> _outdoorZones = [
   'kitchen',
@@ -31,107 +48,131 @@ const List<String> _outdoorZones = [
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  void _showAddPlantDialog(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AddPlantBottomSheet(),
+    );
+  }
+
+  void _showZoneSettingsSheet(BuildContext context, WidgetRef ref, String zone) {
+    final notifier = ref.read(settingsProvider.notifier);
+    final existing = notifier.getZoneConfig(zone);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ZoneSettingsSheet(zone: zone, initial: existing),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncUserPlants = ref.watch(userPlantsProvider);
     final weatherAsync = ref.watch(weatherAlertProvider);
     final alert = weatherAsync.value;
     final locationReady = ref.watch(gardenLocationReadyProvider);
-    // Keeps the 4-hour weather refresh cycle alive for the app session.
     ref.watch(weatherAutoRefreshProvider);
 
     return asyncUserPlants.when(
       data: (userPlants) {
-        // Build dynamic tabs from the unique zones present in the garden.
         final Map<String, List<UserPlant>> zoneGroups = {};
         for (final p in userPlants) {
           final z = (p.zone ?? 'uncategorized').toLowerCase().trim();
           zoneGroups.putIfAbsent(z, () => []).add(p);
         }
         final zones = zoneGroups.keys.toList()..sort();
-        final tabTitles = [...zones, 'Diagnostic'];
+        
+        // Capture instance methods for use in closures
+        void showZoneSettings(BuildContext ctx, String zone) => this._showZoneSettingsSheet(ctx, ref, zone);
+        void showAddPlant(BuildContext ctx) => this._showAddPlantDialog(ctx, ref);
 
-        return DefaultTabController(
-          length: tabTitles.length,
-          child: Scaffold(
-            drawer: const AppSettingsDrawer(),
-            appBar: AppBar(
-              leading: Builder(
-                builder: (ctx) => IconButton(
-                  icon: const Icon(Icons.menu_rounded),
-                  onPressed: () => Scaffold.of(ctx).openDrawer(),
-                  tooltip: 'Menu & settings',
-                ),
+        return Scaffold(
+          drawer: const AppSettingsDrawer(),
+          appBar: AppBar(
+            leading: Builder(
+              builder: (ctx) => IconButton(
+                icon: const Icon(Icons.menu_rounded),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+                tooltip: 'Menu & settings',
               ),
-              title: const BrandLogo(),
-              centerTitle: false,
-              actions: [
-                // Day/Night toggle — mirrors the sun/moon icon in the website mockup
-                Consumer(
-                  builder: (ctx, ref, _) {
-                    final settings = ref.watch(settingsProvider);
-                    final isDark = settings.themeMode == 2;
-                    return IconButton(
-                      icon: Icon(
-                        isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                        semanticLabel: isDark ? 'Switch to Cream theme' : 'Switch to Evergreen theme',
-                      ),
-                      onPressed: () {
-                        ref.read(settingsProvider.notifier).setThemeMode(isDark ? 1 : 2);
-                      },
-                      tooltip: 'Toggle theme (Cream ↔ Evergreen)',
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search_rounded),
-                  onPressed: () => _showSearchDialog(context, ref),
-                  tooltip: 'Search plants',
-                ),
+            ),
+            title: const BrandLogo(),
+            centerTitle: false,
+            actions: [
+              Consumer(
+                builder: (ctx, ref, _) {
+                  final settings = ref.watch(settingsProvider);
+                  final isDark = settings.themeMode == 2;
+                  return IconButton(
+                    icon: Icon(
+                      isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      semanticLabel: isDark ? 'Switch to Cream theme' : 'Switch to Evergreen theme',
+                    ),
+                    onPressed: () {
+                      ref.read(settingsProvider.notifier).setThemeMode(isDark ? 1 : 2);
+                    },
+                    tooltip: 'Toggle theme (Cream ↔ Evergreen)',
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.search_rounded),
+                onPressed: () => _showSearchDialog(context, ref),
+                tooltip: 'Search plants',
+              ),
+            ],
+            elevation: 0,
+            scrolledUnderElevation: 0,
+          ),
+          body: RefreshIndicator(
+            onRefresh: () async => ref.invalidate(userPlantsProvider),
+            child: CustomScrollView(
+              slivers: [
+                // Hero Garden Selector — matches website "Backyard Beds"
+                SliverToBoxAdapter(child: _GardenHeroSelector(
+                  zones: zones, 
+                  userPlants: userPlants, 
+                  zoneGroups: zoneGroups,
+                  onAddPlant: () => showAddPlant(context),
+                  onZoneSettings: (ctx, zone) => showZoneSettings(ctx, zone),
+                )),
+                
+                // Quick Actions Row
+                SliverToBoxAdapter(child: _QuickActionsRow()),
+                
+                // Garden Score
+                const SliverToBoxAdapter(child: GardenScoreCard()),
+                
+                // Weather Alert
+                if (alert != null) SliverToBoxAdapter(child: _WeatherAlertCard(alert: alert)),
+                
+                // Location Hint
+                if (!locationReady) const SliverToBoxAdapter(child: _GardenLocationHint()),
+                
+                // Feature Cards Grid (matching website's feature illustrations)
+                SliverToBoxAdapter(child: _FeatureCardsGrid(
+                  zones: zones, 
+                  zoneGroups: zoneGroups, 
+                  userPlants: userPlants, 
+                  hasAlert: alert != null
+                )),
+                
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(56),
-                child: TabBar(
-                  isScrollable: true,
-                  tabs: tabTitles.map((t) => Tab(
-                    icon: Icon(_zoneIcon(t)),
-                    text: _pretty(t),
-                  )).toList(),
-                ),
-              ),
             ),
-            body: Column(
-              children: [
-                const GardenScoreCard(),
-                if (alert != null) _WeatherAlertCard(alert: alert),
-                if (!locationReady) const _GardenLocationHint(),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      ...zones.map(
-                        (z) => _buildZoneTab(
-                          context,
-                          ref,
-                          z,
-                          zoneGroups[z]!,
-                          userPlants,
-                        ),
-                      ),
-                      _buildDiagnosticTab(context, ref, userPlants),
-                    ],
-                  ),
-                ),
-              ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => _showAddPlantDialog(context, ref),
+            icon: const Icon(Icons.add_rounded),
+            label: const Text(
+              'Add Plant',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => _showAddPlantDialog(context, ref),
-              icon: const Icon(Icons.add_rounded),
-              label: const Text(
-                'Add Plant',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              tooltip: 'Add plant',
-            ),
+            tooltip: 'Add plant',
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
         );
       },
@@ -492,15 +533,6 @@ class HomeScreen extends ConsumerWidget {
     showSearch(
       context: context,
       delegate: PlantSearchDelegate(),
-    );
-  }
-
-  void _showAddPlantDialog(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const AddPlantBottomSheet(),
     );
   }
 
@@ -1051,17 +1083,6 @@ class AppSettingsDrawer extends ConsumerWidget {
     );
   }
 
-  void _showZoneSettingsSheet(BuildContext context, WidgetRef ref, String zone) {
-    final notifier = ref.read(settingsProvider.notifier);
-    final existing = notifier.getZoneConfig(zone);
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _ZoneSettingsSheet(zone: zone, initial: existing),
-    );
-  }
-
   /// Serialises the whole garden (plants, hydroponic logs, settings) to a
   /// timestamped JSON file and surfaces the file path in a snackbar.
   Future<void> _exportGardenData(BuildContext context) async {
@@ -1407,16 +1428,19 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    const evergreen = Color(0xFF1B4332);
-    const leafGreen = Color(0xFF52B788);
+    final theme = Theme.of(context);
+    final leaf = BotanishtPalette.leaf;
+    final leafDeep = BotanishtPalette.leafDeep;
+    final leafBright = BotanishtPalette.leafBright;
+    final creamBg = BotanishtPalette.creamBg;
 
     return Container(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5F0E1),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: creamBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -1431,31 +1455,32 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: evergreen.withValues(alpha: 0.2),
+                  color: BotanishtPalette.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            // Title
+            // Title — Fraunces serif from theme
             Text(
               '${_pretty(widget.zone)} Conditions',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: evergreen,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: leafDeep,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Sun exposure
-            const Text('Sun Exposure',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
-                    color: evergreen)),
+            _sectionHeader(icon: Icons.wb_sunny_outlined, label: 'Sun Exposure', color: leafDeep),
             const SizedBox(height: 8),
             SegmentedButton<String>(
               selected: {_sunExposure},
               onSelectionChanged: (v) =>
                   setState(() => _sunExposure = v.first),
+              style: SegmentedButton.styleFrom(
+                selectedBackgroundColor: BotanishtPalette.leafSoft,
+                selectedForegroundColor: leafDeep,
+                foregroundColor: BotanishtPalette.inkSoft,
+              ),
               segments: const [
                 ButtonSegment(value: 'Full sun', label: Text('Full sun')),
                 ButtonSegment(value: 'Partial shade',
@@ -1466,50 +1491,45 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
                     label: Text('Grow lights')),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Target pH
-            Row(
-              children: [
-                const Text('Target Soil pH',
-                    style: TextStyle(fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: evergreen)),
-                const Spacer(),
-                Text(
-                  _targetPh.toStringAsFixed(1),
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: leafGreen),
-                ),
-              ],
+            _sliderSection(
+              icon: Icons.science_outlined,
+              label: 'Target Soil pH',
+              value: _targetPh.toStringAsFixed(1),
+              color: leafDeep,
+              accent: leafBright,
+              slider: Slider(
+                value: _targetPh,
+                min: 5.0,
+                max: 8.0,
+                divisions: 30,
+                activeColor: leafBright,
+                inactiveColor: BotanishtPalette.leafSoft,
+                label: _targetPh.toStringAsFixed(1),
+                onChanged: (v) => setState(() => _targetPh = v),
+              ),
             ),
-            Slider(
-              value: _targetPh,
-              min: 5.0,
-              max: 8.0,
-              divisions: 30,
-              activeColor: leafGreen,
-              inactiveColor: leafGreen.withValues(alpha: 0.2),
-              label: _targetPh.toStringAsFixed(1),
-              onChanged: (v) => setState(() => _targetPh = v),
-            ),
-            const SizedBox(height: 12),
 
             // Soil drainage
-            const Text('Soil Drainage',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
-                    color: evergreen)),
+            _sectionHeader(icon: Icons.water_drop_outlined, label: 'Soil Drainage', color: leafDeep),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: _soilDrainage,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: BotanishtPalette.line),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: BotanishtPalette.line),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                filled: true,
+                fillColor: BotanishtPalette.creamSurface,
               ),
               items: const [
                 DropdownMenuItem(value: 'Well-drained',
@@ -1523,70 +1543,49 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
                 if (v != null) setState(() => _soilDrainage = v);
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Temperature
-            Row(
-              children: [
-                const Text('Temperature (°C)',
-                    style: TextStyle(fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: evergreen)),
-                const Spacer(),
-                Text(
-                  '${_temperatureC.round()}°C',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: leafGreen),
-                ),
-              ],
+            _sliderSection(
+              icon: Icons.thermostat_outlined,
+              label: 'Temperature (°C)',
+              value: '${_temperatureC.round()}°C',
+              color: leafDeep,
+              accent: leafBright,
+              slider: Slider(
+                value: _temperatureC,
+                min: 5.0,
+                max: 40.0,
+                divisions: 35,
+                activeColor: leafBright,
+                inactiveColor: BotanishtPalette.leafSoft,
+                label: '${_temperatureC.round()}°C',
+                onChanged: (v) => setState(() => _temperatureC = v),
+              ),
             ),
-            Slider(
-              value: _temperatureC,
-              min: 5.0,
-              max: 40.0,
-              divisions: 35,
-              activeColor: leafGreen,
-              inactiveColor: leafGreen.withValues(alpha: 0.2),
-              label: '${_temperatureC.round()}°C',
-              onChanged: (v) => setState(() => _temperatureC = v),
-            ),
-            const SizedBox(height: 12),
 
             // Humidity
-            Row(
-              children: [
-                const Text('Humidity (%)',
-                    style: TextStyle(fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: evergreen)),
-                const Spacer(),
-                Text(
-                  '${_humidityPercent.round()}%',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: leafGreen),
-                ),
-              ],
-            ),
-            Slider(
-              value: _humidityPercent,
-              min: 20.0,
-              max: 100.0,
-              divisions: 80,
-              activeColor: leafGreen,
-              inactiveColor: leafGreen.withValues(alpha: 0.2),
-              label: '${_humidityPercent.round()}%',
-              onChanged: (v) => setState(() => _humidityPercent = v),
+            _sliderSection(
+              icon: Icons.water_outlined,
+              label: 'Humidity (%)',
+              value: '${_humidityPercent.round()}%',
+              color: leafDeep,
+              accent: leafBright,
+              slider: Slider(
+                value: _humidityPercent,
+                min: 20.0,
+                max: 100.0,
+                divisions: 80,
+                activeColor: leafBright,
+                inactiveColor: BotanishtPalette.leafSoft,
+                label: '${_humidityPercent.round()}%',
+                onChanged: (v) => setState(() => _humidityPercent = v),
+              ),
             ),
             const SizedBox(height: 16),
 
             // Notes
-            const Text('Notes',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
-                    color: evergreen)),
+            _sectionHeader(icon: Icons.edit_note_outlined, label: 'Notes', color: leafDeep),
             const SizedBox(height: 8),
             TextField(
               controller: _notesController,
@@ -1595,8 +1594,15 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
                 hintText: 'e.g. Keep away from drafty windows',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: BotanishtPalette.line),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: BotanishtPalette.line),
                 ),
                 contentPadding: const EdgeInsets.all(16),
+                filled: true,
+                fillColor: BotanishtPalette.creamSurface,
               ),
             ),
             const SizedBox(height: 24),
@@ -1606,8 +1612,8 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: evergreen,
-                  foregroundColor: const Color(0xFFF5F0E1),
+                  backgroundColor: leaf,
+                  foregroundColor: BotanishtPalette.creamSurface,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -1629,15 +1635,80 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
                       .setZoneConfig(widget.zone, config);
                   Navigator.pop(context);
                 },
-                child: const Text(
+                child: Text(
                   'Save Conditions',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: BotanishtPalette.creamSurface,
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _sectionHeader({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: color),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _sliderSection({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    required Color accent,
+    required Widget slider,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: accent,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        slider,
+        const SizedBox(height: 16),
+      ],
     );
   }
 
@@ -1658,3 +1729,775 @@ class _ZoneSettingsSheetState extends ConsumerState<_ZoneSettingsSheet> {
     return z[0].toUpperCase() + z.substring(1);
   }
 }
+
+/// ============================================================================
+/// NEW WIDGETS FOR WEBSITE-MATCHING HOME SCREEN
+/// ============================================================================
+
+/// Hero Garden Selector — "Backyard Beds" style from website
+class _GardenHeroSelector extends StatelessWidget {
+  final List<String> zones;
+  final List<UserPlant> userPlants;
+  final Map<String, List<UserPlant>> zoneGroups;
+  final VoidCallback onAddPlant;
+  final Function(BuildContext, String) onZoneSettings;
+
+  const _GardenHeroSelector({
+    required this.zones,
+    required this.userPlants,
+    required this.zoneGroups,
+    required this.onAddPlant,
+    required this.onZoneSettings,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (userPlants.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow,
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Botanical illustration placeholder
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.local_florist_rounded,
+                size: 60,
+                color: colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Welcome to Your Garden',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Start by adding your first plant.\nWe\'ll help you track watering, companions,\nand growing conditions.',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: onAddPlant,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Add Your First Plant'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Find the main garden zone
+    final mainZone = zones.firstWhere(
+      (z) => _outdoorZones.any((o) => z.contains(o)),
+      orElse: () => zones.first,
+    );
+    final mainPlants = zoneGroups[mainZone] ?? [];
+    final plantCount = userPlants.length;
+    const totalCatalog = 73;
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with garden name
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.grass_rounded,
+                  color: colorScheme.onPrimaryContainer,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Backyard Beds',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      '$plantCount of $totalCatalog plants in your garden',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.edit_rounded, color: colorScheme.onSurfaceVariant),
+                onPressed: () => onZoneSettings(context, mainZone),
+                tooltip: 'Edit garden settings',
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Plant preview row - horizontal scroll
+          SizedBox(
+            height: 140,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: (mainPlants.length > 5 ? 5 : mainPlants.length) + 1,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                if (index == (mainPlants.length > 5 ? 5 : mainPlants.length)) {
+                  return _AddPlantPreviewCard(onAddPlant: onAddPlant);
+                }
+                final plant = mainPlants[index];
+                return _PlantPreviewCard(userPlant: plant);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Preview card for a plant in the garden hero
+class _PlantPreviewCard extends StatelessWidget {
+  final UserPlant userPlant;
+
+  const _PlantPreviewCard({required this.userPlant});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final healthColor = _healthColor(userPlant.healthStatus, colorScheme);
+    final name = userPlant.customName ?? 'Unnamed Plant';
+    
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => UserPlantDetailScreen(plantId: userPlant.id)),
+      ),
+      child: Container(
+        width: 110,
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _plantIcon(userPlant),
+                color: colorScheme.primary,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              name,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: healthColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                userPlant.healthStatus ?? 'healthy',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: healthColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _healthColor(String? status, ColorScheme scheme) {
+    switch (status) {
+      case 'healthy': return scheme.primary;
+      case 'warning': return scheme.secondary;
+      case 'critical': return scheme.error;
+      case 'dormant': return scheme.onSurfaceVariant;
+      default: return scheme.primary;
+    }
+  }
+
+  IconData _plantIcon(UserPlant p) {
+    final name = (p.customName ?? '').toLowerCase();
+    if (name.contains('tomato')) return Icons.agriculture_rounded;
+    if (name.contains('basil') || name.contains('herb')) return Icons.eco_rounded;
+    if (name.contains('pepper')) return Icons.local_fire_department_rounded;
+    if (name.contains('lettuce') || name.contains('greens')) return Icons.grass_rounded;
+    return Icons.local_florist_rounded;
+  }
+}
+
+/// Add plant preview card
+class _AddPlantPreviewCard extends StatelessWidget {
+  final VoidCallback onAddPlant;
+
+  const _AddPlantPreviewCard({required this.onAddPlant});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    return GestureDetector(
+      onTap: onAddPlant,
+      child: Container(
+        width: 110,
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.primary.withValues(alpha: 0.4),
+            width: 2,
+            strokeAlign: BorderSide.strokeAlignInside,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.add_rounded,
+                color: colorScheme.onPrimaryContainer,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Add Plant',
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.primary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick Actions Row - matches website feature cards
+class _QuickActionsRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: _QuickActionCard(
+              icon: Icons.science_rounded,
+              label: 'Hydroponic Log',
+              color: colorScheme.primary,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HydroponicLogScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _QuickActionCard(
+              icon: Icons.analytics_rounded,
+              label: 'Diagnostics',
+              color: colorScheme.secondary,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _QuickActionCard(
+              icon: Icons.eco_rounded,
+              label: 'Plant Profiles',
+              color: Color(0xFF52B788),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PlantProfilesScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _QuickActionCard(
+              icon: Icons.warning_amber_rounded,
+              label: 'Companion Alerts',
+              color: Color(0xFFD98A2B),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CompanionAlertsScreen()),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Feature Cards Grid - matches website's illustrated feature cards
+class _FeatureCardsGrid extends StatelessWidget {
+  final List<String> zones;
+  final Map<String, List<UserPlant>> zoneGroups;
+  final List<UserPlant> userPlants;
+  final bool hasAlert;
+
+  const _FeatureCardsGrid({
+    required this.zones,
+    required this.zoneGroups,
+    required this.userPlants,
+    required this.hasAlert,
+  });
+
+  static IconData _zoneIcon(String z) {
+    final lower = z.toLowerCase();
+    if (lower.contains('indoor')) return Icons.home_rounded;
+    if (lower.contains('outdoor') || lower.contains('garden') || lower.contains('bed')) return Icons.grass_rounded;
+    if (lower.contains('hydro')) return Icons.science_rounded;
+    if (lower.contains('greenhouse')) return Icons.eco_rounded;
+    if (lower.contains('balcony')) return Icons.balcony_rounded;
+    if (lower.contains('kitchen')) return Icons.kitchen_rounded;
+    return Icons.local_florist_rounded;
+  }
+
+  static String _pretty(String z) {
+    return z
+        .split(' ')
+        .map((w) => w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1)}')
+        .join(' ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    // Only show if user has plants
+    if (userPlants.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Your Garden Features',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.1,
+            children: [
+              // Zone Overview Card
+              _IllustratedFeatureCard(
+                illustration: Icons.grass_rounded,
+                title: 'Zone Overview',
+                subtitle: '${zones.length} zones • ${userPlants.length} plants',
+                color: colorScheme.primary,
+                onTap: () => _showZoneOverviewDialog(context),
+              ),
+              // Watering Schedule
+              _IllustratedFeatureCard(
+                illustration: Icons.water_drop_rounded,
+                title: 'Watering Schedule',
+                subtitle: _wateringSummary(),
+                color: Colors.blue.shade600,
+                onTap: () => _showWateringSchedule(context),
+              ),
+              // Companion Planting
+              _IllustratedFeatureCard(
+                illustration: Icons.handshake_rounded,
+                title: 'Companions',
+                subtitle: _companionSummary(),
+                color: Color(0xFF52B788),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CompanionAlertsScreen()),
+                ),
+              ),
+              // Hydroponic
+              _IllustratedFeatureCard(
+                illustration: Icons.science_rounded,
+                title: 'Hydroponic Log',
+                subtitle: _hydroSummary(),
+                color: Colors.teal.shade600,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HydroponicLogScreen()),
+                ),
+              ),
+              // Diagnostics
+              _IllustratedFeatureCard(
+                illustration: Icons.analytics_rounded,
+                title: 'Diagnostics',
+                subtitle: 'Health & environment insights',
+                color: colorScheme.secondary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+                ),
+              ),
+              // Weather
+              _IllustratedFeatureCard(
+                illustration: hasAlert ? Icons.storm_rounded : Icons.wb_sunny_rounded,
+                title: 'Weather Alerts',
+                subtitle: hasAlert ? 'Active alert' : 'No active alerts',
+                color: hasAlert ? Colors.red.shade600 : Colors.amber.shade700,
+                onTap: () => _showWeatherDetails(context),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _wateringSummary() {
+    int dueSoon = 0;
+    for (final p in userPlants) {
+      if (p.nextWateringDue != null && p.nextWateringDue!.isBefore(DateTime.now().add(const Duration(hours: 24)))) {
+        dueSoon++;
+      }
+    }
+    return dueSoon > 0 ? '$dueSoon due in 24h' : 'All caught up';
+  }
+
+  String _companionSummary() {
+    int clashes = 0;
+    for (final zonePlants in zoneGroups.values) {
+      for (final p in zonePlants) {
+        final neighbors = zonePlants
+            .where((n) => n.id != p.id)
+            .map((n) => n.customName ?? 'Plant')
+            .toList();
+        final advice = CompanionRules.evaluate(p.customName ?? 'Plant', neighbors);
+        if (advice != null && advice.isWarning) clashes++;
+      }
+    }
+    return clashes > 0 ? '$clashes clash${clashes > 1 ? 'es' : ''} detected' : 'All harmonious';
+  }
+
+  String _hydroSummary() {
+    int hydroCount = userPlants.where((p) => (p.zone ?? '').toLowerCase() == 'hydro').length;
+    return hydroCount > 0 ? '$hydroCount hydro plant${hydroCount > 1 ? 's' : ''}' : 'No hydro setup';
+  }
+
+  void _showZoneOverviewDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Zone Overview'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: zones.length,
+            itemBuilder: (ctx, i) {
+              final zone = zones[i];
+              final plants = zoneGroups[zone] ?? [];
+              return ListTile(
+                leading: Icon(_zoneIcon(zone), color: Theme.of(context).colorScheme.primary),
+                title: Text(_pretty(zone)),
+                trailing: Text('${plants.length} plants'),
+                onTap: () => Navigator.pop(ctx),
+              );
+            },
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+      ),
+    );
+  }
+
+  void _showWateringSchedule(BuildContext context) {
+    final duePlants = userPlants.where((p) => 
+      p.nextWateringDue != null && p.nextWateringDue!.isBefore(DateTime.now().add(const Duration(days: 7)))
+    ).toList()
+      ..sort((a, b) => (a.nextWateringDue ?? DateTime.now()).compareTo(b.nextWateringDue ?? DateTime.now()));
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Upcoming Watering'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: duePlants.isEmpty
+              ? const Center(child: Text('All plants watered!'))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: duePlants.length,
+                  itemBuilder: (ctx, i) {
+                    final p = duePlants[i];
+                    final due = p.nextWateringDue!;
+                    final hoursUntil = due.difference(DateTime.now()).inHours;
+                    return ListTile(
+                      leading: Icon(Icons.water_drop_rounded, color: Theme.of(context).colorScheme.primary),
+                      title: Text(p.customName ?? 'Unnamed'),
+                      subtitle: Text(hoursUntil <= 0 ? 'Overdue' : '$hoursUntil hours'),
+                      trailing: Text('${p.wateringIntervalHours}h interval'),
+                    );
+                  },
+                ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+      ),
+    );
+  }
+
+  void _showWeatherDetails(BuildContext context) {
+    // Placeholder - could show full weather dialog
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Weather details coming soon')),
+    );
+  }
+}
+
+/// Illustrated Feature Card matching website design
+class _IllustratedFeatureCard extends StatelessWidget {
+  final IconData illustration;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _IllustratedFeatureCard({
+    required this.illustration,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow,
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Botanical illustration area
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(illustration, color: color, size: 26),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.3,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.chevron_right_rounded, color: colorScheme.onSurfaceVariant, size: 20),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Keep existing _WeatherAlertCard and _GardenLocationHint classes...
+// They are already defined later in the file, just need to make sure they're not duplicated
