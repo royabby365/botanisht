@@ -1,1 +1,8 @@
-custom: ["https://buymeacoffee.com/royabby"]
+# Funding
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+github: [royabby365]
+buy_me_a_coffee: royabby
+custom:
+  - https://botanisht.com/privacy/
+  - https://buymeacoffee.com/royabby

@@ -1,5 +1,4 @@
-My goal is to make sure all of my projects stay free, local, and private. If you have a philanthropic side of you that just HAS to contribute, or if you like my projects and want to see more of them, click the badge! I'll also take GH Stars, every little "attaboy" is appreciated.
-
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%23E53935?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/royabby365)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/royabby)
 
 # Botanisht 🌱
@@ -159,6 +158,34 @@ lib/
   widgets/           # Logo, cards, dialogs
 assets/data/         # fallback_plants.json, plant_catalog.json
 ```
+
+---
+
+## Sponsors
+
+Botanisht is built in the open, for free, with no ads, no telemetry, and
+no subscriptions. If the app saves you a plant or helps you grow something
+beautiful, consider becoming a sponsor.
+
+<div align="center">
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%23E53935?style=flat&logo=github&logoColor=white)](https://github.com/sponsors/royabby365)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-%23FFDD00?style=flat&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/royabby)
+
+**Sponsor Tiers (GitHub Sponsors)**
+- **Plant Saver** — $5/mo · Name in README & app credits
+- **Garden Champion** — $15/mo · Plant Saver + priority feature voting
+- **Master Gardener** — $50/mo · Garden Champion + direct 1:1 feature requests
+
+Or drop a one-time coffee at [Buy Me a Coffee](https://buymeacoffee.com/royabby).
+
+</div>
+
+### Partners & Affiliates
+
+*Have a plant-care, IoT, or smart-home brand?* Reach out — Botanisht is
+open to affiliate partnerships, in-app integrations, and co-marketing with
+products our users already love.
 
 ---
 
