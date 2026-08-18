@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
@@ -140,9 +141,10 @@ class _LeafLoadingBarState extends State<LeafLoadingBar>
             final partial = leafProgress > 0.0 && leafProgress < 1.0;
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: Icon(
-                Icons.eco_rounded,
-                size: 22,
+              child: SvgPicture.asset(
+                'assets/data/leaf_mark.svg',
+                width: 22,
+                height: 22,
                 color: filled
                     ? widget.color
                     : partial
