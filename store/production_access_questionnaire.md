@@ -1,9 +1,8 @@
-# Botanisht — Production Access Questionnaire (draft answers)
+# Botanisht — Production Access Questionnaire
 
-Google's "Apply for production access" flow asks a set of questions to
-verify app design, testing process, and production readiness. Exact
-questions vary — these are copy-paste-ready answers aligned with the
-v3.3.0 app and closed-test submission. Fill in the bracketed bits.
+Answers for Google's "Apply for production access" form, covering app
+design, testing process, and production readiness for the v3.3.0
+closed-test submission.
 
 ---
 

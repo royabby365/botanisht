@@ -1,8 +1,8 @@
 # Botanisht — Closed Testing Recruitment
 
 Google requires 12 testers opted in for 14 continuous days before new
-personal dev accounts can ship to Production. This file has copy-paste
-blurbs for each channel. **Keep it to a 2-week commitment per tester.**
+personal dev accounts can ship to Production. Blurbs below are ready to
+send as-is. Keep it to a 2-week commitment per tester.
 
 ---
 
@@ -18,7 +18,7 @@ blurbs for each channel. **Keep it to a 2-week commitment per tester.**
 
 ---
 
-## DISCORD (your server, the-bot-speaks etc.)
+## Discord server
 
 > 🌱 **Help Botanisht pass Google's new-account test!** I need 12 people
 > to join a 2-week closed beta so the app can go live on the Play Store.
@@ -39,21 +39,21 @@ blurbs for each channel. **Keep it to a 2-week commitment per tester.**
 > Reply or DM and I'll send the opt-in link. Happy to return the favor
 > for your closed test if you have one.
 
-## REDDIT — dev-swap subs (search "closed testing" / "app testing swap")
+## Reddit — dev-swap subs
 
 > Dev here. Need 12 closed-testers for my Flutter app (Botanisht —
 > plant care, offline-first). Requirement: install and stay opted-in
 > 14 days. Will gladly swap: join your closed test in return and hold
 > it the same 14 days. Comment or DM your link.
 
-## FRIENDS/FAMILY (DM text)
+## Friends & family (DM)
 
 > Hey — I need a tiny favor for my app. I'm launching on Google Play
 > and Google wants 12 people to install the beta for 2 weeks. Click
 > this link, install it, and just leave it alone for 14 days. That's
 > the whole ask. Thanks!
 
-## GITHUB repo / issues (open a pinned issue or discussion)
+## GitHub repo / issues
 
 > **Calling all beta testers** — to publish Botanisht on the Play
 > Store, Google requires a 14-day closed test with 12 testers.

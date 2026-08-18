@@ -1,6 +1,6 @@
 # Publishing Botanisht — Step-by-Step
 
-## Part 1: Google Play (doable from this machine — everything below is ready)
+## Part 1: Google Play
 
 ### What's already done in the repo (v3.3.0)
 - Application ID changed: `com.example.botanisht` → `com.royabernathy.botanisht`
@@ -13,12 +13,12 @@
 - Plant catalog expanded to 121 plants.
 - Privacy policy + listing copy in `store/`.
 
-### The ONE thing to back up right now
+### Back this up first
 ```
 android/upload-keystore.jks
-android/key.properties   (password: see file / /tmp/keystore_pass.txt)
+android/key.properties   (contains the signing passwords)
 ```
-Copy both to your 5TB Google Drive / password manager. Lose the keystore
+Copy both to a Google Drive / password manager. Lose the keystore
 and you can still recover via Play's "reset upload key" flow, but it's a
 pain — back it up first.
 
