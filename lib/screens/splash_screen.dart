@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:botanisht/models/plant.dart';
 import 'package:botanisht/providers/plant_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
-import 'package:botanisht/widgets/brand_logo.dart';
+import 'package:botanisht/widgets/wordmark_logo.dart';
 
 /// Launch screen shown until the app is actually ready: the Isar-backed
 /// garden list and the cached plant catalog have both loaded their first
@@ -75,7 +75,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BrandLogo(height: 88),
+            WordmarkLogo(width: 230),
             const SizedBox(height: 30),
             SizedBox(
               width: 240,

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:botanisht/core/theme/app_theme.dart';
 import 'package:botanisht/providers/settings_provider.dart';
 import 'package:botanisht/screens/home_screen.dart';
-import 'package:botanisht/widgets/brand_logo.dart';
+import 'package:botanisht/widgets/wordmark_logo.dart';
 
 /// First-run onboarding tutorial.
 ///
@@ -139,16 +139,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 24),
-          // The official website logo mark (green tile + white leaf SVG).
+          // The official Botanisht wordmark (real logo artwork, cream card).
           Semantics(
             label: 'Botanisht logo',
-            child: BrandLogo(height: 96 * s),
-          ),
-          const SizedBox(height: 28),
-          Icon(
-            Icons.eco_rounded,
-            size: 72 * s,
-            color: theme.colorScheme.tertiary,
+            child: WordmarkLogo(width: 250 * s),
           ),
           const SizedBox(height: 28),
           Text(
