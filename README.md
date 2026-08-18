@@ -1,4 +1,5 @@
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%23E53935?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/royabby365)
+[![GitHub Downloads](https://img.shields.io/github/downloads/royabby365/botanisht/total?style=for-the-badge&logo=github&label=Downloads&color=%232E7D4F)](https://github.com/royabby365/botanisht/releases)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/royabby)
 
 # Botanisht 🌱
