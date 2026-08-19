@@ -7,11 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, bd]
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      # Self-hosted runner has no preinstalled JDK (GH-hosted ubuntu does)
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - uses: subosito/flutter-action@v2
         with:
